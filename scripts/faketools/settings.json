@@ -1,0 +1,14 @@
+{
+    "LEFT_TO_RIGHT": [
+        "(.*)(L)",
+        "\\g<1>R"
+    ],
+    "RIGHT_TO_LEFT": [
+        "(.*)(R)",
+        "\\g<1>L"
+    ],
+    "MIRROR_JOINTS":[
+        "_L",
+        "_R"
+    ]
+}

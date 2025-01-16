@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_stocker_en.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+<link rel="stylesheet" href="./markdown-pdf.css" type="text/css">
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="node-stocker">Node Stocker</h1>
+<p>A tool that allows you to save selected nodes and recall them later.</p>
+<h2 id="how-to-use">How to Use</h2>
+<p>Launch the tool from the dedicated menu or with the following command:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.tools.node_stocker
+faketools.tools.node_stocker.show_ui()
+</div></code></pre>
+<p><img src="images/node_stocker/image001.png" alt="image001"></p>
+<h3 id="basic-usage">Basic Usage</h3>
+<p>This section explains how to save, select, and clear nodes.</p>
+<h3 id="saving-nodes">Saving Nodes</h3>
+<ol>
+<li>
+<p>Select the node you want to save.</p>
+</li>
+<li>
+<p>Choose the area to save the node. The area is determined by the radio buttons at the top.</p>
+<p><img src="images/node_stocker/image002.png" alt="image002">
+<img src="images/node_stocker/image003.png" alt="image003"></p>
+</li>
+<li>
+<p>Middle-click the button with the number to register the node to that button.</p>
+<p>When a node is registered to a button, the background color of the button changes.</p>
+<p><img src="images/node_stocker/image004.png" alt="image004">
+<img src="images/node_stocker/image005.png" alt="image005"></p>
+</li>
+</ol>
+<h3 id="selecting-nodes">Selecting Nodes</h3>
+<ol>
+<li>
+<p>Select the area you want to choose.</p>
+</li>
+<li>
+<p>Click the button with the changed background color to select the node registered to that button.</p>
+<p><strong>Using Modifier Keys for Selection</strong> is also possible. The selection rules are the same as in Maya's View.<br>
+Additionally, you can perform <strong>rectangular selection</strong> on the area to call multiple nodes at once.</p>
+</li>
+</ol>
+<h3 id="clearing-saved-nodes">Clearing Saved Nodes</h3>
+<p>Right-click on the button to clear the node registered to that button.</p>
+<h2 id="options">Options</h2>
+<h3 id="highlight-registered-nodes">Highlight Registered Nodes</h3>
+<p>Mouse over the button to highlight the node registered to that button in Maya's View.<br>
+To enable highlighting, turn on the light bulb icon.</p>
+<p><img src="images/node_stocker/image006.png" alt="image006">
+<img src="images/node_stocker/image007.png" alt="image007"></p>
+<p>When the icon is on, mousing over the button will highlight the node.</p>
+<p><img src="images/node_stocker/image008.png" alt="image008">
+<img src="images/node_stocker/image009.png" alt="image009"></p>
+<h3 id="include-namespace-in-selection">Include Namespace in Selection</h3>
+<p>You can set whether to include the namespace when calling nodes.</p>
+<p>To include the namespace, turn on the checkbox and select the desired namespace from the dropdown menu at the bottom.</p>
+<p><img src="images/node_stocker/image010.png" alt="image010">
+<img src="images/node_stocker/image011.png" alt="image011"></p>
+<ul>
+<li>If the registered node does not have a namespace, the node will be selected with the namespace added.</li>
+<li>If the node is registered with a full path, the parent namespace of the node will also be replaced.</li>
+</ul>
+<h3 id="replace-node-names-in-selection">Replace Node Names in Selection</h3>
+<p>You can replace node names when calling nodes.</p>
+<p>To replace node names, turn on the checkbox and enter the original and replacement node names in the text box at the bottom.</p>
+<p><strong>Example: Replacing 'surface' with 'curve' in registered nodes</strong></p>
+<p><img src="images/node_stocker/image012.png" alt="image012"></p>
+<p>Click the middle arrow button to reverse the replacement.</p>
+<p><img src="images/node_stocker/image014.png" alt="image013"></p>
+<p>Also, check the leftmost button to perform the replacement using regular expressions.</p>
+<p><strong>Example: Adding 'curve' to the beginning of registered node names</strong></p>
+<p><img src="images/node_stocker/image013.png" alt="image013"></p>
+<ul>
+<li>In non-regular expression mode, the original text is required for replacement.</li>
+</ul>
+<h3 id="refresh-the-tool">Refresh the Tool</h3>
+<p>To refresh the tool, click the <strong>refresh button</strong> at the top right.<br>
+The registered nodes will be reloaded from the file, and the namespace list will be updated.</p>
+<p><img src="images/node_stocker/image003.png" alt="image003"></p>
+
+</body>
+</html>

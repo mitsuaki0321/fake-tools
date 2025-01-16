@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>drivenkey_tools_en.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+<link rel="stylesheet" href="./markdown-pdf.css" type="text/css">
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="drivenkey-tools">DrivenKey Tools</h1>
+<p>This tool assists in editing set driven keys.</p>
+<h2 id="overview">Overview</h2>
+<p>This tool assists in editing set driven keys.</p>
+<p>It mainly provides the following functions for set driven keys:</p>
+<ul>
+<li>Save and Load</li>
+<li>Copy and Paste</li>
+<li>Mirror Animation Curves</li>
+<li>Several Utility Functions</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<p>Launch the tool from the dedicated menu or with the following command:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.tools.drivenkey_tools
+faketools.tools.drivenkey_tools.show_ui()
+</div></code></pre>
+<p><img src="images/drivenkey_tools/image001.png" alt="image001"></p>
+<h3 id="save-and-load-set-driven-keys">Save and Load Set Driven Keys</h3>
+<p>Save set driven keys to a file and reproduce them from the saved file.<br>
+There are <strong>Quick</strong> mode and <strong>Advanced</strong> mode.</p>
+<p><img src="images/drivenkey_tools/image002.png" alt="image002"></p>
+<p>To save set driven keys to a file, follow these steps:</p>
+<ol>
+<li>
+<p>Select the nodes with set driven keys (multiple selections allowed).</p>
+</li>
+<li>
+<p>Press the <strong>Export</strong> button to save the data.</p>
+<ol>
+<li>In <strong>Quick</strong> mode, the file is temporarily saved in the TEMP folder.</li>
+<li>In <strong>Advanced</strong> mode, the file is saved to a specified location. Enter the file name and press the <code>Save</code> button.</li>
+</ol>
+</li>
+</ol>
+<p>To load set driven keys from a file, follow these steps:</p>
+<ol>
+<li>
+<p>Press the <strong>Import</strong> button to load the saved file.</p>
+<ol>
+<li>In <strong>Quick</strong> mode, the file saved in the TEMP folder is loaded.</li>
+<li>In <strong>Advanced</strong> mode, select the file to load and press the <code>Open</code> button.</li>
+</ol>
+</li>
+<li>
+<p>The set driven keys saved in the file are reproduced, and the target nodes are selected.</p>
+</li>
+</ol>
+<h3 id="copy-and-paste-set-driven-keys">Copy and Paste Set Driven Keys</h3>
+<p>Copy and paste set driven keys.<br>
+There are two methods: <strong>One to All</strong> and <strong>One to Replace</strong>.</p>
+<p><img src="images/drivenkey_tools/image003.png" alt="image003"></p>
+<h4 id="one-to-all">One to All</h4>
+<p>Copy the set driven keys from one node to multiple nodes.</p>
+<p>To copy, follow these steps:</p>
+<ol>
+<li>Select the source node.</li>
+<li>Add the target nodes (multiple selections allowed).</li>
+<li>Press the <code>One to All</code> button.</li>
+</ol>
+<h4 id="one-to-replace">One to Replace</h4>
+<p>Copy the set driven keys from one node to nodes found in the scene by replacing the node name.<br>
+Use the field below the <code>One to Replace</code> button for node name replacement (replaced with Python regular expressions).</p>
+<p>To copy, follow these steps:</p>
+<ol>
+<li>Select the source node (multiple selections allowed).</li>
+<li>Press the <code>One to Replace</code> button. The target nodes are found in the scene and copied.</li>
+</ol>
+<ul>
+<li><strong>Replace Driver</strong>
+<ul>
+<li>Use the replaced driver node name.</li>
+</ul>
+</li>
+<li><strong>Force Delete Driven Key</strong>
+<ul>
+<li>If the target node already has set driven keys, delete all driven keys except the applied ones and copy.</li>
+</ul>
+</li>
+<li><strong>Mirror</strong>
+<ul>
+<li>Mirror the T (Translate), R (Rotate), and S (Scale) animation curves of the target node in the <strong>Time</strong> or <strong>Value</strong> direction.</li>
+</ul>
+</li>
+</ul>
+<h3 id="mirror-animation-curves">Mirror Animation Curves</h3>
+<p>Mirror animation curves.</p>
+<p><img src="images/drivenkey_tools/image004.png" alt="image004"></p>
+<p>To mirror, follow these steps:</p>
+<ol>
+<li>Select the driven key animation curves to mirror (multiple selections allowed).</li>
+<li>Press the <code>Time</code> or <code>Value</code> button.
+<ul>
+<li>Press the <code>Time</code> button to mirror the animation curves in the time direction.</li>
+<li>Press the <code>Value</code> button to mirror the animation curves in the value direction.</li>
+</ul>
+</li>
+</ol>
+<h3 id="options">Options</h3>
+<p>There are several additional functions.</p>
+<p><img src="images/drivenkey_tools/image005.png" alt="image005"></p>
+<ul>
+<li><strong>Select Driven Key Nodes</strong>
+<ul>
+<li>Select nodes with set driven keys.
+<ul>
+<li>If nodes are already selected in the scene, select the nodes with set driven keys within those nodes.</li>
+<li>If nothing is selected, select all nodes with set driven keys in the scene.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Cleanup Driven Key</strong>
+<ul>
+<li>Clean up nodes with set driven keys. Organize the following situations:
+<ul>
+<li>Delete driven keys with no driver.</li>
+<li>Delete driven keys where all values are the same and all tangent values are 0.0.</li>
+<li>If the above conditions are met and after deletion, if the blendWeighted node has no animCurve connected or only one connected, delete the blendWeighted node.</li>
+<li>Clean up thoroughly.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+global proc AEpreviewLocatorTemplate( string $nodeName )
+{
+    editorTemplate -beginScrollLayout;
+
+        // Preview Locator Attributes
+        editorTemplate -beginLayout "Preview Locator Attributes" -collapse false;
+
+            // Basic attributes
+            editorTemplate -beginLayout "Basic Attributes" -collapse false;
+                editorTemplate -addControl "shapeType";
+                editorTemplate -addControl "shapeGlobalSize";
+            editorTemplate -endLayout;
+
+            // Drawing attributes
+            editorTemplate -beginLayout "Drawing Attributes" -collapse false;
+                editorTemplate -addControl "lineWidth";
+                editorTemplate -addControl "manipulationColor";
+            editorTemplate -endLayout;
+
+            editorTemplate -label "Shape Settings Attributes" -addControl "shape";
+        
+        editorTemplate -endLayout;
+        
+        // Hide all the attributes that are not needed
+        editorTemplate -suppress "compInstObjGroups";
+        editorTemplate -suppress "ignoreSelfShadowing";
+        
+        editorTemplate -beginNoOptimize;
+        editorTemplate -suppress "castsShadows";
+        editorTemplate -suppress "receiveShadows";
+        editorTemplate -suppress "motionBlur";
+        editorTemplate -suppress "primaryVisibility";
+        editorTemplate -suppress "visibleInReflections";
+        editorTemplate -suppress "visibleInRefractions";
+        editorTemplate -suppress "doubleSided";
+        editorTemplate -suppress "opposite";
+        editorTemplate -suppress "geometryAntialiasingOverride";
+        editorTemplate -suppress "antialiasingLevel";
+        editorTemplate -suppress "shadingSamplesOverride";
+        editorTemplate -suppress "shadingSamples";
+        editorTemplate -suppress "maxShadingSamples";
+        editorTemplate -suppress "volumeSamplesOverride";
+        editorTemplate -suppress "volumeSamples";
+        editorTemplate -suppress "depthJitter";
+        editorTemplate -suppress "maxVisibilitySamplesOverride";
+        editorTemplate -suppress "maxVisibilitySamples";
+        editorTemplate -suppress "boundingBoxScale"; 
+        editorTemplate -suppress "featureDisplacement";
+        editorTemplate -suppress "initialSampleRate";
+        editorTemplate -suppress "extraSampleRate";
+        editorTemplate -suppress "textureThreshold";
+        editorTemplate -suppress "normalThreshold";
+        editorTemplate -suppress "componentTags";
+        editorTemplate -suppress "localScale";
+        editorTemplate -suppress "localPosition";
+        editorTemplate -endNoOptimize;
+
+        AEshapeTemplate $nodeName;
+
+        editorTemplate -addExtraControls;
+    
+    editorTemplate -endScrollLayout;
+}
