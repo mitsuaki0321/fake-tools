@@ -162,6 +162,6 @@ def setup_global_settings() -> dict:
         if key not in settings:
             settings[key] = value
 
-    tool_settings.save(current_settings)
+    tool_settings.save(settings)
 
-    logger.debug(f'Loaded global settings from: {settings_file}')
+    logger.info(f'Loaded global settings from: {settings_file}')

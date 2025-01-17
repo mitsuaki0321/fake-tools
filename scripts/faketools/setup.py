@@ -24,6 +24,8 @@ def setup_logger() -> None:
 
     logger.propagate = False
 
+    logger.info('Logger initialized')
+
 
 def debug_mode(debug: bool) -> None:
     """Set debug mode.

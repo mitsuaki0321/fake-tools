@@ -10,5 +10,13 @@
     "MIRROR_JOINTS":[
         "_L",
         "_R"
-    ]
+    ],
+    "SELECTER_SETTINGS": {
+        "FILTER_COLOR": "#6D7B8D",
+        "HIERARCHY_COLOR": "#4C516D",
+        "SUBSTITUTION_COLOR": "#6E7F80",
+        "RENAME_COLOR": "#536878",
+        "BUTTON_SIZE": 32,
+        "FONT_SIZE": 12
+    }
 }
