@@ -127,7 +127,7 @@ class MainWindow(QMainWindow):
     def __copy_value(self):
         """Copy Value.
         """
-        sel_nodes = cmds.ls(sl=True, long=True, type='transform')
+        sel_nodes = cmds.ls(sl=True, type='transform')
         if not sel_nodes:
             cmds.error('Select transform nodes.')
             return
@@ -150,13 +150,16 @@ class MainWindow(QMainWindow):
                 dest_attr = f'{dest_node}.{attribute}'
 
                 if not cmds.attributeQuery(attribute, node=src_node, exists=True):
-                    cmds.error(f'Failed to copy value. Attribute not exists: {src_attr}')
+                    cmds.warning(f'Failed to copy value. Attribute not exists: {src_attr}')
+                    continue
 
                 if not cmds.attributeQuery(attribute, node=dest_node, exists=True):
-                    cmds.error(f'Failed to copy value. Attribute not exists: {dest_attr}')
+                    cmds.warning(f'Failed to copy value. Attribute not exists: {dest_attr}')
+                    continue
 
                 if cmds.connectionInfo(src_attr, isDestination=True):
                     cmds.error(f'Failed to copy value. Attribute is connected: {src_attr}')
+                    continue
 
                 if cmds.getAttr(dest_attr, lock=True):
                     cmds.setAttr(dest_attr, lock=False)
@@ -173,7 +176,7 @@ class MainWindow(QMainWindow):
     def __connect_attr(self):
         """Connect Value.
         """
-        sel_nodes = cmds.ls(sl=True, long=True, type='transform')
+        sel_nodes = cmds.ls(sl=True, type='transform')
         if not sel_nodes:
             cmds.error('Select transform nodes.')
             return
@@ -196,10 +199,12 @@ class MainWindow(QMainWindow):
                 dest_attr = f'{dest_node}.{attribute}'
 
                 if not cmds.attributeQuery(attribute, node=src_node, exists=True):
-                    cmds.error(f'Failed to connect value. Attribute not exists: {src_attr}')
+                    cmds.warning(f'Failed to connect value. Attribute not exists: {src_attr}')
+                    continue
 
                 if not cmds.attributeQuery(attribute, node=dest_node, exists=True):
-                    cmds.error(f'Failed to connect value. Attribute not exists: {dest_attr}')
+                    cmds.warning(f'Failed to connect value. Attribute not exists: {dest_attr}')
+                    continue
 
                 if cmds.getAttr(dest_attr, lock=True):
                     cmds.setAttr(dest_attr, lock=False)
@@ -216,7 +221,7 @@ class MainWindow(QMainWindow):
     def __zero_out(self):
         """Zero Out.
         """
-        sel_nodes = cmds.ls(sl=True, long=True, type='transform')
+        sel_nodes = cmds.ls(sl=True, type='transform')
         if not sel_nodes:
             cmds.error('Select transform nodes.')
             return
@@ -231,15 +236,20 @@ class MainWindow(QMainWindow):
                 attr = f'{node}.{attribute}'
 
                 if not cmds.attributeQuery(attribute, node=node, exists=True):
-                    cmds.error(f'Failed to zero out. Attribute not exists: {attr}')
+                    cmds.warning(f'Failed to zero out. Attribute not exists: {attr}')
+                    continue
 
                 if cmds.connectionInfo(attr, isDestination=True):
                     cmds.error(f'Failed to zero out. Attribute is connected: {attr}')
+                    continue
 
                 if cmds.getAttr(attr, lock=True):
                     cmds.setAttr(attr, lock=False)
 
-                cmds.setAttr(attr, 0)
+                if attribute in ['scaleX', 'scaleY', 'scaleZ', 'visibility']:
+                    cmds.setAttr(attr, 1)
+                else:
+                    cmds.setAttr(attr, 0)
 
                 if cmds.getAttr(attr, lock=True):
                     cmds.setAttr(attr, lock=True)

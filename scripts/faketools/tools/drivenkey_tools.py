@@ -57,46 +57,8 @@ class MainWindow(QMainWindow):
         self.central_layout = QVBoxLayout()
         self.central_widget.setLayout(self.central_layout)
 
-        label = QLabel('Quick')
-        label.setStyleSheet('font-weight: bold;')
-        self.central_layout.addWidget(label)
-
-        layout = QHBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-
-        quick_export_button = QPushButton('Export')
-        layout.addWidget(quick_export_button)
-        quick_export_button.setContextMenuPolicy(Qt.CustomContextMenu)
-
-        quick_import_button = QPushButton('Import')
-        layout.addWidget(quick_import_button)
-        quick_import_button.setContextMenuPolicy(Qt.CustomContextMenu)
-
-        self.central_layout.addLayout(layout)
-
-        label = QLabel('Advanced')
-        label.setStyleSheet('font-weight: bold;')
-        self.central_layout.addWidget(label)
-
-        layout = QHBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-
-        file_export_button = QPushButton('Export')
-        layout.addWidget(file_export_button)
-        file_export_button.setContextMenuPolicy(Qt.CustomContextMenu)
-
-        file_import_button = QPushButton('Import')
-        layout.addWidget(file_import_button)
-        file_import_button.setContextMenuPolicy(Qt.CustomContextMenu)
-
-        self.central_layout.addLayout(layout)
-
-        separator = extra_widgets.HorizontalSeparator()
-        self.central_layout.addWidget(separator)
-
-        label = QLabel('Transfer')
-        label.setStyleSheet('font-weight: bold;')
-        self.central_layout.addWidget(label)
+        self.menu_bar = self.menuBar()
+        self.__add_menu()
 
         one_to_all_button = QPushButton('One to All')
         self.central_layout.addWidget(one_to_all_button)
@@ -173,19 +135,6 @@ class MainWindow(QMainWindow):
 
         self.central_layout.addLayout(layout)
 
-        separator = extra_widgets.HorizontalSeparator()
-        self.central_layout.addWidget(separator)
-
-        label = QLabel('Options')
-        label.setStyleSheet('font-weight: bold;')
-        self.central_layout.addWidget(label)
-
-        select_driven_key_button = QPushButton('Select Driven Key Nodes')
-        self.central_layout.addWidget(select_driven_key_button)
-
-        cleanup_button = QPushButton('Cleanup Driven Key')
-        self.central_layout.addWidget(cleanup_button)
-
         # Option Settings
         self.regex_line_edit.setText(self.tool_options.read('regex', REGEX[0]))
         self.replace_to_line_edit.setText(self.tool_options.read('replace_to', REGEX[1]))
@@ -200,20 +149,41 @@ class MainWindow(QMainWindow):
         self.value_scale_check_box.set_values(self.tool_options.read('value_scale', []))
 
         # Signal & Slot
-        quick_export_button.clicked.connect(self.export_to_temp)
-        quick_import_button.clicked.connect(self.import_from_temp)
-        file_export_button.clicked.connect(self.export_to_file)
-        file_import_button.clicked.connect(self.import_from_file)
         one_to_all_button.clicked.connect(self.transfer_one_to_all)
         one_to_replace_button.clicked.connect(self.transfer_one_to_replace)
         mirror_curve_time_button.clicked.connect(self.mirror_curve_time)
         mirror_curve_value_button.clicked.connect(self.mirror_curve_value)
-        select_driven_key_button.clicked.connect(self.select_driven_key_nodes)
-        cleanup_button.clicked.connect(self.cleanup_driven_keys)
-
         self.mirror_check_box.stateChanged.connect(self.__update_mirror_check_box)
 
+        # Initial state
         self.__update_mirror_check_box()
+
+    def __add_menu(self):
+        """Add the menu.
+        """
+        menu = self.menu_bar.addMenu('Export/Import')
+
+        export_temp_action = menu.addAction('Export')
+        export_temp_action.triggered.connect(self.export_to_temp)
+
+        import_temp_action = menu.addAction('Import')
+        import_temp_action.triggered.connect(self.import_from_temp)
+
+        menu.addSeparator()
+
+        export_file_action = menu.addAction('Export File')
+        export_file_action.triggered.connect(self.export_to_file)
+
+        import_file_action = menu.addAction('Import File')
+        import_file_action.triggered.connect(self.import_from_file)
+
+        menu = self.menu_bar.addMenu('Options')
+
+        option_action = menu.addAction('Select Driven Key Nodes')
+        option_action.triggered.connect(self.select_driven_key_nodes)
+
+        option_action = menu.addAction('Cleanup Driven Key')
+        option_action.triggered.connect(self.cleanup_driven_keys)
 
     @maya_ui.error_handler
     def export_to_temp(self):

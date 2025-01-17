@@ -137,10 +137,43 @@ class FreezeTransformNode:
 
     @_unlock_and_lock
     def freeze_transform(self) -> None:
-        """Freeze the transform of the node.
+        """Freeze the transform of the nodes.
+
+        Notes:
+            - Even if the transform attributes of the children are locked, they will be forcibly unlocked and processed.
         """
+        nodes = cmds.listRelatives(self.node, ad=True, path=True, type='transform') or []
+        nodes.append(self.node)
+
+        # Unlock the locked attributes
+        locked_data = {}
+        for node in nodes:
+            attrs = ['tx', 'ty', 'tz', 'rx', 'ry', 'rz', 'sx', 'sy', 'sz', 'jox', 'joy', 'joz']
+            locked_attrs = []
+            for attr in attrs:
+                if cmds.nodeType(node) == 'joint':
+                    if cmds.getAttr(f'{node}.{attr}', lock=True):
+                        locked_attrs.append(attr)
+                        cmds.setAttr(f'{node}.{attr}', lock=False)
+                else:
+                    if attr in ['jox', 'joy', 'joz']:
+                        continue
+                    if cmds.getAttr(f'{node}.{attr}', lock=True):
+                        locked_attrs.append(attr)
+                        cmds.setAttr(f'{node}.{attr}', lock=False)
+
+            if locked_attrs:
+                locked_data[node] = locked_attrs
+                logger.debug(f'Unlocked attributes: {node} -> {locked_attrs}')
+
+        # Freeze the transform
         cmds.makeIdentity(self.node, apply=True, t=True, r=True, s=True, n=0, pn=True)
         logger.debug(f'Freeze transform: {self.node}')
+
+        # Lock the locked attributes
+        for node, attrs in locked_data.items():
+            for attr in attrs:
+                cmds.setAttr(f'{node}.{attr}', lock=True)
 
     @_unlock_and_lock
     def freeze_pivot(self) -> None:
@@ -152,13 +185,9 @@ class FreezeTransformNode:
     def freeze_vertex(self) -> None:
         """Freeze the vertex of the node.
         """
-        shape = cmds.listRelatives(self.node, shapes=True, path=True)
+        shape = cmds.listRelatives(self.node, ad=True, path=True, type='mesh')
         if not shape:
-            cmds.warning(f'No shape found: {self.node}')
-            return
-
-        if cmds.nodeType(shape[0]) != 'mesh':
-            cmds.warning(f'Unsupported shape type. Only mesh node.: {shape[0]}')
+            cmds.warning(f'No mesh found: {self.node}')
             return
 
         cmds.cluster(self.node)

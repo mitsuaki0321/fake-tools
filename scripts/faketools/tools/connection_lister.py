@@ -2,6 +2,7 @@
 Attribute connection tool.
 """
 
+from functools import partial
 from logging import getLogger
 
 import maya.cmds as cmds
@@ -124,7 +125,7 @@ class MainWindow(QMainWindow):
                 button = QPushButton(cls_name)
                 layout.addWidget(button)
 
-                button.clicked.connect(self._execute_single_command)
+                button.clicked.connect(partial(self._execute_single_command, cls_name))
 
             spacer = QSpacerItem(1, 1, QSizePolicy.Minimum, QSizePolicy.Expanding)
             layout.addItem(spacer)
@@ -416,17 +417,18 @@ class MainWindow(QMainWindow):
 
     @maya_ui.undo_chunk('Execute Single Command')
     @maya_ui.error_handler
-    def _execute_single_command(self) -> None:
+    def _execute_single_command(self, command_name: str) -> None:
         """Execute the single command.
-        """
-        button = self.sender()
-        single_command_name = button.text()
-        if not hasattr(singleCommands, single_command_name):
-            cmds.error(f'Command does not exist: {single_command_name}')
 
-        single_command_cls = getattr(singleCommands, single_command_name)
+        Args:
+            command_name (str): The single command class name.
+        """
+        if not hasattr(singleCommands, command_name):
+            cmds.error(f'Command does not exist: {command_name}')
+
+        single_command_cls = getattr(singleCommands, command_name)
         if not issubclass(single_command_cls, PairCommand):
-            cmds.error(f'Command is not a pair command: {single_command_name}')
+            cmds.error(f'Command is not a pair command: {command_name}')
 
         source_nodes = self.source_node_list.get_selected_nodes()
         dest_nodes = self.dest_node_list.get_selected_nodes()
@@ -442,7 +444,7 @@ class MainWindow(QMainWindow):
 
         single_command_cls(source_nodes, dest_nodes)
 
-        logger.debug(f'Executed: {single_command_name}')
+        logger.debug(f'Executed: {command_name}')
 
 
 class OperationSwitchWidget(QWidget):

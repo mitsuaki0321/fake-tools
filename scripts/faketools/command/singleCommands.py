@@ -32,7 +32,7 @@ from logging import getLogger
 import maya.cmds as cmds
 
 from .. import user_directory
-from ..lib import lib_shape
+from ..lib import lib_shape, lib_transform
 from ..lib.lib_singleCommand import AllCommand, PairCommand, SceneCommand
 from ..lib_ui import maya_ui
 from . import convert_weight, scene_optimize
@@ -203,12 +203,7 @@ class FreezeTransform(AllCommand):
             - Freeze the transform of the nodes.
         """
         for node in nodes:
-            # Freeze transform
-            cmds.makeIdentity(node, apply=True, t=True, r=True, s=True, n=False, pn=True)
-            # Reset pivot transform
-            cmds.makeIdentity(node, apply=False, t=True, r=True, s=True, n=False, pn=True)
-
-            logger.debug(f'Freezed and reset pivot transform: {node}')
+            lib_transform.FreezeTransformNode(node).freeze(freeze_transform=True, freeze_pivot=True, freeze_vertex=False)
 
 
 class FreezeVertices(AllCommand):
@@ -223,15 +218,7 @@ class FreezeVertices(AllCommand):
         sel_nodes = cmds.ls(sl=True)
 
         for node in nodes:
-            shape = cmds.listRelatives(node, s=True, f=True)
-            if not shape:
-                logger.debug(f'No shape: {node}')
-                continue
-
-            cmds.cluster(shape)
-            cmds.delete(shape, ch=True)
-
-            logger.debug(f'Freezed vertices: {node}')
+            lib_transform.FreezeTransformNode(node).freeze(freeze_transform=False, freeze_pivot=False, freeze_vertex=True)
 
         if sel_nodes:
             cmds.select(sel_nodes, r=True)
@@ -307,19 +294,61 @@ class ChainJoints(AllCommand):
         """Chain the joints.
         """
         if len(nodes) < 2:
-            cmds.warning('Select more than 2 nodes')
+            cmds.warning('Select at least 2 nodes')
             return
 
-        for i in range(len(nodes) - 1):
-            current_parent = cmds.listRelatives(nodes[i + 1], p=True)
-            if current_parent:
-                if current_parent[0] == nodes[i]:
-                    cmds.warning(f'Already chained: {nodes[i + 1]} -> {nodes[i]}')
-                    continue
+        # Check root parent node
+        nodes = cmds.ls(nodes, l=True)
+        root_parent_node = cmds.listRelatives(nodes[0], p=True, f=True)
+        is_root_node_world = False
+        if root_parent_node:
+            parent_node = root_parent_node[0]
+            parent_nodes = [parent_node]
+            while True:
+                parent_node = cmds.listRelatives(parent_node, p=True, f=True)
+                if not parent_node:
+                    break
+                parent_nodes.append(parent_node[0])
 
-            cmds.parent(nodes[i + 1], nodes[i])
+            parent_nodes = list(reversed(parent_nodes))
+            for index, parent_node in enumerate(parent_nodes):
+                if parent_node in nodes:
+                    if index == 0:
+                        root_parent_node = None
+                    else:
+                        root_parent_node = parent_nodes[index - 1]
+                    break
+        else:
+            is_root_node_world = True
 
-        cmds.select(nodes[0], r=True)
+        # Create dummy parent nodes
+        dummy_parent_nodes = []
+        uuids = cmds.ls(nodes, uuid=True)
+        for uuid in uuids:
+            node = cmds.ls(uuid)[0]
+            parent = cmds.listRelatives(node, p=True)
+            if parent:
+                mat = cmds.xform(node, q=True, ws=True, m=True)
+                dummy = cmds.createNode('transform', ss=True)
+                cmds.xform(dummy, ws=True, m=mat)
+                cmds.parent(node, dummy)
+                dummy_parent_nodes.append(dummy)
+
+        # Chain transforms
+        for i in range(len(uuids) - 1):
+            uuid_nodes = cmds.ls([uuids[i + 1], uuids[i]])
+            cmds.parent(*uuid_nodes)
+
+        root_node = cmds.ls(uuids[0])[0]
+        if root_parent_node:
+            cmds.parent(root_node, root_parent_node)
+        elif not is_root_node_world:
+            cmds.parent(root_node, w=True)
+
+        cmds.delete(dummy_parent_nodes)
+
+        root_node = cmds.ls(uuids[0])[0]
+        cmds.select(root_node, r=True)
 
         logger.debug(f'Chained joints: {nodes}')
 
@@ -511,6 +540,11 @@ class Parent(PairCommand):
     def execute(self, source_node: str, target_node: str):
         """Parent the source to the target.
         """
+        parent_node = cmds.listRelatives(source_node, p=True)
+        if parent_node and parent_node[0] == target_node:
+            cmds.warning(f'Already parented: {source_node} -> {target_node}')
+            return
+
         cmds.parent(source_node, target_node, r=True)
 
         logger.debug(f'Parented: {source_node} -> {target_node}')

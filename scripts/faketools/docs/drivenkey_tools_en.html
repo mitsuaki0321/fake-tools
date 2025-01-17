@@ -376,40 +376,39 @@ code {
 <li>Mirror Animation Curves</li>
 <li>Several Utility Functions</li>
 </ul>
-<h2 id="usage">Usage</h2>
+<h2 id="how-to-use">How to Use</h2>
 <p>Launch the tool from the dedicated menu or with the following command:</p>
 <pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.tools.drivenkey_tools
 faketools.tools.drivenkey_tools.show_ui()
 </div></code></pre>
 <p><img src="images/drivenkey_tools/image001.png" alt="image001"></p>
 <h3 id="save-and-load-set-driven-keys">Save and Load Set Driven Keys</h3>
-<p>Save set driven keys to a file and reproduce them from the saved file.<br>
-There are <strong>Quick</strong> mode and <strong>Advanced</strong> mode.</p>
+<p>Save set driven keys to a file and reproduce them from the saved file.</p>
 <p><img src="images/drivenkey_tools/image002.png" alt="image002"></p>
 <p>To save set driven keys to a file, follow these steps:</p>
 <ol>
 <li>
-<p>Select the nodes with set driven keys (multiple selections allowed).</p>
+<p>Select the node with the set driven keys (multiple selections allowed).</p>
 </li>
 <li>
-<p>Press the <strong>Export</strong> button to save the data.</p>
-<ol>
-<li>In <strong>Quick</strong> mode, the file is temporarily saved in the TEMP folder.</li>
-<li>In <strong>Advanced</strong> mode, the file is saved to a specified location. Enter the file name and press the <code>Save</code> button.</li>
-</ol>
+<p>Select <code>Export</code> or <code>Export File</code> from the <code>Export/Import</code> menu.</p>
+<ul>
+<li><code>Export</code> saves to the TEMP folder.</li>
+<li><code>Export File</code> allows you to choose the save location.</li>
+</ul>
 </li>
 </ol>
 <p>To load set driven keys from a file, follow these steps:</p>
 <ol>
 <li>
-<p>Press the <strong>Import</strong> button to load the saved file.</p>
-<ol>
-<li>In <strong>Quick</strong> mode, the file saved in the TEMP folder is loaded.</li>
-<li>In <strong>Advanced</strong> mode, select the file to load and press the <code>Open</code> button.</li>
-</ol>
+<p>Select <code>Import</code> or <code>Import File</code> from the <code>Export/Import</code> menu.</p>
+<ul>
+<li><code>Import</code> loads from the TEMP folder.</li>
+<li><code>Import File</code> allows you to choose the file to load.</li>
+</ul>
 </li>
 <li>
-<p>The set driven keys saved in the file are reproduced, and the target nodes are selected.</p>
+<p>The set driven keys saved in the file will be reproduced, and the target nodes will be selected.</p>
 </li>
 </ol>
 <h3 id="copy-and-paste-set-driven-keys">Copy and Paste Set Driven Keys</h3>
@@ -421,26 +420,26 @@ There are two methods: <strong>One to All</strong> and <strong>One to Replace</s
 <p>To copy, follow these steps:</p>
 <ol>
 <li>Select the source node.</li>
-<li>Add the target nodes (multiple selections allowed).</li>
+<li>Add the target nodes to the selection (multiple selections allowed).</li>
 <li>Press the <code>One to All</code> button.</li>
 </ol>
 <h4 id="one-to-replace">One to Replace</h4>
-<p>Copy the set driven keys from one node to nodes found in the scene by replacing the node name.<br>
-Use the field below the <code>One to Replace</code> button for node name replacement (replaced with Python regular expressions).</p>
+<p>Copy the set driven keys from one node to nodes found in the scene with replaced names.<br>
+Use the field below the <code>One to Replace</code> button for name replacement (replaced using Python regular expressions).</p>
 <p>To copy, follow these steps:</p>
 <ol>
 <li>Select the source node (multiple selections allowed).</li>
-<li>Press the <code>One to Replace</code> button. The target nodes are found in the scene and copied.</li>
+<li>Press the <code>One to Replace</code> button. The nodes with replaced names will be found in the scene and copied.</li>
 </ol>
 <ul>
 <li><strong>Replace Driver</strong>
 <ul>
-<li>Use the replaced driver node name.</li>
+<li>Use the replaced name for the driver node as well.</li>
 </ul>
 </li>
 <li><strong>Force Delete Driven Key</strong>
 <ul>
-<li>If the target node already has set driven keys, delete all driven keys except the applied ones and copy.</li>
+<li>If the target node already has set driven keys, delete all driven keys except the ones being applied, then copy.</li>
 </ul>
 </li>
 <li><strong>Mirror</strong>
@@ -454,7 +453,7 @@ Use the field below the <code>One to Replace</code> button for node name replace
 <p><img src="images/drivenkey_tools/image004.png" alt="image004"></p>
 <p>To mirror, follow these steps:</p>
 <ol>
-<li>Select the driven key animation curves to mirror (multiple selections allowed).</li>
+<li>Select the driven key animation curves you want to mirror (multiple selections allowed).</li>
 <li>Press the <code>Time</code> or <code>Value</code> button.
 <ul>
 <li>Press the <code>Time</code> button to mirror the animation curves in the time direction.</li>
@@ -462,7 +461,7 @@ Use the field below the <code>One to Replace</code> button for node name replace
 </ul>
 </li>
 </ol>
-<h3 id="options">Options</h3>
+<h3 id="option-menu">Option Menu</h3>
 <p>There are several additional functions.</p>
 <p><img src="images/drivenkey_tools/image005.png" alt="image005"></p>
 <ul>
@@ -480,9 +479,9 @@ Use the field below the <code>One to Replace</code> button for node name replace
 <ul>
 <li>Clean up nodes with set driven keys. Organize the following situations:
 <ul>
-<li>Delete driven keys with no driver.</li>
+<li>Delete driven keys with non-existent drivers.</li>
 <li>Delete driven keys where all values are the same and all tangent values are 0.0.</li>
-<li>If the above conditions are met and after deletion, if the blendWeighted node has no animCurve connected or only one connected, delete the blendWeighted node.</li>
+<li>If the above conditions are met and after deletion, the blendWeighted node has no animCurve connected or only one connected, delete the blendWeighted node.</li>
 <li>Clean up thoroughly.</li>
 </ul>
 </li>
