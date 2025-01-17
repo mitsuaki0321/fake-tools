@@ -13,7 +13,7 @@ This is a collection of personal tools to streamline work in Maya.
 ## Installation
 
 - faketools.mod を MAYA_MODULE_PATH に追加してください。
-- NumPy と SciPy が必要です。NumPy and SciPy are required.
+- NumPy と SciPy が必要です。
 
 
 - Add faketools.mod to MAYA_MODULE_PATH.

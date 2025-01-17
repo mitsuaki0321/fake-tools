@@ -35,8 +35,8 @@ class RemoteSliderWindow:
         self.max_field = self.ui_name('maxField')
         self.attr_list = self.ui_name('attrList')
         self.mode = self.ui_name('mode')
-        self.local_relative_radio_btn = self.ui_name('localRelativeRadioBtn')
         self.local_absolute_radio_btn = self.ui_name('localAbsoluteRadioBtn')
+        self.local_relative_radio_btn = self.ui_name('localRelativeRadioBtn')
         self.world_relative_radio_btn = self.ui_name('worldRelativeRadioBtn')
 
         # slider value
@@ -75,8 +75,8 @@ class RemoteSliderWindow:
 
         cmds.menuItem(l='Mode', divider=True)
         cmds.radioMenuItemCollection()
-        cmds.menuItem(self.local_relative_radio_btn, l='Local Relative', rb=True, c=self.change_mode)
         cmds.menuItem(self.local_absolute_radio_btn, l='Local Absolute', rb=False, c=self.change_mode)
+        cmds.menuItem(self.local_relative_radio_btn, l='Local Relative', rb=True, c=self.change_mode)
         cmds.menuItem(self.world_relative_radio_btn, l='World Relative', rb=False, c=self.change_mode)
 
         # Main Widgets
@@ -168,8 +168,8 @@ class RemoteSliderWindow:
         saved_nodes = self.tool_options.read(self.node_list, [])
 
         # Settings initial values
-        cmds.menuItem(self.local_relative_radio_btn, e=True, rb=local_relative)
         cmds.menuItem(self.local_absolute_radio_btn, e=True, rb=local_absolute)
+        cmds.menuItem(self.local_relative_radio_btn, e=True, rb=local_relative)
         cmds.menuItem(self.world_relative_radio_btn, e=True, rb=world_relative)
 
         cmds.floatField(self.min_field, e=True, v=min_value)
@@ -211,8 +211,8 @@ class RemoteSliderWindow:
                 cmds.textScrollList(self.attr_list, e=True, si=selected_attrs)
 
         # Save the option settings
-        self.tool_options.write(self.mode, [cmds.menuItem(self.local_relative_radio_btn, q=True, rb=True),
-                                            cmds.menuItem(self.local_absolute_radio_btn, q=True, rb=True),
+        self.tool_options.write(self.mode, [cmds.menuItem(self.local_absolute_radio_btn, q=True, rb=True),
+                                            cmds.menuItem(self.local_relative_radio_btn, q=True, rb=True),
                                             cmds.menuItem(self.world_relative_radio_btn, q=True, rb=True)])
 
     def set_items(self, *args):
@@ -626,10 +626,10 @@ class RemoteSliderWindow:
         Returns:
             str: Mode.
         """
-        if cmds.menuItem(self.local_relative_radio_btn, q=True, rb=True):
-            return 'local_relative'
-        elif cmds.menuItem(self.local_absolute_radio_btn, q=True, rb=True):
+        if cmds.menuItem(self.local_absolute_radio_btn, q=True, rb=True):
             return 'local_absolute'
+        elif cmds.menuItem(self.local_relative_radio_btn, q=True, rb=True):
+            return 'local_relative'
         elif cmds.menuItem(self.world_relative_radio_btn, q=True, rb=True):
             return 'world_relative'
 

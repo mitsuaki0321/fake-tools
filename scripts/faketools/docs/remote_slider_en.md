@@ -26,7 +26,7 @@ faketools.tools.remote_slider.show_ui()
 
 <img src="images/remote_slider/image001.png" alt="image001" style="display: block; margin: 10px 0;">
 
-Select the mode for manipulating values from the **[ Edit ]** menu.
+From the **[ Edit ]** menu, you can choose how to manipulate the values with the slider. The following modes are available:
 
 - **Local Relative Mode**
   - Adds the slider's value to the current value in the node's local space.
