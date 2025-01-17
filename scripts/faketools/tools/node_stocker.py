@@ -2,7 +2,6 @@
 Node Stocker Tool.
 """
 
-import importlib
 from logging import getLogger
 
 import maya.cmds as cmds
@@ -20,6 +19,7 @@ from PySide2.QtWidgets import (
     QRadioButton,
     QSizePolicy,
     QSpacerItem,
+    QStatusBar,
     QStyle,
     QVBoxLayout,
     QWidget,
@@ -32,9 +32,6 @@ from ..lib_ui import maya_qt, maya_ui, optionvar, tool_icons
 from ..lib_ui.widgets import extra_widgets, nodeStock_view
 
 logger = getLogger(__name__)
-
-importlib.reload(nodeStock_view)
-importlib.reload(node_storage)
 
 
 class MainWindow(QMainWindow):
@@ -126,7 +123,9 @@ class MainWindow(QMainWindow):
         # Status bar
         layout = QHBoxLayout()
 
-        self.status_bar = self.statusBar()
+        # In Maya, the status bar gets destroyed at some point, so this is a workaround
+        self.status_bar = QStatusBar()
+        self.setStatusBar(self.status_bar)
         self.status_bar.setStyleSheet('QStatusBar::item { border: none; }')
         self.status_bar.setSizeGripEnabled(False)
         layout.addWidget(self.status_bar)
@@ -280,6 +279,7 @@ class MainWindow(QMainWindow):
         if not nodes:
             self.node_length_label.setText(self.__get_node_length_label(0))
             self.node_names_label.clear()
+            return
 
         node_count = len(nodes)
         node_names = ' '.join(nodes)
