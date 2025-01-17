@@ -60,6 +60,7 @@ class MainWindow(QMainWindow):
         self.central_layout.addWidget(extra_widgets.HorizontalSeparator())
 
         layout = QHBoxLayout()
+        layout.setSpacing(1)
 
         all_on_checked_button = QPushButton('All On')
         layout.addWidget(all_on_checked_button)
@@ -110,19 +111,21 @@ class MainWindow(QMainWindow):
     def __execute(self):
         """Execute.
         """
-        print('#' * 15)
-        print('Start Optimize Scene')
-        print('#' * 15)
+        start_msg = 'Start Optimize Scene'
+        print('#' * len(start_msg))
+        print(start_msg)
+        print('#' * len(start_msg))
         print('')
 
         for checkbox, optimizer in zip(self.enable_checkboxes, self.optimizers):
             if checkbox.isChecked():
                 optimizer.execute(echo=True)
 
+        end_msg = 'End Optimize Scene'
         print('')
-        print('#' * 15)
-        print('End Optimize Scene')
-        print('#' * 15)
+        print('#' * len(end_msg))
+        print(end_msg)
+        print('#' * len(end_msg))
 
     def closeEvent(self, event):
         """Close event.

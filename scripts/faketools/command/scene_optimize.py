@@ -57,9 +57,9 @@ class OptimizeBase:
             echo (bool): Whether to echo the optimization. Default is False.
         """
         if echo:
-            print('#' * 30)
+            print('#' * len(self.description))
             print(self.description)
-            print('#' * 30)
+            print('#' * len(self.description))
             print('')
 
         self.optimize(echo=echo)
