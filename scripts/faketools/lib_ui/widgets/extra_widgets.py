@@ -88,6 +88,56 @@ class CheckBoxButton(QPushButton):
             self.setIcon(self.icon_off)
 
 
+class TextCheckBoxButton(QPushButton):
+    """Text check box button widget.
+    """
+
+    def __init__(self, text: str, width: int = 32, height: int = 32, font_size: int = 24, parent=None):
+        """Constructor.
+
+        Args:
+            text (str): The text for both checked and unchecked states.
+            width (int): The width of the button.
+            height (int): The height of the button.
+            font_size (int): The font size of the text.
+            parent (QWidget): Parent widget.
+        """
+        super().__init__(parent=parent)
+
+        self.text = text
+        self.bg_color_on = '#5285a6'
+        self.width = width
+        self.height = height
+
+        if parent is None:
+            raise ValueError("Parent widget is required to determine the background color.")
+
+        self.bg_color_off = parent.palette().window().color().name()
+
+        self.setCheckable(True)
+        self.setChecked(False)
+
+        self.setText(self.text)
+        self.setFixedSize(self.width, self.height)
+
+        self.font_size = font_size
+
+        self.setStyleSheet(f'background-color: {self.bg_color_off}; font-size: {self.font_size}px; font-weight: bold; border: none;')
+
+        self.toggled.connect(self.update_color)
+
+    def update_color(self, checked) -> None:
+        """Update the background color based on the checked state.
+
+        Args:
+            checked (bool): The checked state.
+        """
+        if checked:
+            self.setStyleSheet(f'background-color: {self.bg_color_on}; font-size: {self.font_size}px; font-weight: bold; border: none;')
+        else:
+            self.setStyleSheet(f'background-color: {self.bg_color_off}; font-size: {self.font_size}px; font-weight: bold; border: none;')
+
+
 class ModifierSpinBox(QDoubleSpinBox):
     """Double spin box widget with modifier keys.
     """

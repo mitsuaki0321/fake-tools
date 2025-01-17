@@ -2,9 +2,12 @@
 Maya scene selection tools.
 """
 
+import importlib
+
 import maya.cmds as cmds
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 from PySide2.QtCore import Qt
+from PySide2.QtGui import QColor
 from PySide2.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -22,11 +25,20 @@ from ..lib import lib_name, lib_selection, lib_transform
 from ..lib_ui import maya_qt, maya_ui, optionvar
 from ..lib_ui.widgets import extra_widgets
 
+importlib.reload(extra_widgets)
+
 tool_options = optionvar.ToolOptionSettings(__name__)
 
 global_settings = user_directory.ToolSettings(__name__).load()
 LEFT_TO_RIGHT = global_settings.get('LEFT_TO_RIGHT', ['(.*)(L)', r'\g<1>R'])
 RIGHT_TO_LEFT = global_settings.get('RIGHT_TO_LEFT', ['(.*)(R)', r'\g<1>L'])
+
+FILTER_COLOR = global_settings.get('FILTER_COLOR', '#6D7B8D')
+HIERARCHY_COLOR = global_settings.get('HIERARCHY_COLOR', '#4C516D')
+SUBSTITUTION_COLOR = global_settings.get('SUBSTITUTION_COLOR', '#6E7F80')
+RENAME_COLOR = global_settings.get('RENAME_COLOR', '#536878')
+BUTTON_SIZE = global_settings.get('BUTTON_SIZE', 32)
+FONT_SIZE = global_settings.get('FONT_SIZE', 12)
 
 
 def selecter_handler(func):
@@ -75,8 +87,8 @@ class DockableWidget(MayaQWidgetDockableMixin, QWidget):
         self.setAttribute(Qt.WA_DeleteOnClose)
 
         main_layout = QHBoxLayout()
-        main_layout.setSpacing(10)
-        main_layout.setContentsMargins(10, 5, 5, 5)
+        main_layout.setSpacing(5)
+        main_layout.setContentsMargins(10, 1, 1, 1)
 
         filter_selection_widget = FilterSelectionWidget()
         main_layout.addWidget(filter_selection_widget)
@@ -127,17 +139,21 @@ class FilterSelectionWidget(QWidget):
         self.filter_name_field.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
         main_layout.addWidget(self.filter_name_field)
 
-        self.filter_name_ignorecase_cb = extra_widgets.CheckBoxButton(icon_on='ignorecase-checked', icon_off='ignorecase')
+        self.filter_name_ignorecase_cb = extra_widgets.TextCheckBoxButton(text='Aa',
+                                                                          width=BUTTON_SIZE,
+                                                                          height=BUTTON_SIZE,
+                                                                          font_size=FONT_SIZE,
+                                                                          parent=self)
         main_layout.addWidget(self.filter_name_ignorecase_cb)
 
-        filter_name_button = SelecterButton('NAM')
+        filter_name_button = SelecterButton('NAM', color=FILTER_COLOR)
         main_layout.addWidget(filter_name_button)
 
         self.filter_type_field = QLineEdit()
         self.filter_type_field.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
         main_layout.addWidget(self.filter_type_field)
 
-        filter_type_button = SelecterButton('TYP')
+        filter_type_button = SelecterButton('TYP', color=FILTER_COLOR)
         main_layout.addWidget(filter_type_button)
 
         self.setLayout(main_layout)
@@ -218,22 +234,22 @@ class HierarchicalSelectionWidget(QWidget):
         main_layout.setSpacing(5)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
-        parent_button = SelecterButton('PAR')
+        parent_button = SelecterButton('PAR', color=HIERARCHY_COLOR)
         main_layout.addWidget(parent_button)
 
-        children_button = SelecterButton('CHI')
+        children_button = SelecterButton('CHI', color=HIERARCHY_COLOR)
         main_layout.addWidget(children_button)
 
-        siblings_button = SelecterButton('SIB')
+        siblings_button = SelecterButton('SIB', color=HIERARCHY_COLOR)
         main_layout.addWidget(siblings_button)
 
-        children_all_button = SelecterButton('ALL')
+        children_all_button = SelecterButton('ALL', color=HIERARCHY_COLOR)
         main_layout.addWidget(children_all_button)
 
-        children_bottom_button = SelecterButton('BTM')
+        children_bottom_button = SelecterButton('BTM', color=HIERARCHY_COLOR)
         main_layout.addWidget(children_bottom_button)
 
-        hierarchy_all_button = SelecterButton('HIE')
+        hierarchy_all_button = SelecterButton('HIE', color=HIERARCHY_COLOR)
         main_layout.addWidget(hierarchy_all_button)
 
         self.setLayout(main_layout)
@@ -348,10 +364,10 @@ class SubstitutionSelectionWidget(QWidget):
         main_layout.setSpacing(5)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
-        left_to_right_button = SelecterButton('LR')
+        left_to_right_button = SelecterButton('LR', color=SUBSTITUTION_COLOR)
         main_layout.addWidget(left_to_right_button)
 
-        right_to_left_button = SelecterButton('RL')
+        right_to_left_button = SelecterButton('RL', color=SUBSTITUTION_COLOR)
         main_layout.addWidget(right_to_left_button)
 
         self.search_text_field = QLineEdit()
@@ -365,45 +381,61 @@ class SubstitutionSelectionWidget(QWidget):
         self.replace_text_field.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
         main_layout.addWidget(self.replace_text_field)
 
-        select_button = SelecterButton('SEL')
+        select_button = SelecterButton('SEL', color=SUBSTITUTION_COLOR)
         main_layout.addWidget(select_button)
 
-        rename_button = SelecterButton('REN')
+        rename_button = SelecterButton('REN', color=SUBSTITUTION_COLOR)
         main_layout.addWidget(rename_button)
 
-        mirror_button = SelecterButton('MIR')
+        mirror_button = SelecterButton('MIR', color=SUBSTITUTION_COLOR)
         main_layout.addWidget(mirror_button)
 
         separator = extra_widgets.VerticalSeparator()
         main_layout.addWidget(separator)
 
-        duplicate_button = SelecterButton('DUP')
+        duplicate_button = SelecterButton('DUP', color=SUBSTITUTION_COLOR)
         main_layout.addWidget(duplicate_button)
 
-        self.mirror_checkbox = extra_widgets.CheckBoxButton(icon_on='mirror-checked', icon_off='mirror')
+        self.mirror_checkbox = extra_widgets.TextCheckBoxButton(text='MIR',
+                                                                width=BUTTON_SIZE,
+                                                                height=BUTTON_SIZE,
+                                                                font_size=FONT_SIZE,
+                                                                parent=self)
         main_layout.addWidget(self.mirror_checkbox)
 
         layout = QVBoxLayout()
-        layout.setSpacing(0)
+        layout.setSpacing(2)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        self.mirror_pos_checkbox = extra_widgets.CheckBoxButton(icon_on='pos-checked', icon_off='pos')
+        self.mirror_pos_checkbox = extra_widgets.TextCheckBoxButton(text='POS',
+                                                                    width=BUTTON_SIZE,
+                                                                    height=BUTTON_SIZE // 2 - 1,
+                                                                    font_size=FONT_SIZE // 1.5,
+                                                                    parent=self)
         self.mirror_pos_checkbox.setChecked(True)
         layout.addWidget(self.mirror_pos_checkbox)
 
-        self.mirror_rot_checkbox = extra_widgets.CheckBoxButton(icon_on='rot-checked', icon_off='rot')
+        self.mirror_rot_checkbox = extra_widgets.TextCheckBoxButton(text='ROT',
+                                                                    width=BUTTON_SIZE,
+                                                                    height=BUTTON_SIZE // 2 - 1,
+                                                                    font_size=FONT_SIZE // 1.5,
+                                                                    parent=self)
         layout.addWidget(self.mirror_rot_checkbox)
 
         main_layout.addLayout(layout)
 
-        self.freeze_checkbox = extra_widgets.CheckBoxButton(icon_on='freeze-checked', icon_off='freeze')
+        self.freeze_checkbox = extra_widgets.TextCheckBoxButton(text='FRZ',
+                                                                width=BUTTON_SIZE,
+                                                                height=BUTTON_SIZE,
+                                                                font_size=FONT_SIZE,
+                                                                parent=self)
         self.freeze_checkbox.setChecked(True)
         main_layout.addWidget(self.freeze_checkbox)
 
         separator = extra_widgets.VerticalSeparator()
         main_layout.addWidget(separator)
 
-        duplicate_orig_button = SelecterButton('ORG')
+        duplicate_orig_button = SelecterButton('ORG', color=SUBSTITUTION_COLOR)
         main_layout.addWidget(duplicate_orig_button)
 
         self.setLayout(main_layout)
@@ -640,7 +672,7 @@ class RenameSelectionWidget(QWidget):
         self.name_field.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
         main_layout.addWidget(self.name_field)
 
-        rename_button = SelecterButton('REN')
+        rename_button = SelecterButton('REN', color=RENAME_COLOR)
         main_layout.addWidget(rename_button)
 
         label = QLabel('@ : ')
@@ -737,18 +769,49 @@ class ExtraSelectionWidget(QWidget):
 class SelecterButton(QPushButton):
     """Select button widget.
     """
-    __size = 32
 
-    def __init__(self, text: str, parent=None):
+    def __init__(self, text: str, color: str = '#333', parent=None):
         """Constructor.
 
         Args:
             text (str): The button text.
+            color (str): The button color.
             parent (QWidget): Parent widget.
         """
         super().__init__(text, parent=parent)
-        self.setFixedSize(self.__size, self.__size)
-        self.setStyleSheet('font-weight: bold; font-size: 12px;')
+        self.setFixedSize(BUTTON_SIZE, BUTTON_SIZE)
+        color = QColor(color)
+        hover_color = self._get_lightness_color(color, 1.2)
+        pressed_color = self._get_lightness_color(color, 0.8)
+        self.setStyleSheet(f"""
+                   QPushButton {{
+                       font-weight: bold;
+                       font-size: {FONT_SIZE}px;
+                       border: 1px solid #333;
+                       background-color: {color.name()};
+                   }}
+                   QPushButton:hover {{
+                       background-color: {hover_color};
+                   }}
+                    QPushButton:pressed {{
+                       background-color: {pressed_color};
+                   }}
+                   """)
+
+    def _get_lightness_color(self, color: QColor, factor: float) -> str:
+        """Adjust the brightness of a color for hover and pressed states.
+
+        Args:
+            color (QColor): The color to adjust.
+            factor (float): The brightness factor.
+
+        Returns:
+            str: The adjusted color in hex format.
+        """
+        h, s, v, a = color.getHsv()
+        v = max(0, min(v * factor, 255))
+        adjusted_color = QColor.fromHsv(h, s, v, a)
+        return adjusted_color.name()
 
 
 def show_ui():
@@ -773,4 +836,5 @@ def show_ui():
     main_window.show(dockable=True)
 
     # Edit actLikeMayaUIElement
-    cmds.workspaceControl(workspace_control_name, e=True, actLikeMayaUIElement=True, dockToControl=('Shelf', 'bottom'))
+    cmds.workspaceControl(workspace_control_name, e=True, dockToControl=('Shelf', 'bottom'))
+    cmds.workspaceControl(workspace_control_name, e=True, actLikeMayaUIElement=True)
