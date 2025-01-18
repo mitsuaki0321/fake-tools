@@ -384,13 +384,19 @@ code {
 faketools.tools.selecter.show_ui()
 </div></code></pre>
 <h3 id="%E9%81%B8%E6%8A%9E%E3%82%92%E5%90%8D%E5%89%8D%E3%81%A7%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF%E3%83%AA%E3%83%B3%E3%82%B0">選択を名前でフィルタリング</h3>
-<p>選択したノードを正規表現でフィルタリングします。</p>
-<p><img src="images/selecter/image002.png" alt="image002"></p>
-<p><code>Ctrl</code> キーを押しながら選択すると、該当したノードを選択から外します。</p>
+<p>選択したノードをテキストでフィルタリングします。<br>
+<code>Ctrl</code> キーを押しながら選択すると、該当したノードを選択から外します。</p>
+<p><strong>例: Group というテキストが含まれているノードを選択</strong><br>
+<img src="images/selecter/image002.png" alt="image002"></p>
+<p>正規表現文字列を使用した場合は、正規表現としてフィルタリングされます。</p>
+<p><strong>例: Group というテキストがノードの後方に含まれているノードを選択</strong><br>
+<img src="images/selecter/image012.png" alt="image012"></p>
+<p><code>Aa</code> ボタンを押すと、大文字と小文字を区別しないフィルタリングを行います。</p>
+<p><img src="images/selecter/image013.png" alt="image013"></p>
 <h3 id="%E9%81%B8%E6%8A%9E%E3%82%92%E3%83%8E%E3%83%BC%E3%83%89%E3%82%BF%E3%82%A4%E3%83%97%E3%81%A7%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF%E3%83%AA%E3%83%B3%E3%82%B0">選択をノードタイプでフィルタリング</h3>
-<p>選択したノードをノードタイプでフィルタリングします。</p>
+<p>選択したノードをノードタイプでフィルタリングします。<br>
+<code>Ctrl</code> キーを押しながら選択すると、該当したノードを選択から外します。</p>
 <p><img src="images/selecter/image003.png" alt="image003"></p>
-<p><code>Ctrl</code> キーを押しながら選択すると、該当したノードを選択から外します。</p>
 <h3 id="%E9%81%B8%E6%8A%9E%E3%81%97%E3%81%9F%E3%83%8E%E3%83%BC%E3%83%89%E3%81%AE%E8%A6%AA%E5%AD%90%E5%85%84%E5%BC%9F%E3%82%92%E9%81%B8%E6%8A%9E">選択したノードの親、子、兄弟を選択</h3>
 <p>選択したノードの親、子、兄弟を選択します。</p>
 <p><img src="images/selecter/image004.png" alt="image004"></p>
@@ -467,6 +473,33 @@ faketools.tools.selecter.show_ui()
 <li><code>#</code> で始まる文字列は数字に変換されます。選択順に 1 から順番に割り当てられます。最初の数字を変更したい場合は、# フィールドの文字列を変更します。</li>
 <li><code>~</code> で始まる文字列は選択したノードの名前に置換されます。</li>
 </ul>
+<p><strong>例:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">選択ノード</th>
+<th style="text-align:left">フィールド</th>
+<th style="text-align:left">名前変更結果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Any</td>
+<td style="text-align:left">fake@</td>
+<td style="text-align:left">fakeA, fakeB, fakeC, ...</td>
+</tr>
+<tr>
+<td style="text-align:left">Any</td>
+<td style="text-align:left">fake#</td>
+<td style="text-align:left">fake1, fake2, fake3, ...</td>
+</tr>
+<tr>
+<td style="text-align:left">Any</td>
+<td style="text-align:left">~_fake</td>
+<td style="text-align:left">Any_fake</td>
+</tr>
+</tbody>
+</table>
 <h3 id="%E7%89%B9%E6%AE%8A%E3%81%AA%E6%A9%9F%E8%83%BD">特殊な機能</h3>
 <p>それぞれのボタンを押すことで、特殊な機能を使用することができます。</p>
 <p><img src="images/selecter/image007.png" alt="image007"></p>

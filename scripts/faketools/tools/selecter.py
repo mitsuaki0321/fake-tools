@@ -3,6 +3,7 @@ Maya scene selection tools.
 """
 
 import importlib
+import re
 
 import maya.cmds as cmds
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
@@ -180,6 +181,10 @@ class FilterSelectionWidget(QWidget):
         filter_name = self.filter_name_field.text()
         if not filter_name:
             cmds.error('No filter name specified.')
+
+        # If only alphanumeric characters, convert to .*filter_name.*
+        if re.match(r'^[a-zA-Z0-9]+$', filter_name):
+            filter_name = f'.*{filter_name}.*'
 
         ignorecase = self.filter_name_ignorecase_cb.isChecked()
 

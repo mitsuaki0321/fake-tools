@@ -366,72 +366,149 @@ code {
     });
   </script>
 <h1 id="selecter">Selecter</h1>
-<p>A tool to assist with selection and renaming operations.</p>
+<p>A tool to assist with selection and name substitution in Maya.</p>
 <p><img src="images/selecter/image001.png" alt="image001"></p>
 <h2 id="overview">Overview</h2>
-<p>This tool assists with selecting nodes in the scene and renaming operations.</p>
-<p>Key features include:</p>
+<p>This tool assists with operations such as selecting nodes in the scene and substituting names.</p>
+<p>Main features include:</p>
 <ul>
-<li>Filtering selected nodes by name or node type.</li>
-<li>Selecting parent, child, or sibling transform nodes of the selected nodes.</li>
-<li>Renaming, duplicating, or duplicating original shapes by replacing selected node names.</li>
-<li>Changing the names of selected nodes.</li>
+<li>Filtering selected nodes by name or node type</li>
+<li>Selecting parents, children, and siblings of selected transform nodes</li>
+<li>Selecting, renaming, duplicating, and duplicating original shapes of nodes by substituting names</li>
+<li>Renaming selected nodes</li>
 </ul>
-<h2 id="how-to-use">How to Use</h2>
-<p>Launch from the dedicated menu or the following command. The tool will dock at the bottom of the shelf.</p>
+<h2 id="usage">Usage</h2>
+<p>Launch the tool from the dedicated menu or with the following command.
+The launched tool will dock at the bottom of the shelf.</p>
 <pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.tools.selecter
 faketools.tools.selecter.show_ui()
 </div></code></pre>
-<h3 id="filtering-selection-by-name">Filtering Selection by Name</h3>
-<p>Filters selected nodes using regular expressions.</p>
-<p><img src="images/selecter/image002.png" alt="image002"></p>
-<p>Selecting the .* icon on the left changes it to ^, and selecting the .* icon on the right changes it to $. Selecting the Aa icon distinguishes between uppercase and lowercase.</p>
-<p>Hold the <code>Ctrl</code> key while selecting to deselect matching nodes.</p>
-<h3 id="filtering-selection-by-node-type">Filtering Selection by Node Type</h3>
-<p>Filters selected nodes by node type.</p>
+<h3 id="filter-selection-by-name">Filter Selection by Name</h3>
+<p>Filter selected nodes by text.
+Holding down the <code>Ctrl</code> key while selecting will deselect the matching nodes.</p>
+<p><strong>Example: Select nodes containing the text &quot;Group&quot;</strong><br>
+<img src="images/selecter/image002.png" alt="image002"></p>
+<p>If a regular expression string is used, it will be filtered as a regular expression.</p>
+<p><strong>Example: Select nodes containing the text &quot;Group&quot; at the end of the node name</strong><br>
+<img src="images/selecter/image012.png" alt="image012"></p>
+<p>Pressing the <code>Aa</code> button will filter without case sensitivity.</p>
+<p><img src="images/selecter/image013.png" alt="image013"></p>
+<h3 id="filter-selection-by-node-type">Filter Selection by Node Type</h3>
+<p>Filter selected nodes by node type.
+Holding down the <code>Ctrl</code> key while selecting will deselect the matching nodes.</p>
 <p><img src="images/selecter/image003.png" alt="image003"></p>
-<p>Hold the <code>Ctrl</code> key while selecting to deselect matching nodes.</p>
-<h3 id="selecting-parent-child-or-sibling-nodes">Selecting Parent, Child, or Sibling Nodes</h3>
-<p>Selects parent, child, or sibling nodes of the selected nodes.</p>
+<h3 id="select-parent-child-and-sibling-nodes">Select Parent, Child, and Sibling Nodes</h3>
+<p>Select the parent, child, and sibling nodes of the selected nodes.</p>
 <p><img src="images/selecter/image004.png" alt="image004"></p>
 <ul>
-<li><strong>PAR</strong>: Selects the parent of the selected node.</li>
-<li><strong>CHI</strong>: Selects the child of the selected node.</li>
-<li><strong>SIB</strong>: Selects the siblings of the selected node.</li>
-<li><strong>ALL</strong>: Selects the parent, child, and siblings of the selected node.</li>
-<li><strong>BTM</strong>: Selects the lowest-level nodes in the hierarchy of the selected nodes.</li>
-<li><strong>HIE</strong>: Selects all nodes, including shape nodes, of the selected nodes.</li>
-</ul>
-<p>All these options can use modifier keys similar to Maya's viewport selection.</p>
-<h3 id="selecting-by-replacing-names-left-and-right">Selecting by Replacing Names (Left and Right)</h3>
-<p>Selects nodes by replacing names with those set in the tool.</p>
-<p><img src="images/selecter/image009.png" alt="image005"></p>
-<p>Modifier keys can also be used, similar to Maya's viewport selection.</p>
-<p>※ This feature can change the replacement method according to the settings of <code>LEFT_TO_RIGHT</code> and <code>RIGHT_TO_LEFT</code> in settings.json.</p>
-<h3 id="selecting-renaming-duplicating-or-duplicating-original-shapes-by-replacing-names">Selecting, Renaming, Duplicating, or Duplicating Original Shapes by Replacing Names</h3>
-<p>Replaces the names of selected nodes to execute selection, renaming, duplication, or duplicating original shapes.</p>
-<p><img src="images/selecter/image005.png" alt="image006"></p>
-<p>Commands execute using strings entered in the respective text boxes. Press the <strong>→</strong> button to swap the replacement direction.</p>
-<p><img src="images/selecter/image011.png" alt="image007"></p>
+<li><strong>PAR</strong>
 <ul>
-<li><strong>SEL</strong>: Replaces the names of selected nodes and selects them.</li>
-<li><strong>REN</strong>: Replaces the names of selected nodes and renames them.</li>
-<li><strong>DUP</strong>: Replaces the names of selected nodes and duplicates them. Press the <strong>MIR</strong> button for mirroring. Use <strong>POS</strong> and <strong>ROT</strong> to decide whether to mirror position and rotation, respectively. If the <strong>FRZ</strong> button is pressed, the transform and pivot will freeze after mirroring. For mesh nodes, components are also frozen.</li>
-<li><strong>ORG</strong>: Replaces the names of selected nodes and duplicates the original shape.</li>
+<li>Select the parent of the selected nodes.</li>
 </ul>
-<h3 id="renaming-selected-nodes">Renaming Selected Nodes</h3>
-<p>Changes the names of selected nodes.</p>
-<p><img src="images/selecter/image006.png" alt="image008"></p>
+</li>
+<li><strong>CHI</strong>
 <ul>
-<li>Strings starting with <code>@</code> are converted to alphabets. They are assigned in order of selection, starting with A. Change the first string using the @ field.</li>
-<li>Strings starting with <code>#</code> are converted to numbers. They are assigned in order of selection, starting with 1. Change the first number using the # field.</li>
-<li>Strings starting with <code>~</code> are replaced with the names of the selected nodes.</li>
+<li>Select the children of the selected nodes.</li>
 </ul>
-<h3 id="special-functions">Special Functions</h3>
-<p>Special functions are available by pressing the respective buttons.</p>
-<p><img src="images/selecter/image007.png" alt="image009"></p>
+</li>
+<li><strong>SIB</strong>
 <ul>
-<li><strong>L2F</strong>: Changes the last selected node to the first selected node.</li>
+<li>Select the siblings of the selected nodes.</li>
+</ul>
+</li>
+<li><strong>ALL</strong>
+<ul>
+<li>Select all parents, children, and siblings of the selected nodes.</li>
+</ul>
+</li>
+<li><strong>BTM</strong>
+<ul>
+<li>Select the bottom nodes of the selected node hierarchy.</li>
+</ul>
+</li>
+<li><strong>HIE</strong>
+<ul>
+<li>Select all nodes including shape nodes of the selected nodes.</li>
+</ul>
+</li>
+</ul>
+<p>All selections can use modifier keys just like in Maya's view.</p>
+<h3 id="select-by-substituting-names-left-to-right">Select by Substituting Names (Left to Right)</h3>
+<p>Select nodes by substituting the names of the selected nodes from left to right.</p>
+<p><img src="images/selecter/image009.png" alt="image009"></p>
+<p>All selections can use modifier keys just like in Maya's view.</p>
+<p>※ This feature can be customized by setting <code>LEFT_TO_RIGHT</code> and <code>RIGHT_TO_LEFT</code> in settings.json.</p>
+<h3 id="select-rename-duplicate-and-duplicate-original-shapes-by-substituting-names">Select, Rename, Duplicate, and Duplicate Original Shapes by Substituting Names</h3>
+<p>Select, rename, duplicate, and duplicate original shapes of nodes by substituting names.</p>
+<p><img src="images/selecter/image005.png" alt="image005"></p>
+<p>The command is executed by substituting the names with the strings entered in each text box. Pressing the <strong>→</strong> button will swap the direction of substitution.</p>
+<p><img src="images/selecter/image011.png" alt="image0011"></p>
+<ul>
+<li><strong>SEL</strong>
+<ul>
+<li>Select nodes by substituting names.</li>
+</ul>
+</li>
+<li><strong>REN</strong>
+<ul>
+<li>Rename nodes by substituting names.</li>
+</ul>
+</li>
+<li><strong>DUP</strong>
+<ul>
+<li>Duplicate nodes by substituting names. Pressing the <strong>MIR</strong> button will mirror the nodes. <strong>POS</strong> and <strong>ROT</strong> determine whether to mirror the position and rotation, respectively. If the <strong>FRZ</strong> button is pressed, the transform and pivot will be frozen after mirroring. For mesh nodes, components will also be frozen.</li>
+</ul>
+</li>
+<li><strong>ORG</strong>
+<ul>
+<li>Duplicate original shapes by substituting names.</li>
+</ul>
+</li>
+</ul>
+<h3 id="rename-selected-nodes">Rename Selected Nodes</h3>
+<p>Rename the selected nodes.</p>
+<p><img src="images/selecter/image006.png" alt="image006"></p>
+<ul>
+<li>Strings starting with <code>@</code> will be converted to alphabets. They will be assigned sequentially from A based on the selection order. To change the initial string, modify the string in the @ field.</li>
+<li>Strings starting with <code>#</code> will be converted to numbers. They will be assigned sequentially from 1 based on the selection order. To change the initial number, modify the string in the # field.</li>
+<li>Strings starting with <code>~</code> will be replaced with the names of the selected nodes.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Selected Nodes</th>
+<th style="text-align:left">Field</th>
+<th style="text-align:left">Rename Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Any</td>
+<td style="text-align:left">fake@</td>
+<td style="text-align:left">fakeA, fakeB, fakeC, ...</td>
+</tr>
+<tr>
+<td style="text-align:left">Any</td>
+<td style="text-align:left">fake#</td>
+<td style="text-align:left">fake1, fake2, fake3, ...</td>
+</tr>
+<tr>
+<td style="text-align:left">Any</td>
+<td style="text-align:left">~_fake</td>
+<td style="text-align:left">Any_fake</td>
+</tr>
+</tbody>
+</table>
+<h3 id="special-features">Special Features</h3>
+<p>Use the special features by pressing the respective buttons.</p>
+<p><img src="images/selecter/image007.png" alt="image007"></p>
+<ul>
+<li><strong>L2F</strong>
+<ul>
+<li>Change the last selected node to the first selected node.</li>
+</ul>
+</li>
 </ul>
 
 </body>
