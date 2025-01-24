@@ -6,6 +6,7 @@ Scene commands:
 All commands:
     - LockAndHide
     - UnlockAndShow
+    - ZeroOutChannelBox
     - BreakConnections
     - FreezeVertices
     - FreezeImmediateVertices
@@ -32,10 +33,10 @@ from logging import getLogger
 import maya.cmds as cmds
 
 from .. import user_directory
-from ..lib import lib_shape, lib_transform
+from ..lib import lib_attribute, lib_shape, lib_transform
 from ..lib.lib_singleCommand import AllCommand, PairCommand, SceneCommand
 from ..lib_ui import maya_ui
-from . import convert_weight, scene_optimize
+from . import convert_weight, rigging_setup, scene_optimize
 
 logger = getLogger(__name__)
 
@@ -46,8 +47,8 @@ MIRROR_JOINTS = global_settings.get('MIRROR_JOINTS', ['_L', '_R'])
 
 SCENE_COMMANDS = ('OptimizeScene',)
 
-ALL_COMMANDS = ('LockAndHide', 'UnlockAndShow', 'BreakConnections', 'FreezeTransform', 'FreezeVertices', 'FreezeImmediateVertices',
-                'ParentConstraint', 'DeleteConstraint', 'ChainJoints', 'MirrorJoints', 'DeleteDynamicAttributes')
+ALL_COMMANDS = ('LockAndHide', 'UnlockAndShow', 'ZeroOutChannelBox', 'BreakConnections', 'FreezeTransform', 'FreezeVertices',
+                'FreezeImmediateVertices', 'ParentConstraint', 'DeleteConstraint', 'ChainJoints', 'MirrorJoints', 'DeleteDynamicAttributes')
 
 PAIR_COMMANDS = ('SnapPosition', 'SnapRotation', 'SnapScale', 'SnapTranslateAndRotate', 'CopyTransform', 'ConnectTransform', 'CopyWeight',
                  'ConnectTopology', 'CopyTopology', 'Parent')
@@ -153,6 +154,23 @@ class UnlockAndShow(AllCommand):
                 logger.debug(f'Unlocked and shown: {node}')
 
             cmds.delete(tmp_node)
+
+
+class ZeroOutChannelBox(AllCommand):
+
+    def execute(self, nodes: list[str]):
+        """Zero out the nodes.
+
+        Notes:
+            - Zero out the nodes.
+        """
+        for node in nodes:
+            attrs = lib_attribute.get_channelBox_attr(node)
+            if not attrs:
+                cmds.warning('No channelBox attributes: {node}')
+                return
+
+            rigging_setup.zero_out_attributes(node, attrs)
 
 
 class BreakConnections(AllCommand):

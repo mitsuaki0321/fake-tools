@@ -209,3 +209,48 @@ class FreezeTransformNode:
             self.freeze_pivot()
         if freeze_vertex:
             self.freeze_vertex()
+
+
+def reorder_transform_nodes(nodes: list[str]) -> list:
+    """Reorder transform nodes by hierarchy depth.
+
+    Args:
+        nodes (list[str]): List of transform nodes.
+
+    Returns:
+        list: Reordered list of transform nodes.
+    """
+    if not nodes:
+        raise ValueError('Nodes are not specified.')
+
+    not_transform_nodes = [node for node in nodes if 'transform' not in cmds.nodeType(node, inherited=True)]
+    if not_transform_nodes:
+        raise ValueError(f'Nodes are not transform nodes: {not_transform_nodes}')
+
+    depth_dict = {}
+    for node in nodes:
+        depth = len(cmds.ls(node, long=True)[0].split('|')) - 1
+        depth_dict[node] = depth
+
+    sorted_nodes = sorted(nodes, key=lambda x: depth_dict[x])
+
+    return sorted_nodes
+
+
+def is_unique_node(node: str) -> bool:
+    """Check if the node is unique name node.
+
+    Args:
+        node (str): The target node.
+
+    Returns:
+        bool: Whether the node is unique.
+    """
+    if not node:
+        raise ValueError('Node is not specified.')
+
+    node = cmds.ls(node)
+    if '|' in node:
+        return False
+
+    return True
