@@ -129,16 +129,22 @@ def solve_names(names: list[str], regex_name: str, *args, **kwargs) -> list[str]
     return new_names
 
 
-def get_local_names(names: list[str]) -> list[str]:
+def get_local_name(name: str) -> str:
     """Get the local names.
 
     Args:
-        names (list[str]): The target names.
+        name (str): The target name.
 
     Returns:
-        list[str]: The local names.
+        str: The local name.
     """
-    return [name.split('|')[-1] for name in names]
+    if not name:
+        raise ValueError('Name is not specified.')
+
+    if '|' in name:
+        return name.split('|')[-1]
+
+    return name
 
 
 def replace_namespaces(names: list[str], namespace: str) -> list[str]:
