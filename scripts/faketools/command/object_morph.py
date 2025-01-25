@@ -8,7 +8,6 @@ import os
 import pickle
 from abc import ABC, abstractmethod
 from logging import getLogger
-from typing import Optional
 
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
@@ -283,16 +282,28 @@ class MeshRBFPosition(MeshPosition):
 
     _data_type = np.float32
 
-    def export_data(self, positions: list[list[float]], method_instance: Optional[IndexQueryMethod] = None, **kwargs) -> dict:
+    def export_data(self, positions: list[list[float]], method_instance: IndexQueryMethod, **kwargs) -> dict:
         """Export the positions to RBF-like interpolation.
 
         Args:
             positions (list[list[float]]): The positions.
             method_instance (IndexQueryMethod): The index query method instance.
 
+        Raises:
+            ValueError: If the mesh has less than 4 vertices.
+
         Returns:
             dict: The RBF-like interpolation.
         """
+        if self.mesh_fn.numVertices < 4:
+            raise ValueError('Mesh must have at least 4 vertices.')
+
+        if method_instance is None:
+            raise ValueError('Index query method instance not provided.')
+
+        if not isinstance(method_instance, IndexQueryMethod):
+            raise ValueError('Invalid index query method instance.')
+
         rotations = kwargs.get('rotations', [])
         rotation_positions = []
         if rotations:
@@ -319,14 +330,16 @@ class MeshRBFPosition(MeshPosition):
                 rotation_positions.append([[x_point.x, x_point.y, x_point.z], [y_point.x, y_point.y, y_point.z]])
 
         vtx_positions = self._get_vtx_positions()
+        indices = method_instance.get_indices(vtx_positions, positions)
 
-        if method_instance is None:
-            indices = None
-        else:
-            if not isinstance(method_instance, IndexQueryMethod):
-                raise ValueError('Invalid index query method instance.')
-
-            indices = method_instance.get_indices(vtx_positions, positions)
+        # Add vertices if the number of elements in indices is less than 4
+        index_counts = [len(index) for index in indices]
+        if not all([count >= 4 for count in index_counts]):
+            distance_index_query = DistanceIndexQuery(num_vertices=4)
+            distance_indices = distance_index_query.get_indices(vtx_positions, positions)
+            for i, count in enumerate(index_counts):
+                if count < 4:
+                    indices[i] = distance_indices[i]
 
         logger.debug(f'Exporting RBF-like interpolation with positions: {len(positions)}')
 
@@ -353,6 +366,9 @@ class MeshRBFPosition(MeshPosition):
         src_positions_list = np.asarray(data['vtx_positions'])
         dst_positions_list = np.asarray(self._get_vtx_positions())
 
+        print(f'trg_positions: {trg_positions}')
+        print(f'trg_indices_list: {trg_indices_list}')
+
         trg_rotations_positions = data.get('rotation_positions', [])
 
         if len(src_positions_list) != len(dst_positions_list):
@@ -373,6 +389,8 @@ class MeshRBFPosition(MeshPosition):
             weight_point_x, weight_point_y, weight_point_z = _rbf_compute_weight(dst_positions, mesh_mat, dataType=self._data_type)
             computed_positions = _rbf_compute_points(src_positions, compute_positions, weight_point_x,
                                                      weight_point_y, weight_point_z, dataType=self._data_type)
+
+            logger.debug(f'Computed positions: {computed_positions}')
 
             computed_position_list.append(computed_positions[0])
 
@@ -542,8 +560,6 @@ class NearestRadiusIndexQuery(IndexQueryMethod):
             effective_radius = self.__radius_multiplier * dist
             indices = kd_tree.query_ball_point(position, effective_radius)
 
-            print(f'Indices size: {len(indices)}')
-
             result_indices.append(indices)
 
         return result_indices
@@ -670,6 +686,7 @@ def _rbf_solve_weight(base_matrix: csr_matrix,
     try:
         return spsolve(base_matrix, trg_points)
     except np.linalg.LinAlgError:
+        logger.warning('Singular matrix detected. Using pinv instead.')
         return np.dot(pinv(base_matrix), trg_points)
 
 
@@ -774,7 +791,7 @@ def export_transform_position(output_directory: str, file_name: str, method: str
     if not_unique_names:
         cmds.error(f'Selected nodes have non-unique names in selection: {not_unique_names}')
 
-    # Export the data
+    # Get the positions and rotations
     positions = [cmds.xform(transform, q=True, ws=True, t=True) for transform in transforms]
     rotations = [cmds.xform(transform, q=True, ws=True, ro=True) for transform in transforms]
 
@@ -790,7 +807,13 @@ def export_transform_position(output_directory: str, file_name: str, method: str
             index_query_method = NearestRadiusIndexQuery(radius_multiplier=1.5)
             position_data = method_instance.export_data(positions, rotations=rotations, method_instance=index_query_method)
 
-    export_data = {'method': method, 'transforms': local_names, 'position_data': position_data}
+    # Get the hierarchy data
+    transform_hierarchy = lib_transform.TransformHierarchy()
+    for transform in transforms:
+        transform_hierarchy.register_node(transform)
+
+    export_data = {'method': method, 'transforms': local_names, 'position_data': position_data,
+                   'hierarchy_data': transform_hierarchy.get_hierarchy_data()}
 
     # Write the data to a file
     with open(output_file_path, 'wb') as f:
@@ -870,9 +893,11 @@ def import_transform_position(input_file_path: str, create_new: bool = False, is
         is_rotation (bool): Import rotations. Default is True.
 
     Keyword Args:
+        restore_hierarchy (bool): Restore the hierarchy only if create_new is True. Default is False.
         creation_object_type (str): The creation object type. Default is 'transform'. Options are 'transform', 'locator', 'joint'.
         creation_object_size (float): The creation object size. Default is 1.0.
     """
+    restore_hierarchy = kwargs.get('restore_hierarchy', False)
     creation_object_type = kwargs.get('creation_object_type', 'transform')  # 'transform', 'locator', 'joint'
     creation_object_size = kwargs.get('creation_object_size', 1.0)
 
@@ -882,6 +907,7 @@ def import_transform_position(input_file_path: str, create_new: bool = False, is
     method = input_data['method']
     target_transforms = input_data['transforms']
     position_data = input_data['position_data']
+    hierarchy_data = input_data['hierarchy_data']
 
     # Get the target mesh
     if method in ['barycentric', 'rbf']:
@@ -926,11 +952,25 @@ def import_transform_position(input_file_path: str, create_new: bool = False, is
     if create_new:
         new_transforms = []
         for i, transform in enumerate(target_transforms):
-            new_transform = _create_transform_node(f'{transform}_position', creation_object_type, creation_object_size)
+            new_transform = _create_transform_node(f'{transform}_position#', creation_object_type, creation_object_size)
             cmds.xform(new_transform, ws=True, t=result_positions[i])
             if is_rotation:
                 cmds.xform(new_transform, ws=True, ro=result_rotations[i])
             new_transforms.append(new_transform)
+
+        logger.debug(f'Created new transform nodes: {new_transforms}')
+
+        if restore_hierarchy:
+            transform_hierarchy = lib_transform.TransformHierarchy.set_hierarchy_data(hierarchy_data)
+            for target_transform, new_transform in zip(target_transforms, new_transforms):
+                register_parent = transform_hierarchy.get_registered_parent(target_transform)
+                if not register_parent:
+                    continue
+
+                parent_transform = new_transforms[target_transforms.index(register_parent)]
+                cmds.parent(new_transform, parent_transform)
+
+            logger.debug(f'Restored transform hierarchy: {new_transforms}')
 
         cmds.select(new_transforms, r=True)
     else:
@@ -942,5 +982,7 @@ def import_transform_position(input_file_path: str, create_new: bool = False, is
                 cmds.xform(transform, ws=True, ro=result_rotations[index])
 
         cmds.select(reorder_transforms, r=True)
+
+        logger.debug(f'Set transform positions: {reorder_transforms}')
 
     logger.debug(f'Imported transform positions: {input_file_path}')

@@ -105,14 +105,14 @@ class MainWindow(QMainWindow):
         self.central_layout.addWidget(separator)
 
         # Import Options
-        import_button = QPushButton('Import')
-        self.central_layout.addWidget(import_button)
-
         self.is_rotation_checkbox = QCheckBox('Is Rotation')
         self.central_layout.addWidget(self.is_rotation_checkbox)
 
         self.create_new_checkbox = QCheckBox('Create New')
         self.central_layout.addWidget(self.create_new_checkbox)
+
+        self.restore_hierarchy_checkbox = QCheckBox('Restore Hierarchy')
+        self.central_layout.addWidget(self.restore_hierarchy_checkbox)
 
         layout = QGridLayout()
 
@@ -126,14 +126,25 @@ class MainWindow(QMainWindow):
         self.object_size_label = QLabel('Size:', alignment=Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(self.object_size_label, 1, 0)
 
-        self.object_size = extra_widgets.ModifierSpinBox()
-        self.object_size.setRange(0.01, 100.0)
-        self.object_size.setValue(1.0)
-        layout.addWidget(self.object_size, 1, 1)
+        self.object_size_box = extra_widgets.ModifierSpinBox()
+        self.object_size_box.setRange(0.00, 100.0)
+        self.object_size_box.setValue(1.0)
+        layout.addWidget(self.object_size_box, 1, 1)
 
         layout.setColumnStretch(1, 1)
 
         self.central_layout.addLayout(layout)
+
+        import_button = QPushButton('Import')
+        self.central_layout.addWidget(import_button)
+
+        # Option settings
+        self.method_box.setCurrentText(self.tool_options.read('method', self._method_list[0]))
+        self.is_rotation_checkbox.setChecked(self.tool_options.read('is_rotation', False))
+        self.create_new_checkbox.setChecked(self.tool_options.read('create_new', False))
+        self.restore_hierarchy_checkbox.setChecked(self.tool_options.read('restore_hierarchy', False))
+        self.object_type_box.setCurrentText(self.tool_options.read('object_type', self._create_new_list[0]))
+        self.object_size_box.setValue(self.tool_options.read('object_size', 1.0))
 
         # Signals & Slots
         self.create_new_checkbox.stateChanged.connect(self.__update_create_new_options)
@@ -141,11 +152,17 @@ class MainWindow(QMainWindow):
         export_button.clicked.connect(self.export_transform_position)
         import_button.clicked.connect(self.import_transform_position)
 
+        selection_model = self.file_list_view.selectionModel()
+        selection_model.selectionChanged.connect(self.__insert_file_name)
+
         # Initial state
         self.__update_create_new_options()
         self.__update_file_list()
 
-        self.resize(self.minimumSize())
+        minimum_size = self.minimumSizeHint()
+        width = minimum_size.width() * 1.1
+        height = minimum_size.height()
+        self.resize(width, height)
 
     @maya_ui.error_handler
     def export_transform_position(self) -> None:
@@ -162,6 +179,7 @@ class MainWindow(QMainWindow):
                                                method=method)
 
         self.__update_file_list()
+        self.__select_file(file_name)
 
     @maya_ui.undo_chunk('Import Transform Position')
     @maya_ui.error_handler
@@ -174,22 +192,33 @@ class MainWindow(QMainWindow):
 
         is_rotation = self.is_rotation_checkbox.isChecked()
         create_new = self.create_new_checkbox.isChecked()
+        restore_hierarchy = self.restore_hierarchy_checkbox.isChecked()
         object_type = self.object_type_box.currentText()
-        object_size = self.object_size.value()
+        object_size = self.object_size_box.value()
 
         object_morph.import_transform_position(sel_file_path,
                                                create_new=create_new,
                                                is_rotation=is_rotation,
+                                               restore_hierarchy=restore_hierarchy,
                                                creation_object_type=object_type,
                                                creation_object_size=object_size)
 
     @maya_ui.error_handler
-    def _open_directory(self) -> None:
-        """Open file directory.
+    def _select_data_nodes(self) -> None:
+        """Select the transform nodes from the selected file.
         """
-        os.startfile(self.output_directory)
+        sel_file_path = self.__get_selected_file_path()
+        if not sel_file_path:
+            cmds.error('No file selected.')
 
-        logger.debug(f'Opened directory: {self.output_directory}')
+        transform_data = object_morph.load_transform_position_data(sel_file_path)
+        transform_nodes = transform_data['transforms']
+
+        not_exists_nodes = [node for node in transform_nodes if not cmds.objExists(node)]
+        if not_exists_nodes:
+            cmds.error(f'Nodes do not exist: {not_exists_nodes}')
+
+        cmds.select(transform_nodes)
 
     @maya_ui.error_handler
     def _remove_file(self) -> None:
@@ -204,15 +233,26 @@ class MainWindow(QMainWindow):
 
         logger.debug(f'Removed file: {sel_file_path}')
 
+    @maya_ui.error_handler
+    def _open_directory(self) -> None:
+        """Open file directory.
+        """
+        os.startfile(self.output_directory)
+
+        logger.debug(f'Opened directory: {self.output_directory}')
+
     def _on_context_menu(self, point) -> None:
         """Show the context menu on the file list view.
         """
         menu = QMenu()
 
-        action = menu.addAction('Remove File')
-        action.triggered.connect(self._remove_file)
+        action = menu.addAction('Select Nodes')
+        action.triggered.connect(self._select_data_nodes)
 
         menu.addSeparator()
+
+        action = menu.addAction('Remove File')
+        action.triggered.connect(self._remove_file)
 
         action = menu.addAction('Refresh')
         action.triggered.connect(self.__update_file_list)
@@ -256,6 +296,19 @@ class MainWindow(QMainWindow):
         self.node_length_label.setText(self.__get_node_length_label(node_count))
         self.method_label.setText(self.__get_method_label(method))
 
+    def __insert_file_name(self, item) -> None:
+        """Insert the file name to the file name field.
+
+        Args:
+            item (QModelIndex): The selected item.
+        """
+        indices = item.indexes()
+        if not indices:
+            return
+
+        file_name = self.file_list_model.data(indices[0])
+        self.file_name_field.setText(file_name)
+
     def __get_selected_file_path(self) -> str:
         """Get the selected file path.
 
@@ -274,12 +327,28 @@ class MainWindow(QMainWindow):
 
         return file_path
 
+    def __select_file(self, file_name: str) -> None:
+        """Select the file in the file list.
+
+        Args:
+            file_name (str): The file name.
+        """
+        file_list = self.file_list_model.stringList()
+        if file_name not in file_list:
+            return
+
+        index = file_list.index(file_name)
+        self.file_list_view.setCurrentIndex(self.file_list_model.index(index))
+
     def __update_create_new_options(self) -> None:
         """Enable/Disable based on the state of the Create New checkbox.
         """
         state = self.create_new_checkbox.isChecked()
         self.object_type_label.setEnabled(state)
         self.object_type_box.setEnabled(state)
+        self.object_size_label.setEnabled(state)
+        self.object_size_box.setEnabled(state)
+        self.restore_hierarchy_checkbox.setEnabled(state)
 
     @ staticmethod
     def __get_node_length_label(node_count: int) -> str:
@@ -304,6 +373,19 @@ class MainWindow(QMainWindow):
                 str: The method label.
         """
         return f'Method: {method}'
+
+    def closeEvent(self, event) -> None:
+        """Close event.
+        """
+        # Save option settings
+        self.tool_options.write('method', self.method_box.currentText())
+        self.tool_options.write('is_rotation', self.is_rotation_checkbox.isChecked())
+        self.tool_options.write('create_new', self.create_new_checkbox.isChecked())
+        self.tool_options.write('restore_hierarchy', self.restore_hierarchy_checkbox.isChecked())
+        self.tool_options.write('object_type', self.object_type_box.currentText())
+        self.tool_options.write('object_size', self.object_size_box.value())
+
+        super().closeEvent(event)
 
 
 def show_ui():

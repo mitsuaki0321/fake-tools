@@ -28,6 +28,7 @@ tools = [{'label': 'Remote Slider', 'module': 'remote_slider'},
          {'label': 'Attribute Lister', 'module': 'attribute_lister'},
          {'label': 'Connection Lister', 'module': 'connection_lister'},
          {'label': 'Node Stocker', 'module': 'node_stocker'},
+         {'label': 'Position Import/Export', 'module': 'position_import_export'},
          ]
 
 
