@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>index.md</title>
+<title>position_import_export_en.md</title>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 
 <style>
@@ -365,52 +365,149 @@ code {
           : 'default'
     });
   </script>
-<h1 id="faketools">FakeTools</h1>
+<h1 id="position-importexport">Position Import/Export</h1>
+<p>This tool allows you to export and import the position information of selected nodes.</p>
 <h2 id="overview">Overview</h2>
-<p>Maya での作業を効率化するための個人用ツール集です。</p>
-<p>This is a collection of personal tools to streamline work in Maya.</p>
-<h2 id="tools">Tools</h2>
-<h3 id="japanese">Japanese</h3>
+<p>This tool can export and import the position and rotation information of selected transform nodes to a file.<br>
+You can obtain and set position information in several ways. The methods are as follows:</p>
+<h3 id="default">Default</h3>
+<p>Obtain the position information of the transform node in world space and reproduce it in world space.</p>
+<h3 id="barycentric">Barycentric</h3>
+<p>Obtain the position information of the transform node in barycentric coordinates of the nearest triangle polygon from the node and reproduce it in the barycentric coordinates of the mesh.
+When reproducing, you need to select a mesh with the same topology.</p>
+<p>This method is effective when the transform node is on the surface of the mesh.</p>
+<p><img src="images/position_import_export/image002.png" alt="image002"></p>
+<h3 id="rbf">Rbf</h3>
+<p>Obtain the position information of the transform node from a point cloud and reproduce it in the vertex coordinates of the mesh. When reproducing, you need to select a mesh with the same topology.</p>
+<p>This method is effective when the transform node is inside the mesh.</p>
+<p><img src="images/position_import_export/image003.png" alt="image003"></p>
+<h2 id="how-to-use">How to Use</h2>
+<p>Launch the tool from the dedicated menu or with the following command:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.position_import_export
+faketools.position_import_export.show()
+</div></code></pre>
+<p><img src="images/position_import_export/image001.png" alt="image001"></p>
+<h3 id="basic-usage">Basic Usage</h3>
+<h4 id="export">Export</h4>
+<p>To export position information, follow these steps:</p>
+<ol>
+<li>
+<p>Select the export method from the dropdown menu at the top.<br>
+<img src="images/position_import_export/image004.png" alt="image004"></p>
+</li>
+<li>
+<p>Select the nodes to export according to the method.</p>
 <ul>
-<li><a href="./single_commands.html">Single Commands</a></li>
-<li><a href="./remote_slider.html">Remort Slider</a></li>
-<li><a href="./scene_optimizer.html">Scene Optimizer</a></li>
-<li><a href="./selecter.html">Selecter</a></li>
-<li><a href="./transform_connecter.html">Transform Connecter</a></li>
-<li><a href="./transform_creater.html">Transform Creater</a></li>
-<li><a href="./transform_creater_on_curve.html">Transform on Curve Creater</a></li>
-<li><a href="./membership_handler.html">Membership Handler</a></li>
-<li><a href="./skinWeights_import_export.html">SkinWeights Import/Export</a></li>
-<li><a href="./skinWeights_tools.html">SkinWeights Tools</a></li>
-<li><a href="./skinWeights_copy_paste.html">SkinWeights CopyPaste</a></li>
-<li><a href="./curveSurface_creator.html">CurveSurface Creator</a></li>
-<li><a href="./drivenKey_tools.html">DrivenKey Tools</a></li>
-<li><a href="./component_selecter.html">Component Selecter</a></li>
-<li><a href="./attribute_lister.html">Attribute Lister</a></li>
-<li><a href="./connection_lister.html">Connection Lister</a></li>
-<li><a href="./node_stocker.html">Node Stocker</a></li>
-<li><a href="./position_import_export.html">Position Import/Export</a></li>
+<li><code>Default</code>
+<ul>
+<li>Select the transform nodes to export (multiple selections allowed).</li>
 </ul>
-<h3 id="english">English</h3>
+</li>
+<li><code>Barycentric</code>
 <ul>
-<li><a href="./single_commands_en.html">Single Commands</a></li>
-<li><a href="./remote_slider_en.html">Remort Slider</a></li>
-<li><a href="./scene_optimizer_en.html">Scene Optimizer</a></li>
-<li><a href="./selecter_en.html">Selecter</a></li>
-<li><a href="./transform_connecter_en.html">Transform Connecter</a></li>
-<li><a href="./transform_creater_en.html">Transform Creater</a></li>
-<li><a href="./transform_creater_on_curve_en.html">Transform on Curve Creater</a></li>
-<li><a href="./membership_handler_en.html">Membership Handler</a></li>
-<li><a href="./skinWeights_import_export_en.html">SkinWeights Import/Export</a></li>
-<li><a href="./skinWeights_tools_en.html">SkinWeights Tools</a></li>
-<li><a href="./skinWeights_copy_paste_en.html">SkinWeights Copy Paste</a></li>
-<li><a href="./curveSurface_creator_en.html">CurveSurface Creator</a></li>
-<li><a href="./drivenKey_tools_en.html">DrivenKey Tools</a></li>
-<li><a href="./component_selecter_en.html">Component Selecter</a></li>
-<li><a href="./attribute_lister_en.html">Attribute Lister</a></li>
-<li><a href="./connection_lister_en.html">Connection Lister</a></li>
-<li><a href="./node_stocker_en.html">Node Stocker</a></li>
-<li><a href="./position_import_export_en.html">Position Import/Export</a></li>
+<li>Select the mesh (transform node of the mesh) to export.</li>
+<li>Additionally, select the nodes to export (multiple selections allowed).</li>
+</ul>
+</li>
+<li><code>Rbf</code>
+<ul>
+<li>Select the mesh (transform node of the mesh) to export.</li>
+<li>Additionally, select the nodes to export (multiple selections allowed).</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Enter the file name to export in <code>File Name</code>.<br>
+<img src="images/position_import_export/image005.png" alt="image005"></p>
+</li>
+<li>
+<p>Press the <code>Export</code> button.<br>
+Once the export is complete, the exported file name will be displayed in the list.<br>
+<img src="images/position_import_export/image006.png" alt="image006"></p>
+</li>
+</ol>
+<h4 id="import">Import</h4>
+<p>To import position information, follow these steps:</p>
+<ol>
+<li>
+<p>Select the file name to import from the list.<br>
+<img src="images/position_import_export/image006.png" alt="image006"></p>
+</li>
+<li>
+<p>Select the nodes to import according to the method used during export.</p>
+<ul>
+<li><code>Default</code>
+<ul>
+<li>No selection is required.</li>
+</ul>
+</li>
+<li><code>Barycentric</code>
+<ul>
+<li>Select a mesh with the same topology as when exported.</li>
+</ul>
+</li>
+<li><code>Rbf</code>
+<ul>
+<li>Select a mesh with the same topology as when exported.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Set the options and press the <code>Import</code> button. By default, the position information will be applied to the nodes selected during export.<br>
+<img src="images/position_import_export/image007.png" alt="image007"></p>
+</li>
+</ol>
+<h3 id="import-options">Import Options</h3>
+<p>Options that can be set during import:</p>
+<ul>
+<li><code>Is Rotation</code>
+<ul>
+<li>Set whether to apply rotation information to the transform node.</li>
+</ul>
+</li>
+<li><code>Create New</code>
+<ul>
+<li>When the checkbox is on, a new transform node of the type selected in <code>Object Type</code> will be created. When off, the position information will be applied to the nodes selected during export.</li>
+<li>If even one of the selected nodes does not exist, an error message will be displayed.</li>
+</ul>
+</li>
+<li><code>Object Type</code>
+<ul>
+<li>Select the type of transform node to create when <code>Create New</code> is on.</li>
+</ul>
+</li>
+<li><code>Size</code>
+<ul>
+<li>Set the size of the transform node to create when <code>Create New</code> is on.</li>
+</ul>
+</li>
+</ul>
+<h3 id="context-menu">Context Menu</h3>
+<p>Right-click on the list to display the context menu.</p>
+<p><img src="images/position_import_export/image008.png" alt="image008"></p>
+<ul>
+<li><code>Select Nodes</code>
+<ul>
+<li>Select the nodes recorded in the file selected in the list.</li>
+</ul>
+</li>
+<li><code>Remove File</code>
+<ul>
+<li>Delete the file selected in the list (the actual file will also be deleted).</li>
+</ul>
+</li>
+<li><code>Refresh</code>
+<ul>
+<li>Refresh the list.</li>
+</ul>
+</li>
+<li><code>Open Directory</code>
+<ul>
+<li>Open the folder where the exported files are saved.</li>
+</ul>
+</li>
 </ul>
 
 </body>
