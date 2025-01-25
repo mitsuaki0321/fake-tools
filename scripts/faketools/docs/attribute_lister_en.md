@@ -77,7 +77,7 @@ Right-click on the node list to display a menu for selecting nodes.
 
 ![image007](images/attribute_lister/image007.png)
 
-- **Select Nodes(s)**
+- **Select Nodes**
   - Select the selected nodes in the scene.
 - **Select All Nodes**
   - Select all nodes loaded in the list in the scene.

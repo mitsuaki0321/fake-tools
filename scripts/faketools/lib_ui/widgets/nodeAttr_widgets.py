@@ -62,7 +62,7 @@ class NodeList(QListView):
             position (Qt.Pos): The position of the context menu
         """
         menu = QMenu()
-        menu.addAction("Select Node(s)", self.select_nodes)
+        menu.addAction("Select Nodes", self.select_nodes)
         menu.addAction("Select All Nodes", self.select_all_nodes)
         menu.exec_(position)
 

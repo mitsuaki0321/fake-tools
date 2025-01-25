@@ -77,7 +77,7 @@ faketools.tools.attribute_lister.show_ui()
 
 ![image007](images/attribute_lister/image007.png)
 
-- **Select Nodes(s)**
+- **Select Nodes**
   - 選択したノードをシーン上で選択します。
 - **Select All Nodes**
   - リストにロードされた全てのノードをシーン上で選択します。
