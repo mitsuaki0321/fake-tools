@@ -44,6 +44,9 @@ Commands executed on nodes selected after the first selected node, based on the 
 - **UnlockAndShow**
   - Resets the display in the channel box to the state when the node was created.
   - Dynamic attributes (user-defined attributes) are not considered.
+
+- **ZeroOutChannelBox**
+  - Resets the attributes displayed in the channel box of the selected nodes to their default values.
   
 - **BreakConnections**
   - Breaks connections of attributes displayed in the channel box of the selected nodes.
