@@ -18,19 +18,25 @@ from PySide2.QtWidgets import (
 )
 
 from ..command import convert_weight
-from ..lib_ui import maya_qt, maya_ui
+from ..lib_ui import base_window, maya_qt, maya_ui
 
 logger = getLogger(__name__)
 
 
 class AdjustCenterSkinWeightsWidgets(QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, window_mode: bool = False):
         """Constructor.
         """
         super().__init__(parent=parent)
 
         self.main_layout = QVBoxLayout()
+        spacing = base_window.get_spacing(self)
+        self.main_layout.setSpacing(spacing * 0.75)
+
+        if not window_mode:
+            margins = base_window.get_margins(self)
+            self.main_layout.setContentsMargins(*[margin * 0.5 for margin in margins])
 
         layout = QGridLayout()
 
@@ -145,7 +151,7 @@ def show_ui():
     window.setWindowTitle('Skin Weights Adjust Center')
     window.setAttribute(Qt.WA_DeleteOnClose)
 
-    widgets = AdjustCenterSkinWeightsWidgets()
+    widgets = AdjustCenterSkinWeightsWidgets(window_mode=True)
     window.setCentralWidget(widgets)
 
     window.show()

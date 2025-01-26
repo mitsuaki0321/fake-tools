@@ -7,7 +7,7 @@ from functools import partial
 import maya.cmds as cmds
 
 from ..lib import lib_attribute
-from ..lib_ui import maya_ui, optionvar
+from ..lib_ui import maya_qt, maya_ui, optionvar
 
 
 class RemoteSliderWindow:
@@ -776,4 +776,8 @@ def show_ui():
     """
     remote_slider = RemoteSliderWindow()
     win = remote_slider.show_ui()
-    cmds.window(win, e=True, w=200, h=400)
+
+    # Set minimum size hint
+    qt_win = maya_qt.get_qt_window(win)
+    minimum_size_hint = qt_win.minimumSizeHint()
+    cmds.window(win, e=True, w=minimum_size_hint.width(), h=minimum_size_hint.height())

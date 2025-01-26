@@ -2,43 +2,21 @@
 Maya scene optimize tool.
 """
 
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (
-    QCheckBox,
-    QHBoxLayout,
-    QMainWindow,
-    QPushButton,
-    QSizePolicy,
-    QVBoxLayout,
-    QWidget,
-)
+from PySide2.QtWidgets import QCheckBox, QHBoxLayout, QPushButton, QSizePolicy
 
 from ..command import scene_optimize
-from ..lib_ui import maya_qt, maya_ui, optionvar
+from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
 from ..lib_ui.widgets import extra_widgets
 
 
-class MainWindow(QMainWindow):
+class MainWindow(base_window.BaseMainWindow):
 
-    def __init__(self,
-                 parent=None,
-                 object_name='MainWindow',
-                 window_title='Main Window'):
+    def __init__(self, parent=None, object_name='MainWindow', window_title='Main Window'):
         """Constructor.
         """
-        super().__init__(parent=parent)
+        super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
         self.tool_options = optionvar.ToolOptionSettings(__name__)
-
-        self.setObjectName(object_name)
-        self.setWindowTitle(window_title)
-        self.setAttribute(Qt.WA_DeleteOnClose)
-
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.central_layout = QVBoxLayout()
-        self.central_widget.setLayout(self.central_layout)
-
         self.optimizers = scene_optimize.list_optimizers()
 
         self.enable_checkboxes = []
@@ -60,7 +38,7 @@ class MainWindow(QMainWindow):
         self.central_layout.addWidget(extra_widgets.HorizontalSeparator())
 
         layout = QHBoxLayout()
-        layout.setSpacing(1)
+        layout.setSpacing(base_window.get_spacing(QPushButton(), 'horizontal') * 0.5)
 
         all_on_checked_button = QPushButton('All On')
         layout.addWidget(all_on_checked_button)

@@ -23,7 +23,7 @@ from PySide2.QtWidgets import (
 from .. import user_directory
 from ..command import duplicate_node, rename_node
 from ..lib import lib_name, lib_selection, lib_transform
-from ..lib_ui import maya_qt, maya_ui, optionvar
+from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
 from ..lib_ui.widgets import extra_widgets
 
 importlib.reload(extra_widgets)
@@ -88,7 +88,6 @@ class DockableWidget(MayaQWidgetDockableMixin, QWidget):
         self.setAttribute(Qt.WA_DeleteOnClose)
 
         main_layout = QHBoxLayout()
-        main_layout.setSpacing(5)
         main_layout.setContentsMargins(10, 1, 1, 1)
 
         filter_selection_widget = FilterSelectionWidget()
@@ -132,7 +131,7 @@ class FilterSelectionWidget(QWidget):
         super(FilterSelectionWidget, self).__init__(parent=parent)
 
         main_layout = QHBoxLayout()
-        main_layout.setSpacing(5)
+        main_layout.setSpacing(base_window.get_spacing(self, 'horizontal') * 0.5)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         # Filter selection
@@ -236,7 +235,7 @@ class HierarchicalSelectionWidget(QWidget):
         super(HierarchicalSelectionWidget, self).__init__(parent=parent)
 
         main_layout = QHBoxLayout()
-        main_layout.setSpacing(5)
+        main_layout.setSpacing(base_window.get_spacing(self, 'horizontal') * 0.5)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         parent_button = SelecterButton('PAR', color=HIERARCHY_COLOR)
@@ -366,7 +365,7 @@ class SubstitutionSelectionWidget(QWidget):
         super(SubstitutionSelectionWidget, self).__init__(parent=parent)
 
         main_layout = QHBoxLayout()
-        main_layout.setSpacing(5)
+        main_layout.setSpacing(base_window.get_spacing(self, 'horizontal') * 0.5)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         left_to_right_button = SelecterButton('LR', color=SUBSTITUTION_COLOR)
@@ -670,7 +669,7 @@ class RenameSelectionWidget(QWidget):
         super(RenameSelectionWidget, self).__init__(parent=parent)
 
         main_layout = QHBoxLayout()
-        main_layout.setSpacing(5)
+        main_layout.setSpacing(base_window.get_spacing(self, 'horizontal') * 0.5)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         self.name_field = QLineEdit()
@@ -745,7 +744,7 @@ class ExtraSelectionWidget(QWidget):
         super(ExtraSelectionWidget, self).__init__(parent=parent)
 
         main_layout = QHBoxLayout()
-        main_layout.setSpacing(5)
+        main_layout.setSpacing(base_window.get_spacing(self, 'horizontal') * 0.5)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         last_to_first_button = SelecterButton('L2F')
@@ -841,5 +840,5 @@ def show_ui():
     main_window.show(dockable=True)
 
     # Edit actLikeMayaUIElement
-    cmds.workspaceControl(workspace_control_name, e=True, dockToControl=('Shelf', 'bottom'))
+    cmds.workspaceControl(workspace_control_name, e=True, dockToControl=('Shelf', 'bottom'), tabToControl=('Shelf', -1))
     cmds.workspaceControl(workspace_control_name, e=True, actLikeMayaUIElement=True)

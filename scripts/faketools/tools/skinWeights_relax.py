@@ -15,7 +15,6 @@ from PySide2.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QMainWindow,
     QPushButton,
     QSizePolicy,
     QSlider,
@@ -27,7 +26,7 @@ from PySide2.QtWidgets import (
 
 from ..command import relax_weight
 from ..lib import lib_skinCluster
-from ..lib_ui import maya_qt, maya_ui, optionvar
+from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
 from ..lib_ui.widgets import extra_widgets
 
 logger = getLogger(__name__)
@@ -40,6 +39,20 @@ class SkinWeightsWidgets(QWidget):
 
     This is the base class for widgets used in SkinWeightsRelaxWidgets.
     """
+
+    def __init__(self, parent=None):
+        """Constructor.
+        """
+        super().__init__(parent=parent)
+
+        self.main_layout = QVBoxLayout()
+        spacing = base_window.get_spacing(self)
+        self.main_layout.setSpacing(spacing * 0.75)
+
+        margins = base_window.get_margins(self)
+        self.main_layout.setContentsMargins(*[margin * 0.5 for margin in margins])
+
+        self.setLayout(self.main_layout)
 
     def get_options(self):
         """Get the skin weight options.
@@ -54,16 +67,12 @@ class LaplacianSkinWeightsWidgets(SkinWeightsWidgets):
         """
         super().__init__(parent=parent)
 
-        self.main_layout = QVBoxLayout()
-
         label = QLabel('No options available.')
 
         self.main_layout.addWidget(label)
 
         spacer = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.main_layout.addItem(spacer)
-
-        self.setLayout(self.main_layout)
 
 
 class RBFSkinWeightsWidgets(SkinWeightsWidgets):
@@ -72,8 +81,6 @@ class RBFSkinWeightsWidgets(SkinWeightsWidgets):
         """Constructor.
         """
         super().__init__(parent=parent)
-
-        self.main_layout = QVBoxLayout()
 
         # RBF Weight Method
         layout = QHBoxLayout()
@@ -164,8 +171,6 @@ class RBFSkinWeightsWidgets(SkinWeightsWidgets):
 
         self.main_layout.addLayout(layout)
 
-        self.setLayout(self.main_layout)
-
     @staticmethod
     def weight_function_map():
         """Get the weight function map.
@@ -210,8 +215,6 @@ class BiharmonicSkinWeightsWidgets(SkinWeightsWidgets):
         """
         super().__init__(parent=parent)
 
-        self.main_layout = QVBoxLayout()
-
         layout = QHBoxLayout()
 
         label = QLabel('First Order Weight:', alignment=Qt.AlignRight | Qt.AlignVCenter)
@@ -232,8 +235,6 @@ class BiharmonicSkinWeightsWidgets(SkinWeightsWidgets):
 
         spacer = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.main_layout.addItem(spacer)
-
-        self.setLayout(self.main_layout)
 
         # Option settings
         self.first_order_field.setText(tool_options.read('first_order_weight', '0.75'))
@@ -279,8 +280,6 @@ class RelaxSkinWeightsWidgets(SkinWeightsWidgets):
         """
         super().__init__(parent=parent)
 
-        self.main_layout = QVBoxLayout()
-
         layout = QHBoxLayout()
 
         label = QLabel('Relaxation Factor:', alignment=Qt.AlignRight | Qt.AlignVCenter)
@@ -301,8 +300,6 @@ class RelaxSkinWeightsWidgets(SkinWeightsWidgets):
 
         spacer = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.main_layout.addItem(spacer)
-
-        self.setLayout(self.main_layout)
 
         # Option settings
         self.relaxation_factor_field.setText(tool_options.read('relaxation_factor', '0.5'))
@@ -341,8 +338,8 @@ class RelaxSkinWeightsWidgets(SkinWeightsWidgets):
         super().closeEvent(event)
 
 
-class SkinWeightsRelaxWidgets(QWidget):
-    """Skin weights relax widgets.
+class MainWindow(base_window.BaseMainWindow):
+    """Skin Weights Relax main window.
 
     This class is the main widget for relaxing weights.
     It switches between widgets corresponding to each relax method and performs the weight relaxation process.
@@ -354,12 +351,13 @@ class SkinWeightsRelaxWidgets(QWidget):
                    'Biharmonic': {'command': relax_weight.BiharmonicSkinWeights, 'widget': BiharmonicSkinWeightsWidgets},
                    'Relax': {'command': relax_weight.RelaxSkinWeights, 'widget': RelaxSkinWeightsWidgets}}
 
-    def __init__(self, parent=None):
+    def __init__(self,
+                 parent=None,
+                 object_name='MainWindow',
+                 window_title='Main Window'):
         """Constructor.
         """
-        super().__init__(parent=parent)
-
-        self.main_layout = QVBoxLayout()
+        super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
         method_layout = QVBoxLayout()
         method_layout.setSpacing(0)
@@ -396,7 +394,7 @@ class SkinWeightsRelaxWidgets(QWidget):
         layout.addWidget(self.method_stack_widget)
         option_group.setLayout(layout)
 
-        self.main_layout.addLayout(method_layout)
+        self.central_layout.addLayout(method_layout)
 
         # Options
         layout = QGridLayout()
@@ -429,18 +427,16 @@ class SkinWeightsRelaxWidgets(QWidget):
         self.after_blend_slider.setValue(100)
         layout.addWidget(self.after_blend_slider, 1, 2)
 
-        self.main_layout.addLayout(layout)
+        self.central_layout.addLayout(layout)
 
         self.only_unlock_inf_checkBox = QCheckBox('Use Only Unlocked Influences')
-        self.main_layout.addWidget(self.only_unlock_inf_checkBox)
+        self.central_layout.addWidget(self.only_unlock_inf_checkBox)
 
         separator = extra_widgets.HorizontalSeparator()
-        self.main_layout.addWidget(separator)
+        self.central_layout.addWidget(separator)
 
         execute_button = QPushButton('Relax Skin Weights')
-        self.main_layout.addWidget(execute_button)
-
-        self.setLayout(self.main_layout)
+        self.central_layout.addWidget(execute_button)
 
         # Option settings
         self.method_box.setCurrentIndex(tool_options.read('method', 0))
@@ -532,13 +528,8 @@ def show_ui():
     window_name = f'{__name__}MainWindow'
     maya_qt.delete_widget(window_name)
 
-    window = QMainWindow(parent=maya_qt.get_maya_pointer())
-    window.setObjectName(window_name)
-    window.setWindowTitle('Skin Weights Relax')
-    window.setAttribute(Qt.WA_DeleteOnClose)
-
-    widgets = SkinWeightsRelaxWidgets()
-    window.setCentralWidget(widgets)
-
-    window.show()
-    window.resize(300, 0)
+    # Create the main window.
+    main_window = MainWindow(parent=maya_qt.get_maya_pointer(),
+                             object_name=window_name,
+                             window_title='SkinWeights Relax')
+    main_window.show()

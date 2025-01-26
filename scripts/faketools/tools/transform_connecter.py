@@ -11,20 +11,17 @@ from PySide2.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLabel,
-    QMainWindow,
     QPushButton,
     QSizePolicy,
-    QVBoxLayout,
-    QWidget,
 )
 
-from ..lib_ui import maya_qt, maya_ui, optionvar
+from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
 from ..lib_ui.widgets import extra_widgets
 
 logger = getLogger(__name__)
 
 
-class MainWindow(QMainWindow):
+class MainWindow(base_window.BaseMainWindow):
 
     def __init__(self,
                  parent=None,
@@ -32,18 +29,11 @@ class MainWindow(QMainWindow):
                  window_title='Main Window'):
         """Constructor.
         """
-        super().__init__(parent=parent)
+        super().__init__(parent=parent,
+                         object_name=object_name,
+                         window_title=window_title)
 
         self.tool_options = optionvar.ToolOptionSettings(__name__)
-
-        self.setObjectName(object_name)
-        self.setWindowTitle(window_title)
-        self.setAttribute(Qt.WA_DeleteOnClose)
-
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.central_layout = QVBoxLayout()
-        self.central_widget.setLayout(self.central_layout)
 
         # Translate, Rotate, Scale, JointOrient
         self.checkboxes = {}

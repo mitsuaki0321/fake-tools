@@ -3,7 +3,7 @@ Extra widgets for the UI.
 """
 
 from PySide2.QtCore import Qt
-from PySide2.QtGui import QIcon
+from PySide2.QtGui import QColor, QIcon, QPixmap
 from PySide2.QtWidgets import (
     QApplication,
     QDoubleSpinBox,
@@ -19,7 +19,7 @@ class HorizontalSeparator(QFrame):
     """Separator widget.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, height_ratio: float = 2.0):
         """Constructor.
 
         Args:
@@ -30,13 +30,14 @@ class HorizontalSeparator(QFrame):
         self.setFrameShape(QFrame.HLine)
         self.setFrameShadow(QFrame.Sunken)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.setFixedHeight(self.sizeHint().height() * height_ratio)
 
 
 class VerticalSeparator(QFrame):
     """Separator widget.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, width_ratio: float = 2.0):
         """Constructor.
 
         Args:
@@ -47,6 +48,59 @@ class VerticalSeparator(QFrame):
         self.setFrameShape(QFrame.VLine)
         self.setFrameShadow(QFrame.Sunken)
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.setFixedWidth(self.sizeHint().width() * width_ratio)
+
+
+class ToolIconButton(QPushButton):
+
+    def __init__(self, icon_name, parent=None):
+        super().__init__(parent=parent)
+
+        icon_path = get_icon_path(icon_name)
+        pixmap = QPixmap(icon_path)
+        icon = QIcon(icon_path)
+        self.setIcon(icon)
+
+        palette = self.palette()
+        background_color = palette.color(self.backgroundRole())  # 背景色
+        style = QApplication.style()
+        padding = style.pixelMetric(style.PM_ButtonMargin)
+
+        hover_color = self._get_lightness_color(background_color, 1.2)
+        pressed_color = self._get_lightness_color(background_color, 0.5)
+
+        self.setStyleSheet("""
+            QPushButton {{
+                border: none;
+                background-color: {};
+                border-radius: 1px;
+                text-align: center;
+            }}
+            QPushButton:hover {{
+                background-color: {};
+            }}
+            QPushButton:pressed {{
+                background-color: {};
+            }}
+        """.format(background_color.name(), hover_color.name(), pressed_color.name()))
+
+        size = pixmap.width() + padding
+        self.setMinimumSize(size, size)
+
+    def _get_lightness_color(self, color, factor) -> QColor:
+        """Adjust the brightness of a color for hover and pressed states.
+
+        Args:
+            color (QColor): The color to adjust.
+            factor (float): The brightness factor.
+
+        Returns:
+            QColor: The adjusted color.
+        """
+        h, s, v, a = color.getHsv()
+        v = max(0, min(v * factor, 255))
+        return QColor.fromHsv(h, s, v, a)
 
 
 class CheckBoxButton(QPushButton):

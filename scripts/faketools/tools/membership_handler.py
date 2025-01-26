@@ -5,17 +5,16 @@ Membership Handler for deformer tags tool.
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QHBoxLayout, QLineEdit, QMainWindow, QPushButton, QWidget
+from PySide2.QtWidgets import QLineEdit
 
 from ..lib import lib_memberShip
-from ..lib_ui import maya_qt, maya_ui, tool_icons
+from ..lib_ui import base_window, maya_qt, maya_ui
+from ..lib_ui.widgets import extra_widgets
 
 logger = getLogger(__name__)
 
 
-class MainWindow(QMainWindow):
+class MainWindow(base_window.BaseMainWindow):
 
     def __init__(self,
                  parent=None,
@@ -23,22 +22,11 @@ class MainWindow(QMainWindow):
                  window_title='Main Window'):
         """Constructor.
         """
-        super().__init__(parent=parent)
+        super().__init__(parent=parent, object_name=object_name, window_title=window_title, central_layout='horizontal')
 
         self.deformer = None
 
-        self.setObjectName(object_name)
-        self.setWindowTitle(window_title)
-        self.setAttribute(Qt.WA_DeleteOnClose)
-
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.central_layout = QHBoxLayout()
-        self.central_widget.setLayout(self.central_layout)
-
-        set_deformer_button = QPushButton()
-        icon = QIcon(tool_icons.get_icon_path('log-in'))
-        set_deformer_button.setIcon(icon)
+        set_deformer_button = extra_widgets.ToolIconButton('log-in')
         self.central_layout.addWidget(set_deformer_button)
 
         self.deformer_field = QLineEdit()
@@ -46,20 +34,24 @@ class MainWindow(QMainWindow):
         self.deformer_field.setPlaceholderText('Deformer')
         self.central_layout.addWidget(self.deformer_field, stretch=1)
 
-        update_button = QPushButton()
-        icon = QIcon(tool_icons.get_icon_path('refresh-cw'))
-        update_button.setIcon(icon)
+        update_button = extra_widgets.ToolIconButton('refresh-cw-2')
         self.central_layout.addWidget(update_button)
 
-        select_button = QPushButton()
-        icon = QIcon(tool_icons.get_icon_path('mouse-pointer-2'))
-        select_button.setIcon(icon)
+        select_button = extra_widgets.ToolIconButton('mouse-pointer-2')
         self.central_layout.addWidget(select_button)
 
         # Signal & Slot
         set_deformer_button.clicked.connect(self.set_deformer)
         update_button.clicked.connect(self.update_memberships)
         select_button.clicked.connect(self.select_memberships)
+
+        # Initialize the UI.
+        margins = base_window.get_margins(self.central_widget)
+        self.central_layout.setContentsMargins(*[margin * 0.5 for margin in margins])
+
+        minimum_size_hint = self.minimumSizeHint()
+        size_hint = self.sizeHint()
+        self.resize(size_hint.width() * 1.2, minimum_size_hint.height())
 
     @maya_ui.error_handler
     def set_deformer(self):
@@ -114,4 +106,3 @@ def show_ui():
                              object_name=window_name,
                              window_title='Membership Handler')
     main_window.show()
-    main_window.setFixedHeight(0)

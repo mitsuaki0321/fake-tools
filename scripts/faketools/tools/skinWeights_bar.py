@@ -16,7 +16,7 @@ from PySide2.QtWidgets import (
 
 from .. import user_directory
 from ..command import convert_weight
-from ..lib_ui import maya_qt, maya_ui, optionvar
+from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
 from ..lib_ui.widgets import extra_widgets
 
 global_settings = user_directory.ToolSettings(__name__).load()
@@ -28,7 +28,7 @@ logger = getLogger(__name__)
 
 class SkinWeightsBar(QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, window_mode: bool = False):
         """Constructor.
         """
         super().__init__(parent=parent)
@@ -36,8 +36,11 @@ class SkinWeightsBar(QWidget):
         self.tool_options = optionvar.ToolOptionSettings(__name__)
 
         self.main_layout = QHBoxLayout()
-        self.main_layout.setSpacing(2)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        spacing = base_window.get_spacing(self, direction='horizontal')
+        self.main_layout.setSpacing(spacing * 0.75)
+
+        if not window_mode:
+            self.main_layout.setContentsMargins(0, 0, 0, 0)
 
         copy_button = QPushButton('COPY')
         self.main_layout.addWidget(copy_button, stretch=1)
@@ -142,7 +145,7 @@ def show_ui():
     window.setWindowTitle('Skin Weights Bar')
     window.setAttribute(Qt.WA_DeleteOnClose)
 
-    widgets = SkinWeightsBar()
+    widgets = SkinWeightsBar(window_mode=True)
     window.setCentralWidget(widgets)
 
     window.show()

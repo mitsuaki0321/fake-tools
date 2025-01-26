@@ -13,7 +13,6 @@ from PySide2.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLineEdit,
-    QMainWindow,
     QPushButton,
     QScrollArea,
     QSizePolicy,
@@ -25,13 +24,13 @@ from PySide2.QtWidgets import (
 
 from ..command import singleCommands
 from ..lib.lib_singleCommand import PairCommand
-from ..lib_ui import maya_qt, maya_ui, optionvar
+from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
 from ..lib_ui.widgets import nodeAttr_widgets
 
 logger = getLogger(__name__)
 
 
-class MainWindow(QMainWindow):
+class MainWindow(base_window.BaseMainWindow):
 
     def __init__(self,
                  parent=None,
@@ -39,18 +38,9 @@ class MainWindow(QMainWindow):
                  window_title='Main Window'):
         """Constructor.
         """
-        super().__init__(parent=parent)
+        super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
         self.tool_options = optionvar.ToolOptionSettings(__name__)
-
-        self.setObjectName(object_name)
-        self.setWindowTitle(window_title)
-        self.setAttribute(Qt.WA_DeleteOnClose)
-
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.central_layout = QVBoxLayout()
-        self.central_widget.setLayout(self.central_layout)
 
         # Load button
         load_button_layout = QHBoxLayout()
@@ -90,6 +80,8 @@ class MainWindow(QMainWindow):
         attr_layout = QWidget()
         layout = QGridLayout(attr_layout)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(self.central_layout.spacing())
+
         self.operation_stack_widget.addWidget(attr_layout)
 
         self.source_attr_list = nodeAttr_widgets.AttributeList(self.source_node_list)

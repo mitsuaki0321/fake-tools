@@ -8,16 +8,16 @@ import maya.cmds as cmds
 from maya.api.OpenMaya import MGlobal
 from PySide2.QtCore import Qt, Signal
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QHBoxLayout, QMainWindow, QPushButton, QSlider, QWidget
+from PySide2.QtWidgets import QPushButton, QSlider
 
 from ..command.transfer_weight import SkinWeightsCopyPaste
-from ..lib_ui import maya_qt, maya_ui, tool_icons
+from ..lib_ui import base_window, maya_qt, maya_ui, tool_icons
 from ..lib_ui.widgets import extra_widgets
 
 logger = getLogger(__name__)
 
 
-class MainWindow(QMainWindow):
+class MainWindow(base_window.BaseMainWindow):
 
     def __init__(self,
                  parent=None,
@@ -29,20 +29,11 @@ class MainWindow(QMainWindow):
             parent (QWidget, optional): The parent widget. Defaults to None.
             window_title (str, optional): The window title. Defaults to 'Main Window'.
         """
-        super().__init__(parent=parent)
+        super().__init__(parent=parent, object_name=object_name, window_title=window_title, central_layout='horizontal')
 
         self.skinWeights_copy_paste = SkinWeightsCopyPaste()
         self.is_value_changed = False
         self.is_use_select_pref = False  # Save the preference by user for trackSelectionOrder
-
-        self.setObjectName(object_name)
-        self.setWindowTitle(window_title)
-        self.setAttribute(Qt.WA_DeleteOnClose)
-
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.central_layout = QHBoxLayout()
-        self.central_widget.setLayout(self.central_layout)
 
         # Method button
         self.method_toggle_button = MethodButton(self.skinWeights_copy_paste)
@@ -51,27 +42,26 @@ class MainWindow(QMainWindow):
         separator = extra_widgets.VerticalSeparator()
         self.central_layout.addWidget(separator)
 
-        layout = QHBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(1)
-
         # Clipboard buttons
         self.src_clipboard_button = SourceClipboardButton(self.skinWeights_copy_paste)
-        layout.addWidget(self.src_clipboard_button)
+        self.central_layout.addWidget(self.src_clipboard_button)
 
         self.dst_clipboard_button = DestinationClipboardButton(self.skinWeights_copy_paste)
-        layout.addWidget(self.dst_clipboard_button)
-
-        self.central_layout.addLayout(layout)
+        self.central_layout.addWidget(self.dst_clipboard_button)
 
         separator = extra_widgets.VerticalSeparator()
         self.central_layout.addWidget(separator)
+
+        # Paste button
+        self.paste_button = extra_widgets.ToolIconButton('clipboard-paste')
+        self.paste_button.setEnabled(False)
+        self.central_layout.addWidget(self.paste_button)
 
         # Blend field, slider
         self.blend_spin_box = extra_widgets.ModifierSpinBox()
         self.blend_spin_box.setRange(0.0, 1.0)
         self.blend_spin_box.setSingleStep(0.01)
-        self.blend_spin_box.setFixedWidth(self.blend_spin_box.sizeHint().width() * 1.5)
+        self.blend_spin_box.setFixedWidth(self.blend_spin_box.sizeHint().width() * 1.2)
         self.blend_spin_box.setEnabled(False)
         blend_line_edit = self.blend_spin_box.lineEdit()
         blend_line_edit.setReadOnly(True)
@@ -82,15 +72,8 @@ class MainWindow(QMainWindow):
         self.blend_slider.setEnabled(False)
         self.central_layout.addWidget(self.blend_slider, stretch=1)
 
-        # Paste button
-        self.paste_button = QPushButton()
-        icon = QIcon(tool_icons.get_icon_path('clipboard-paste'))
-        self.paste_button.setIcon(icon)
-        self.paste_button.setEnabled(False)
-        self.central_layout.addWidget(self.paste_button)
-
         # Rearrange the method button
-        self.method_toggle_button.setFixedHeight(self.src_clipboard_button.sizeHint().height())
+        self.method_toggle_button.setMinimumHeight(self.blend_spin_box.sizeHint().height())
 
         # Signal & Slot
         self.src_clipboard_button.clear_clipboard_signal.connect(self.dst_clipboard_button.clear_clipboard)
@@ -106,6 +89,14 @@ class MainWindow(QMainWindow):
         self.blend_slider.sliderReleased.connect(self.__on_slider_released)
 
         self.paste_button.clicked.connect(self.__paste_skinWeights)
+
+        # Initialize the UI.
+        margins = base_window.get_margins(self.central_widget)
+        self.central_layout.setContentsMargins(*[margin * 0.5 for margin in margins])
+
+        minimum_size_hint = self.minimumSizeHint()
+        size_hint = self.sizeHint()
+        self.resize(size_hint.width() * 1.2, minimum_size_hint.height())
 
     def __on_slider_value_changed(self):
         """Slot for the slider value changed.
@@ -233,7 +224,10 @@ class MethodButton(QPushButton):
         self.method_label_map = {'oneToAll': '1:N', 'oneToOne': '1:1'}
 
         self.setText(self.method_label_map[self.__skinWeights_copy_paste.method])
-        self.setFixedWidth(self.sizeHint().width())
+
+        minimum_size_hint = self.minimumSizeHint()
+        self.setMinimumWidth(minimum_size_hint.width() * 1.2)
+
         self.clicked.connect(self.toggle_method)
 
     @maya_ui.error_handler
@@ -248,7 +242,7 @@ class MethodButton(QPushButton):
         self.setText(self.method_label_map[self.__skinWeights_copy_paste.method])
 
 
-class SourceClipboardButton(QPushButton):
+class SourceClipboardButton(extra_widgets.ToolIconButton):
     """This button is used to stock the source components for SkinWeightsCopyPaste.
     """
     clear_clipboard_signal = Signal()
@@ -259,7 +253,7 @@ class SourceClipboardButton(QPushButton):
         Args:
             skinWeights_copy_paste (SkinWeightsCopyPaste): SkinWeightsCopyPaste instance.
         """
-        super().__init__(parent=parent)
+        super().__init__(parent=parent, icon_name='clipboard')
 
         if not isinstance(skinWeights_copy_paste, SkinWeightsCopyPaste):
             raise ValueError('Invalid skinWeights_copy_paste.')
@@ -268,8 +262,11 @@ class SourceClipboardButton(QPushButton):
         self.__select_icon = QIcon(tool_icons.get_icon_path('clipboard'))
         self.__selected_icon = QIcon(tool_icons.get_icon_path('clipboard-list'))
 
-        self.setText(':0')
+        self.setText('0')
         self.setIcon(self.__select_icon)
+
+        minimum_size_hint = self.minimumSizeHint()
+        self.setMinimumWidth(minimum_size_hint.width() * 1.2)
 
         self.clicked.connect(self.stock_clipborad)
 
@@ -279,7 +276,7 @@ class SourceClipboardButton(QPushButton):
         """
         sel_objs = cmds.ls(sl=True)
         if not sel_objs:
-            self.setText(':0')
+            self.setText('0')
             self.setIcon(self.__select_icon)
 
             self.__skinWeights_copy_paste.clear_src_components()
@@ -295,7 +292,7 @@ class SourceClipboardButton(QPushButton):
 
         try:
             self.__skinWeights_copy_paste.set_src_components(sel_components)
-            self.setText(f':{len(sel_components)}')
+            self.setText(str(len(sel_components)))
             self.setIcon(self.__selected_icon)
 
             self.clear_clipboard_signal.emit()
@@ -303,7 +300,7 @@ class SourceClipboardButton(QPushButton):
             cmds.error(str(e))
 
 
-class DestinationClipboardButton(QPushButton):
+class DestinationClipboardButton(extra_widgets.ToolIconButton):
     """This button is used to stock the destination components for SkinWeightsCopyPaste.
     """
     stock_clipboard_signal = Signal()
@@ -315,7 +312,7 @@ class DestinationClipboardButton(QPushButton):
         Args:
             skinWeights_copy_paste (SkinWeightsCopyPaste): SkinWeightsCopyPaste instance.
         """
-        super().__init__(parent=parent)
+        super().__init__(parent=parent, icon_name='square-dashed-mouse-pointer')
 
         if not isinstance(skinWeights_copy_paste, SkinWeightsCopyPaste):
             raise ValueError('Invalid skinWeights_copy_paste.')
@@ -324,8 +321,11 @@ class DestinationClipboardButton(QPushButton):
         self.__select_icon = QIcon(tool_icons.get_icon_path('square-dashed-mouse-pointer'))
         self.__selected_icon = QIcon(tool_icons.get_icon_path('square-mouse-pointer'))
 
-        self.setText(':0')
+        self.setText('0')
         self.setIcon(self.__select_icon)
+
+        minimum_size_hint = self.minimumSizeHint()
+        self.setMinimumWidth(minimum_size_hint.width() * 1.2)
 
         self.clicked.connect(self.stock_clipborad)
 
@@ -335,7 +335,7 @@ class DestinationClipboardButton(QPushButton):
         """
         sel_objs = cmds.ls(sl=True)
         if not sel_objs:
-            self.setText(':0')
+            self.setText('0')
             self.setIcon(self.__select_icon)
 
             self.__skinWeights_copy_paste.clear_dst_components()
@@ -351,7 +351,7 @@ class DestinationClipboardButton(QPushButton):
 
         try:
             self.__skinWeights_copy_paste.set_dst_components(sel_components)
-            self.setText(f':{len(sel_components)}')
+            self.setText(str(len(sel_components)))
             self.setIcon(self.__selected_icon)
         except Exception as e:
             cmds.error(str(e))
@@ -361,7 +361,7 @@ class DestinationClipboardButton(QPushButton):
     def clear_clipboard(self):
         """Clear the clipboard.
         """
-        self.setText(':0')
+        self.setText('0')
         self.setIcon(self.__select_icon)
 
         self.clear_clipboard_signal.emit()
@@ -380,4 +380,3 @@ def show_ui():
                              object_name=window_name,
                              window_title='Skin Weights Copy Paste')
     main_window.show()
-    main_window.resize(400, 0)

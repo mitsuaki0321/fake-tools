@@ -14,17 +14,14 @@ from PySide2.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QMainWindow,
     QMenu,
     QPushButton,
     QTreeView,
-    QVBoxLayout,
-    QWidget,
 )
 
 from .. import user_directory
 from ..command import import_export_weight
-from ..lib_ui import maya_qt, maya_ui, optionvar
+from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
 from ..lib_ui.widgets import extra_widgets
 
 logger = getLogger(__name__)
@@ -32,7 +29,7 @@ logger = getLogger(__name__)
 TEMP_DIR = os.path.normpath(os.path.join(tempfile.gettempdir(), 'skinWeights'))
 
 
-class MainWindow(QMainWindow):
+class MainWindow(base_window.BaseMainWindow):
 
     def __init__(self,
                  parent=None,
@@ -40,19 +37,10 @@ class MainWindow(QMainWindow):
                  window_title='Main Window'):
         """Constructor.
         """
-        super().__init__(parent=parent)
+        super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
         self.tool_options = optionvar.ToolOptionSettings(__name__)
         self.root_path = user_directory.ToolDirectory(__name__).get_directory()
-
-        self.setObjectName(object_name)
-        self.setWindowTitle(window_title)
-        self.setAttribute(Qt.WA_DeleteOnClose)
-
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.central_layout = QVBoxLayout()
-        self.central_widget.setLayout(self.central_layout)
 
         # Quick mode
         label = QLabel('Quick Mode')

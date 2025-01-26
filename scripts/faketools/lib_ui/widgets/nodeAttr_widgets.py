@@ -22,7 +22,7 @@ from PySide2.QtWidgets import (
     QWidget,
 )
 
-from .. import maya_ui
+from .. import base_window, maya_ui
 
 logger = getLogger(__name__)
 
@@ -249,6 +249,8 @@ class NodeAttributeWidgets(QWidget):
 
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
+        spacing = base_window.get_spacing(self)
+        self.main_layout.setSpacing(int(spacing * 0.75))
 
         load_button = QPushButton('Load')
         self.main_layout.addWidget(load_button)

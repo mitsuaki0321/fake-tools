@@ -5,19 +5,11 @@ SkinWeights Tools. All skinWeights tools are integrated into one tool.
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (
-    QComboBox,
-    QGroupBox,
-    QMainWindow,
-    QStackedWidget,
-    QVBoxLayout,
-    QWidget,
-)
+from PySide2.QtWidgets import QComboBox, QGroupBox, QStackedWidget, QVBoxLayout
 
 from ..command import convert_weight
 from ..lib import lib_skinCluster
-from ..lib_ui import maya_qt, maya_ui
+from ..lib_ui import base_window, maya_qt, maya_ui
 from ..lib_ui.widgets import extra_widgets
 from . import (
     influence_exchanger,
@@ -25,14 +17,13 @@ from . import (
     skinWeights_bar,
     skinWeights_combine,
     skinWeights_copy_custom,
-    skinWeights_relax,
     skinWeights_to_mesh,
 )
 
 logger = getLogger(__name__)
 
 
-class MainWindow(QMainWindow):
+class MainWindow(base_window.BaseMainWindow):
 
     def __init__(self,
                  parent=None,
@@ -40,16 +31,7 @@ class MainWindow(QMainWindow):
                  window_title='Main Window'):
         """Constructor.
         """
-        super().__init__(parent=parent)
-
-        self.setObjectName(object_name)
-        self.setWindowTitle(window_title)
-        self.setAttribute(Qt.WA_DeleteOnClose)
-
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.central_layout = QVBoxLayout()
-        self.central_widget.setLayout(self.central_layout)
+        super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
         # Menu
         self.menu = self.menuBar()
@@ -97,7 +79,6 @@ class MainWindow(QMainWindow):
         """List of widgets data.
         """
         return {'Copy Skin Weights Custom': skinWeights_copy_custom.SkinWeightsCopyCustomWidgets,
-                'Relax Skin Weights': skinWeights_relax.SkinWeightsRelaxWidgets,
                 'Skin Weights to Mesh': skinWeights_to_mesh.SkinWeightsMeshConverterWidgets,
                 'Adjust Center Skin Weights': skinWeights_adjust_center.AdjustCenterSkinWeightsWidgets,
                 'Combine Skin Weights': skinWeights_combine.CombineSkinWeightsWidgets,

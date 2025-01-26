@@ -14,7 +14,6 @@ from PySide2.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QMainWindow,
     QPushButton,
     QRadioButton,
     QSizePolicy,
@@ -28,13 +27,13 @@ from PySide2.QtWidgets import (
 from .. import user_directory
 from ..command import node_storage
 from ..lib import lib_name
-from ..lib_ui import maya_qt, maya_ui, optionvar, tool_icons
+from ..lib_ui import base_window, maya_qt, maya_ui, optionvar, tool_icons
 from ..lib_ui.widgets import extra_widgets, nodeStock_view
 
 logger = getLogger(__name__)
 
 
-class MainWindow(QMainWindow):
+class MainWindow(base_window.BaseMainWindow):
 
     _stock_file_name = 'node'
 
@@ -57,7 +56,7 @@ class MainWindow(QMainWindow):
             cols (int): The number of button columns.
             button_size (int): The size of the buttons.
         """
-        super().__init__(parent=parent)
+        super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
         rows = kwargs.get('rows', 2)
         cols = kwargs.get('cols', 7)
@@ -70,15 +69,6 @@ class MainWindow(QMainWindow):
         self._current_scene_data = {}
         self._hilite_nodes = []
         self._hilite_selected_nodes = []
-
-        self.setObjectName(object_name)
-        self.setWindowTitle(window_title)
-        self.setAttribute(Qt.WA_DeleteOnClose)
-
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.central_layout = QVBoxLayout()
-        self.central_widget.setLayout(self.central_layout)
 
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -162,7 +152,10 @@ class MainWindow(QMainWindow):
         self.status_bar_spacing = self.node_length_label.width() + self.status_separator.width() + margin + padding
 
         # For resize view
-        self.resize(self.minimumSize())
+        minimum_size = self.minimumSizeHint()
+        width = minimum_size.width() * 1.1
+        height = minimum_size.height()
+        self.resize(width, height)
 
     def __switch_scene(self, index: int) -> None:
         """Switch the scene in the graphic widget.
@@ -283,7 +276,7 @@ class MainWindow(QMainWindow):
 
         node_count = len(nodes)
         node_names = ' '.join(nodes)
-        max_width = self.status_bar.width() - self.status_bar_spacing
+        max_width = self.status_bar.width() - self.status_bar_spacing - 5
         elided_text = self.font_metrics.elidedText(node_names, Qt.ElideRight, max_width)
         self.node_length_label.setText(self.__get_node_length_label(node_count))
         self.node_names_label.setText(elided_text)
