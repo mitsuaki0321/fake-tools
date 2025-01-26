@@ -41,8 +41,6 @@ faketools.tools.skinWeights_tools.show_ui()
   - ウエイトのコピーとミラーリングを行います。
 - [Copy SkinWeights Custom](copySkinWeights_custom.html)
   - ウエイトのコピーをオプションを指定して行います。
-- [Relax SkinWeights](relaxSkinWeights.html)
-  - ウエイトをスムース、リラックスさせます。
 - [SkinWeights to Mesh](skinWeights_to_mesh.html)
   - skinCluster が設定されているジオメトリをウエイトを保持したままディビジョンを追加した状態で複製します。
 - [Adjust Center Weights](skinWeights_adjust_center.html)

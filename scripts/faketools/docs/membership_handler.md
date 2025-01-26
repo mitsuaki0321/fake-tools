@@ -29,9 +29,18 @@ faketools.tools.membership_handler.show_ui()
 
 ### 基本的な使用方法
 
-1. 編集対象のデフォーマーを選択し、![image001](images/membership_handler/image002.png) ボタンを押します。 
-2. そのデフォーマーのメンバーシップにするコンポーネントを選択します。
-3. ![image001](images/membership_handler/image003.png) ボタンを押すことで、メンバーシップが更新されます。
+1. 編集対象のデフォーマーを選択し、![image002](images/membership_handler/image002.png) ボタンを押します。  
+![image006](images/membership_handler/image006.png)  
+※ cluster デフォーマーの場合は、Handle ではなく、デフォーマー自体を選択してボタンを押してください。
 
-![image001](images/membership_handler/image004.png) ボタンを押すことで、対象のデフォーマーに設定されているメンバーシップを選択します。
+2. 真ん中のフィールドに選択したデフォーマーの名前が表示されます。  
+![image005](images/membership_handler/image005.png)
+
+3. ![image004](images/membership_handler/image004.png) ボタンを押して、そのデフォーマーに登録されれているメンバーシップを選択します。  
+![image007](images/membership_handler/image007.png)
+
+4. 更新したいコンポーネントを選択肢、![image001](images/membership_handler/image003.png) ボタンを押すことで、メンバーシップが更新されます。  
+![image008](images/membership_handler/image008.png)
+
+
 

@@ -4,7 +4,7 @@
 
 ## 使用方法
 
-Skin Weights Utility のメニューを使用するか、以下のコマンドでツールを起動します。
+専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
 import faketools.tools.skinWeights_relax

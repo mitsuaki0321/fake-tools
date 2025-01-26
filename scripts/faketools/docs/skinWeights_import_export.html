@@ -367,6 +367,9 @@ code {
   </script>
 <h1 id="skinweights-importexport">SkinWeights Import/Export</h1>
 <p>スキンウェイトのインポート、エクスポートを行うツールです。</p>
+<h2 id="%E6%A6%82%E8%A6%81">概要</h2>
+<p>スキンウェイトをファイルに保存し、別のジオメトリにインポートすることができます。
+ただし、すでにバインドされているジオメトリにはインポートできません。</p>
 <h2 id="%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">使用方法</h2>
 <p>専用のメニューか、以下のコマンドでツールを起動します。</p>
 <pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.tools.skinWeights_import_export
@@ -374,34 +377,30 @@ faketools.tools.skinWeights_import_export.show_ui()
 </div></code></pre>
 <p><img src="images/skinWeights_import_export/image001.png" alt="image001"></p>
 <h3 id="%E5%9F%BA%E6%9C%AC%E7%9A%84%E3%81%AA%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">基本的な使用方法</h3>
-<p>一時的にスキンウエイトを保存する場合の Quick Mode と、ファイルに保存する場合の Advanced Mode があります。</p>
-<h4 id="quick-mode">Quick Mode</h4>
-<p><strong>Export</strong></p>
+<p>一時的にスキンウエイトを保存する場合の <strong>Quick Mode</strong> と、ファイルに保存する場合の <strong>Advanced Mode</strong> があります。</p>
+<h4 id="%E3%82%A8%E3%82%AF%E3%82%B9%E3%83%9D%E3%83%BC%E3%83%88">エクスポート</h4>
 <ol>
-<li>ジオメトリを選択します。</li>
-<li><code>Export</code> ボタンを押して、スキンウエイトを保存します。この時、ウエイトは各OSのテンポラリディレクトリに保存されます。</li>
+<li>skinCluster でバインドされたジオメトリを選択します ( 複数選択可 )。</li>
 </ol>
-<p><strong>Import</strong></p>
-<ol>
-<li><code>Import</code> ボタンを押して、保存したスキンウエイトを読み込みます。</li>
-</ol>
-<h4 id="advanced-mode">Advanced Mode</h4>
-<p><strong>Export</strong></p>
-<ol>
-<li>ジオメトリを選択します。</li>
-<li>ファイルフォーマットを <code>json</code> か <code>pickle</code> から選択します。</li>
-<li>エクスポートするグループ名（フォルダ名）を入力します。</li>
-<li><code>Export</code> ボタンを押して、スキンウエイトを保存します。</li>
-</ol>
-<p><strong>Import</strong></p>
-<ol>
-<li>ツリービューからインポートするグループかファイルを選択します。</li>
-<li><code>Import</code> ボタンを押して、保存したスキンウエイトを読み込みます。</li>
-</ol>
-<h4 id="import-%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">Import について</h4>
 <ul>
-<li>ジオメトリを選択していた場合は、そのジオメトリの個数とツリービューで選択しているファイルの個数が一致している必要があります。</li>
-<li>グループ（フォルダ）を選択している場合は、そのグループ内のファイルを参照します。</li>
+<li><strong>Quick Mode</strong> : <code>Export</code> ボタンを押して、スキンウエイトを保存します。</li>
+<li><strong>Advanced Mode</strong> : ファイルフォーマットを選択し、エクスポートするグループ名（フォルダ名）を入力して、<code>Export</code> ボタンを押して、スキンウエイトを保存します。</li>
+</ul>
+<h4 id="%E3%82%A4%E3%83%B3%E3%83%9D%E3%83%BC%E3%83%88">インポート</h4>
+<ul>
+<li><strong>Quick Mode</strong> : <code>Import</code> ボタンを押して、保存したスキンウエイトを読み込みます。</li>
+<li><strong>Advanced Mode</strong> : リストからインポートするグループかファイルを選択し、<code>Import</code> ボタンを押して、保存したスキンウエイトを読み込みます。</li>
+</ul>
+<p>以下の場合は、インポートされません。</p>
+<ul>
+<li>インポートするジオメトリが存在しない場合。</li>
+<li>インポートするインフルエンスが存在しない場合。</li>
+<li>インポートするインフルエンスがバインドされている場合。</li>
+</ul>
+<p><strong>インポート時のジオメトリの選択方法</strong></p>
+<ul>
+<li>エクスポート時に選択されていたジオメトリにインポートする場合は、すべての選択を解除してからインポートしてください。シーン上からその名前を検索して対象のジオメトリとします。</li>
+<li>エクスポート時に選択されていたジオメトリ名とは別のジオメトリにインポートする場合は、インポートするジオメトリを選択してからインポートしてください。</li>
 </ul>
 <h3 id="%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3">オプション</h3>
 <h4 id="%E3%82%B3%E3%83%B3%E3%83%86%E3%82%AD%E3%82%B9%E3%83%88%E3%83%A1%E3%83%8B%E3%83%A5%E3%83%BC">コンテキストメニュー</h4>
@@ -420,7 +419,7 @@ faketools.tools.skinWeights_import_export.show_ui()
 </li>
 <li>Open Directory
 <ul>
-<li>対象ファイルが保存されているディレクトリを開きます。</li>
+<li>データが保存されているディレクトリをエクスプローラーで開きます。</li>
 </ul>
 </li>
 </ul>

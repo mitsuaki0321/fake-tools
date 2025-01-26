@@ -367,66 +367,64 @@ code {
   </script>
 <h1 id="skinweights-importexport">SkinWeights Import/Export</h1>
 <p>This tool allows you to import and export skin weights.</p>
-<h2 id="how-to-use">How to Use</h2>
+<h2 id="overview">Overview</h2>
+<p>You can save skin weights to a file and import them to another geometry. However, you cannot import them to geometry that is already bound.</p>
+<h2 id="usage">Usage</h2>
 <p>Launch the tool from the dedicated menu or with the following command:</p>
 <pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.tools.skinWeights_import_export
 faketools.tools.skinWeights_import_export.show_ui()
 </div></code></pre>
 <p><img src="images/skinWeights_import_export/image001.png" alt="image001"></p>
 <h3 id="basic-usage">Basic Usage</h3>
-<p>There are two modes: Quick Mode for temporarily saving skin weights and Advanced Mode for saving to a file.</p>
-<h4 id="quick-mode">Quick Mode</h4>
-<p><strong>Export</strong></p>
+<p>There are two modes: <strong>Quick Mode</strong> for temporarily saving skin weights and <strong>Advanced Mode</strong> for saving them to a file.</p>
+<h4 id="export">Export</h4>
 <ol>
-<li>Select the geometry.</li>
-<li>Press the <code>Export</code> button to save the skin weights. The weights are saved in the temporary directory of your OS.</li>
+<li>Select the geometry bound with a skinCluster (multiple selections allowed).</li>
 </ol>
-<p><strong>Import</strong></p>
-<ol>
-<li>Press the <code>Import</code> button to load the saved skin weights.</li>
-</ol>
-<h4 id="advanced-mode">Advanced Mode</h4>
-<p><strong>Export</strong></p>
-<ol>
-<li>Select the geometry.</li>
-<li>Choose the file format: <code>json</code> or <code>pickle</code>.</li>
-<li>Enter the group name (folder name) for export.</li>
-<li>Press the <code>Export</code> button to save the skin weights.</li>
-</ol>
-<p><strong>Import</strong></p>
-<ol>
-<li>Select the group or file to import from the tree view.</li>
-<li>Press the <code>Import</code> button to load the saved skin weights.</li>
-</ol>
-<h4 id="about-import">About Import</h4>
 <ul>
-<li>If geometry is selected, the number of selected geometries must match the number of files selected in the tree view.</li>
-<li>If a group (folder) is selected, the files within that group will be referenced.</li>
+<li><strong>Quick Mode</strong>: Press the <code>Export</code> button to save the skin weights.</li>
+<li><strong>Advanced Mode</strong>: Select the file format, enter the group name (folder name) for export, and press the <code>Export</code> button to save the skin weights.</li>
+</ul>
+<h4 id="import">Import</h4>
+<ul>
+<li><strong>Quick Mode</strong>: Press the <code>Import</code> button to load the saved skin weights.</li>
+<li><strong>Advanced Mode</strong>: Select the group or file to import from the list, and press the <code>Import</code> button to load the saved skin weights.</li>
+</ul>
+<p>The following cases will prevent import:</p>
+<ul>
+<li>The geometry to import does not exist.</li>
+<li>The influences to import do not exist.</li>
+<li>If the influences to be imported are already bound.</li>
+</ul>
+<p><strong>Selecting Geometry for Import</strong></p>
+<ul>
+<li>To import to the geometry selected during export, deselect everything before importing. The tool will search the scene for the geometry by name.</li>
+<li>To import to a different geometry than the one selected during export, select the geometry to import before importing.</li>
 </ul>
 <h3 id="options">Options</h3>
 <h4 id="context-menu">Context Menu</h4>
 <p><img src="images/skinWeights_import_export/image004.png" alt="image004"></p>
-<p>Right-click on each button in <code>Quick Mode</code> or on the tree view in <code>Advanced Mode</code> to display the context menu.</p>
+<p>Right-click on each button in <code>Quick Mode</code> and on the tree view in <code>Advanced Mode</code> to display the context menu.</p>
 <ul>
 <li>Select Influences
 <ul>
-<li>Selects the influences contained in the target file.</li>
+<li>Select the influences contained in the target file.</li>
 </ul>
 </li>
 <li>Select Geometry
 <ul>
-<li>Selects the geometry contained in the target file.</li>
+<li>Select the geometry contained in the target file.</li>
 </ul>
 </li>
 <li>Open Directory
 <ul>
-<li>Opens the directory where the target file is saved.</li>
+<li>Open the directory where the data is saved in Explorer.</li>
 </ul>
 </li>
 </ul>
 <h4 id="file-format">File Format</h4>
 <p><img src="images/skinWeights_import_export/image002.png" alt="image002"> <img src="images/skinWeights_import_export/image003.png" alt="image003"></p>
-<p>Select the file format for export in <code>Advanced Mode</code>. Click the button to toggle the format.
+<p>Select the file format for export in <code>Advanced Mode</code>. Click the button to switch formats.
 Choose whether to save the file in binary format (<code>pickle</code>) (left) or text format (<code>json</code>) (right).</p>
 
 </body>

@@ -4,7 +4,7 @@ Smooth and relax the weights.
 
 ## How to Use
 
-Use the Skin Weights Utility menu or start the tool with the following command:
+Launch the tool from the dedicated menu or with the following command:
 
 ```python
 import faketools.tools.skinWeights_relax

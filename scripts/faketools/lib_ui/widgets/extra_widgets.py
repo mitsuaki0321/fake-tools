@@ -53,6 +53,8 @@ class VerticalSeparator(QFrame):
 
 
 class ToolIconButton(QPushButton):
+    """Tool icon button widget.
+    """
 
     def __init__(self, icon_name, parent=None):
         super().__init__(parent=parent)

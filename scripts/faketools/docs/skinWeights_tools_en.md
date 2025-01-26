@@ -48,9 +48,6 @@ faketools.tools.skinWeights_tools.show_ui()
 - [Copy SkinWeights Custom](copySkinWeights_custom_en.html)  
   Copy weights with specific options.  
 
-- [Relax SkinWeights](relaxSkinWeights_en.html)  
-  Smooth and relax skin weights.  
-
 - [SkinWeights to Mesh](skinWeights_to_mesh_en.html)  
   Duplicate geometry with added divisions while preserving skinCluster weights.  
 

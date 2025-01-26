@@ -126,6 +126,10 @@ class MainWindow(base_window.BaseMainWindow):
         export_button.clicked.connect(self.export_weights)
         import_button.clicked.connect(self.import_weights)
 
+        # Initialize the UI
+        minimum_size = self.minimumSizeHint()
+        self.resize(minimum_size.width() * 2.0, minimum_size.height())
+
     def on_context_menu(self, point):
         """Show the context menu for the tree view.
         """
@@ -211,14 +215,10 @@ class MainWindow(base_window.BaseMainWindow):
     def _open_directory(self):
         """Open directory.
         """
-        file_path_list = self._get_file_path_list()
-        if not file_path_list:
-            cmds.warning('No file selected.')
-            return
+        if not os.path.exists(self.root_path):
+            cmds.error('The directory does not exist.')
 
-        file_path = os.path.dirname(file_path_list[0])
-
-        os.startfile(file_path)
+        os.startfile(self.root_path)
 
     @maya_ui.error_handler
     @maya_ui.selection_handler
