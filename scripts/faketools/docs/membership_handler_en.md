@@ -31,13 +31,13 @@ Enable component tags with the following settings:
 
 1. Select the deformer to edit and press the ![image002](images/membership_handler/image002.png) button.  
 ![image006](images/membership_handler/image006.png)  
-*Note: For cluster deformers, select the deformer itself instead of the handle and press the button.*
+*Note: In the image, the handle of the cluster deformer is selected, but in reality, select the deformer itself and press the button.*
 
-2. The name of the selected deformer will be displayed in the middle field.  
+1. The name of the selected deformer will be displayed in the middle field.  
 ![image005](images/membership_handler/image005.png)
 
-3. Press the ![image004](images/membership_handler/image004.png) button to select the membership registered to that deformer.  
+1. Press the ![image004](images/membership_handler/image004.png) button to select the membership registered to that deformer.  
 ![image007](images/membership_handler/image007.png)
 
-4. Select the components you want to update and press the ![image001](images/membership_handler/image003.png) button to update the membership.  
+1. Select the components you want to update and press the ![image001](images/membership_handler/image003.png) button to update the membership.  
 ![image008](images/membership_handler/image008.png)
