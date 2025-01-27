@@ -12,7 +12,7 @@ logger = getLogger(__name__)
 
 
 class NodeFilter:
-    """Node selection by filter.
+    """Node selection by filter. (by type, by regex)
     """
 
     def __init__(self, nodes: list[str]):
@@ -276,3 +276,323 @@ class DagHierarchy:
                     break
 
         return cmds.ls([node for node in nodes if node not in except_nodes])
+
+
+class SelectionMode:
+    """Selection mode.
+    """
+
+    @property
+    def object_mode_types(self) -> list[str]:
+        """Get the object mode types.
+
+        Returns:
+            list[str]: The object mode types.
+        """
+        return ['byName',
+                'camera',
+                'cluster',
+                'collisionModel',
+                'curve',
+                'curveOnSurface',
+                'dimension',
+                'dynamicConstraint',
+                'emitter',
+                'field',
+                'fluid',
+                'follicle',
+                'hairSystem',
+                'handle',
+                'ikEndEffector',
+                'ikHandle',
+                'implicitGeometry',
+                'joint',
+                'lattice',
+                'light',
+                'locator',
+                'locatorUV',
+                'locatorXYZ',
+                'nCloth',
+                'nParticleShape',
+                'nRigid',
+                'nonlinear',
+                'nurbsCurve',
+                'nurbsSurface',
+                'orientationLocator',
+                'particleShape',
+                'plane',
+                'polymesh',
+                'rigidBody',
+                'rigidConstraint',
+                'sculpt',
+                'spring',
+                'subdiv',
+                'texture',
+                ]
+
+    @property
+    def component_mode_types(self) -> list[str]:
+        """Get the component mode types.
+
+        Returns:
+            list[str]: The component mode types.
+        """
+        return ['controlVertex',
+                'curveKnot',
+                'curveParameterPoint',
+                'edge',
+                'editPoint',
+                'facet',
+                'hull',
+                'imagePlane',
+                'isoparm',
+                'jointPivot',
+                'latticePoint',
+                'localRotationAxis',
+                'nParticle',
+                'particle',
+                'polymeshEdge',
+                'polymeshFace',
+                'polymeshUV',
+                'polymeshVertex',
+                'polymeshVtxFace',
+                'rotatePivot',
+                'scalePivot',
+                'selectHandle',
+                'springComponent',
+                'subdivMeshEdge',
+                'subdivMeshFace',
+                'subdivMeshPoint',
+                'subdivMeshUV',
+                'surfaceEdge',
+                'surfaceFace',
+                'surfaceKnot',
+                'surfaceParameterPoint',
+                'surfaceRange',
+                'surfaceUV',
+                'vertex'
+                ]
+
+    def get_mode(self) -> str:
+        """Get the current selection mode. (object or component)
+
+        Returns:
+            str: The selection mode.
+        """
+        if cmds.selectMode(q=True, object=True):
+            return 'object'
+        elif cmds.selectMode(q=True, component=True):
+            return 'component'
+
+    def to_object(self) -> list[str]:
+        """Change the selection to the object mode.
+        """
+        cmds.selectMode(object=True)
+
+    def get_object_mode(self, mode: str) -> bool:
+        """Get the object mode.
+
+        Returns:
+            bool or None: The object mode.
+
+        """
+        if not mode:
+            ValueError('Mode is not specified.')
+
+        if not self.__validate_object_mode():
+            return None
+
+        if mode not in self.object_mode_types:
+            cmds.error(f'Unsupported mode: {mode}')
+
+        return cmds.selectType(q=True, **{mode: True})
+
+    def set_object_mode(self, mode: str, value: bool = True) -> None:
+        """Change the object mode.
+
+        Args:
+            mode (str): The object mode.
+            value (bool): If True, the mode is enabled. If False, the mode is disabled.
+        """
+        if not mode:
+            ValueError('Mode is not specified.')
+
+        self.to_object()
+
+        if mode not in self.object_mode_types:
+            cmds.error(f'Unsupported mode: {mode}')
+
+        cmds.selectType(**{mode: value})
+
+        logger.debug(f'Set the object mode to: {mode} -> {value}')
+
+    def toggle_object_mode(self, modes: list[str]) -> None:
+        """Toggle the object mode.
+
+        Args:
+            modes (list[str]): The object mode.
+        """
+        if not modes:
+            ValueError('Modes are not specified.')
+
+        if not self.__validate_object_mode():
+            return
+
+        for mode in modes:
+            if mode not in self.object_mode_types:
+                cmds.error(f'Unsupported mode: {mode}')
+
+            cmds.selectType(**{mode: not self.get_object_mode(mode)})
+
+            logger.debug(f'Toggle the object mode: {mode}')
+
+    def list_current_object_mode(self) -> list[str]:
+        """Get the current object mode.
+
+        Returns:
+            list[str]: The current object mode.
+        """
+        if not self.__validate_object_mode():
+            return None
+
+        modes = []
+        for mode in self.object_mode_types:
+            print(mode)
+            if self.get_object_mode(mode):
+                modes.append(mode)
+
+        return modes
+
+    def to_component(self) -> list[str]:
+        """Change the selection to the component mode.
+        """
+        cmds.selectMode(component=True)
+
+    def get_component_mode(self, mode: str) -> bool:
+        """Get the component mode.
+
+        Returns:
+            bool or None: The component mode.
+
+        """
+        if not mode:
+            ValueError('Mode is not specified.')
+
+        if not self.__validate_component_mode():
+            return None
+
+        if mode not in self.component_mode_types:
+            cmds.error(f'Unsupported mode: {mode}')
+
+        return cmds.selectType(q=True, **{mode: True})
+
+    def set_component_mode(self, mode: str, value: bool = True) -> None:
+        """Change the component mode.
+
+        Args:
+            mode (str): The component mode.
+            value (bool): If True, the mode is enabled. If False, the mode is disabled.
+        """
+        if not mode:
+            ValueError('Mode is not specified.')
+
+        self.to_component()
+
+        if mode not in self.component_mode_types:
+            cmds.error(f'Unsupported mode: {mode}')
+
+        cmds.selectType(**{mode: value})
+
+        logger.debug(f'Set the component mode to: {mode} -> {value}')
+
+    def toggle_component_mode(self, modes: list[str]) -> None:
+        """Toggle the component mode.
+
+        Args:
+            modes (list[str]): The component mode.
+        """
+        if not modes:
+            ValueError('Modes are not specified.')
+
+        if not self.__validate_component_mode():
+            return
+
+        for mode in modes:
+            if mode not in self.component_mode_types:
+                cmds.error(f'Unsupported mode: {mode}')
+
+            cmds.selectType(**{mode: not self.get_component_mode(mode)})
+
+            logger.debug(f'Toggle the component mode: {mode}')
+
+    def list_current_component_mode(self) -> list[str]:
+        """Get the current component mode.
+
+        Returns:
+            list[str]: The current component mode.
+        """
+        if self.__validate_component_mode():
+            return None
+
+        modes = []
+        for mode in self.component_mode_types:
+            if self.get_component_mode(mode):
+                modes.append(mode)
+
+        return modes
+
+    def __validate_object_mode(self) -> bool:
+        """Validate the object mode.
+        """
+        if self.get_mode() != 'object':
+            logger.debug('The current mode is not object.')
+            return False
+
+        return True
+
+    def __validate_component_mode(self):
+        """Validate the component mode.
+        """
+        if self.get_mode() != 'component':
+            logger.debug('The current mode is not component.')
+            return False
+
+        return True
+
+
+class HiliteSelection:
+
+    def list_nodes(self, full_path: bool = False) -> list[str]:
+        """List the hilite nodes.
+
+        Args:
+            full_path (bool): Whether to return the full path. Default is False.
+
+        Returns:
+            list[str]: The hilite nodes.
+        """
+        return cmds.ls(hilite=True, long=full_path)
+
+    def hilite(self, nodes: list[str], replace: bool = True) -> None:
+        """Hilite the nodes.
+
+        Args:
+            nodes (list[str]): The nodes.
+            replace (bool): If True, replace the current hilite. If False, add to the current hilite. Default is True.
+        """
+        if not nodes:
+            ValueError('Nodes are not specified.')
+
+        if not isinstance(nodes, list):
+            ValueError('Nodes must be a list.')
+
+        cmds.hilite(nodes, replace=replace)
+
+    def clear(self) -> None:
+        """Clear the hilite.
+        """
+        hilite_nodes = self.list_nodes()
+        if not hilite_nodes:
+            return
+
+        cmds.hilite(hilite_nodes, unHilite=True)

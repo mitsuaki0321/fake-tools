@@ -646,11 +646,11 @@ class SubstitutionSelectionWidget(QWidget):
         search_text = self.search_text_field.text()
         replace_text = self.replace_text_field.text()
 
-        if not search_text or not replace_text:
-            cmds.error('No search or replace text specified.')
-
         if self.arrow_button.isChecked():
             search_text, replace_text = replace_text, search_text
+
+        if not search_text:
+            cmds.error('No search text specified.')
 
         return search_text, replace_text
 

@@ -7,7 +7,7 @@ from logging import getLogger
 import maya.cmds as cmds
 from PySide2.QtWidgets import QLineEdit
 
-from ..lib import lib_memberShip
+from ..lib import lib_memberShip, lib_selection
 from ..lib_ui import base_window, maya_qt, maya_ui
 from ..lib_ui.widgets import extra_widgets
 
@@ -61,7 +61,6 @@ class MainWindow(base_window.BaseMainWindow):
         sel_deformers = cmds.ls(sl=True, type='weightGeometryFilter')
         if not sel_deformers:
             cmds.error('Select any weightGeometryFilter.')
-            return
 
         self.deformer_field.setText(sel_deformers[0])
         self.deformer = lib_memberShip.DeformerMembership(sel_deformers[0])
@@ -78,6 +77,7 @@ class MainWindow(base_window.BaseMainWindow):
         if not components:
             cmds.error('Select any components (vertex, cv, latticePoint).')
 
+        lib_memberShip.remove_deformer_blank_indices(self.deformer.deformer_name)
         self.deformer.update_components(components)
 
     @maya_ui.error_handler
@@ -89,6 +89,17 @@ class MainWindow(base_window.BaseMainWindow):
 
         components = self.deformer.get_components()
         cmds.select(components, r=True)
+
+        # Change the component mode.
+        selection_mode = lib_selection.SelectionMode()
+        selection_mode.to_component()
+
+        for component_type in ['vertex', 'controlVertex', 'latticePoint']:
+            selection_mode.set_component_mode(component_type, True)
+
+        objs = cmds.ls(sl=True, objectsOnly=True)
+        hilite_selection = lib_selection.HiliteSelection()
+        hilite_selection.hilite(objs, replace=True)
 
 
 def show_ui():
