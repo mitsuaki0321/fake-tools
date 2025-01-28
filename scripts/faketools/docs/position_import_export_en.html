@@ -373,12 +373,13 @@ You can obtain and set position information in several ways. The methods are as 
 <h3 id="default">Default</h3>
 <p>Obtain the position information of the transform node in world space and reproduce it in world space.</p>
 <h3 id="barycentric">Barycentric</h3>
-<p>Obtain the position information of the transform node in barycentric coordinates of the nearest triangle polygon from the node and reproduce it in the barycentric coordinates of the mesh.
+<p>Obtain the position information of the transform node in barycentric coordinates of the nearest triangle polygon from the node and reproduce it in the barycentric coordinates of the mesh.<br>
 When reproducing, you need to select a mesh with the same topology.</p>
 <p>This method is effective when the transform node is on the surface of the mesh.</p>
 <p><img src="images/position_import_export/image002.png" alt="image002"></p>
 <h3 id="rbf">Rbf</h3>
-<p>Obtain the position information of the transform node from a point cloud and reproduce it in the vertex coordinates of the mesh. When reproducing, you need to select a mesh with the same topology.</p>
+<p>Obtain the position information of the transform node from the surrounding vertex positions and reproduce it on a mesh with the same topology.<br>
+When reproducing, you need to select a mesh with the same topology.</p>
 <p>This method is effective when the transform node is inside the mesh.</p>
 <p><img src="images/position_import_export/image003.png" alt="image003"></p>
 <h2 id="how-to-use">How to Use</h2>
@@ -392,11 +393,11 @@ faketools.position_import_export.show()
 <p>To export position information, follow these steps:</p>
 <ol>
 <li>
-<p>Select the export method from the dropdown menu at the top.<br>
+<p>Select the method to export from <code>Method</code>.<br>
 <img src="images/position_import_export/image004.png" alt="image004"></p>
 </li>
 <li>
-<p>Select the nodes to export according to the method.</p>
+<p>Select the nodes to export position information according to the method.</p>
 <ul>
 <li><code>Default</code>
 <ul>
@@ -423,10 +424,13 @@ faketools.position_import_export.show()
 </li>
 <li>
 <p>Press the <code>Export</code> button.<br>
-Once the export is complete, the exported file name will be displayed in the list.<br>
+When the export is complete, the exported file name will be displayed in the list.<br>
 <img src="images/position_import_export/image006.png" alt="image006"></p>
 </li>
 </ol>
+<ul>
+<li>When the <code>Rbf</code> method is selected, you can set the radius for export with the <code>Rbf Radius</code> value. If the behavior differs from the intended one when reproducing the position, increasing this value may achieve the desired behavior.</li>
+</ul>
 <h4 id="import">Import</h4>
 <p>To import position information, follow these steps:</p>
 <ol>
@@ -460,7 +464,7 @@ Once the export is complete, the exported file name will be displayed in the lis
 </li>
 </ol>
 <h3 id="import-options">Import Options</h3>
-<p>Options that can be set during import:</p>
+<p>Options that can be set during import.</p>
 <ul>
 <li><code>Is Rotation</code>
 <ul>

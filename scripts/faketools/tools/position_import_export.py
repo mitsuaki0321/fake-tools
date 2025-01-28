@@ -46,13 +46,31 @@ class MainWindow(base_window.BaseMainWindow):
         self.output_directory = user_directory.ToolDirectory(__name__).get_directory()
 
         # Export Options
+        layout = QGridLayout()
+
+        label = QLabel('Method:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        layout.addWidget(label, 0, 0)
+
         self.method_box = QComboBox()
         self.method_box.addItems(self._method_list)
-        self.central_layout.addWidget(self.method_box)
+        layout.addWidget(self.method_box, 0, 1)
+
+        self.rbf_radius_label = QLabel('Rbf Radius:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        layout.addWidget(self.rbf_radius_label, 1, 0)
+
+        self.rbf_radius_box = extra_widgets.ModifierSpinBox()
+        self.rbf_radius_box.setRange(1.5, 10.0)
+        self.rbf_radius_box.setSingleStep(0.1)
+        layout.addWidget(self.rbf_radius_box, 1, 1)
+
+        label = QLabel('File Name:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        layout.addWidget(label, 2, 0)
 
         self.file_name_field = QLineEdit()
         self.file_name_field.setPlaceholderText('File Name')
-        self.central_layout.addWidget(self.file_name_field)
+        layout.addWidget(self.file_name_field, 2, 1)
+
+        self.central_layout.addLayout(layout)
 
         export_button = QPushButton('Export')
         self.central_layout.addWidget(export_button)
@@ -123,6 +141,7 @@ class MainWindow(base_window.BaseMainWindow):
 
         # Option settings
         self.method_box.setCurrentText(self.tool_options.read('method', self._method_list[0]))
+        self.rbf_radius_box.setValue(self.tool_options.read('rbf_radius', 1.5))
         self.is_rotation_checkbox.setChecked(self.tool_options.read('is_rotation', False))
         self.create_new_checkbox.setChecked(self.tool_options.read('create_new', False))
         self.restore_hierarchy_checkbox.setChecked(self.tool_options.read('restore_hierarchy', False))
@@ -130,6 +149,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.object_size_box.setValue(self.tool_options.read('object_size', 1.0))
 
         # Signals & Slots
+        self.method_box.currentIndexChanged.connect(self.__update_method_options)
         self.create_new_checkbox.stateChanged.connect(self.__update_create_new_options)
         self.file_list_view.clicked.connect(self.__update_data_information)
         export_button.clicked.connect(self.export_transform_position)
@@ -152,6 +172,7 @@ class MainWindow(base_window.BaseMainWindow):
         """Export the positions of the selected objects.
         """
         method = self.method_box.currentText().lower()
+        rbf_radius = self.rbf_radius_box.value()
         file_name = self.file_name_field.text()
 
         if not file_name:
@@ -159,7 +180,8 @@ class MainWindow(base_window.BaseMainWindow):
 
         object_morph.export_transform_position(output_directory=self.output_directory,
                                                file_name=file_name,
-                                               method=method)
+                                               method=method,
+                                               rbf_radius=rbf_radius)
 
         self.__update_file_list()
         self.__select_file(file_name)
@@ -246,6 +268,17 @@ class MainWindow(base_window.BaseMainWindow):
         action.triggered.connect(self._open_directory)
 
         menu.exec_(self.file_list_view.mapToGlobal(point))
+
+    def __update_method_options(self) -> None:
+        """Update the method options based on the selected method.
+        """
+        method = self.method_box.currentText().lower()
+        if method == 'rbf':
+            self.rbf_radius_label.setEnabled(True)
+            self.rbf_radius_box.setEnabled(True)
+        else:
+            self.rbf_radius_label.setEnabled(False)
+            self.rbf_radius_box.setEnabled(False)
 
     def __update_file_list(self) -> None:
         """Update the file list.
@@ -362,6 +395,7 @@ class MainWindow(base_window.BaseMainWindow):
         """
         # Save option settings
         self.tool_options.write('method', self.method_box.currentText())
+        self.tool_options.write('rbf_radius', self.rbf_radius_box.value())
         self.tool_options.write('is_rotation', self.is_rotation_checkbox.isChecked())
         self.tool_options.write('create_new', self.create_new_checkbox.isChecked())
         self.tool_options.write('restore_hierarchy', self.restore_hierarchy_checkbox.isChecked())

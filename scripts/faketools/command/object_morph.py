@@ -366,9 +366,6 @@ class MeshRBFPosition(MeshPosition):
         src_positions_list = np.asarray(data['vtx_positions'])
         dst_positions_list = np.asarray(self._get_vtx_positions())
 
-        print(f'trg_positions: {trg_positions}')
-        print(f'trg_indices_list: {trg_indices_list}')
-
         trg_rotations_positions = data.get('rotation_positions', [])
 
         if len(src_positions_list) != len(dst_positions_list):
@@ -803,8 +800,10 @@ def export_transform_position(output_directory: str, file_name: str, method: str
             method_instance = MeshBaryPosition(target_mesh)
             position_data = method_instance.export_data(positions, rotations=rotations)
         elif method == 'rbf':
+            rbf_radius = kwargs.get('rbf_radius', 1.5)
+            print(f'Using RBF with radius: {rbf_radius}')
             method_instance = MeshRBFPosition(target_mesh)
-            index_query_method = NearestRadiusIndexQuery(radius_multiplier=1.5)
+            index_query_method = NearestRadiusIndexQuery(radius_multiplier=rbf_radius)
             position_data = method_instance.export_data(positions, rotations=rotations, method_instance=index_query_method)
 
     # Get the hierarchy data

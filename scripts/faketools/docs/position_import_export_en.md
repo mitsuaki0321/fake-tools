@@ -13,7 +13,7 @@ Obtain the position information of the transform node in world space and reprodu
 
 ### Barycentric
 
-Obtain the position information of the transform node in barycentric coordinates of the nearest triangle polygon from the node and reproduce it in the barycentric coordinates of the mesh.
+Obtain the position information of the transform node in barycentric coordinates of the nearest triangle polygon from the node and reproduce it in the barycentric coordinates of the mesh.  
 When reproducing, you need to select a mesh with the same topology.
 
 This method is effective when the transform node is on the surface of the mesh.
@@ -22,7 +22,8 @@ This method is effective when the transform node is on the surface of the mesh.
 
 ### Rbf
 
-Obtain the position information of the transform node from a point cloud and reproduce it in the vertex coordinates of the mesh. When reproducing, you need to select a mesh with the same topology.
+Obtain the position information of the transform node from the surrounding vertex positions and reproduce it on a mesh with the same topology.  
+When reproducing, you need to select a mesh with the same topology.
 
 This method is effective when the transform node is inside the mesh.
 
@@ -45,10 +46,10 @@ faketools.position_import_export.show()
 
 To export position information, follow these steps:
 
-1. Select the export method from the dropdown menu at the top.  
+1. Select the method to export from `Method`.  
   ![image004](images/position_import_export/image004.png)
 
-2. Select the nodes to export according to the method.  
+1. Select the nodes to export position information according to the method.  
 
      - `Default`  
        - Select the transform nodes to export (multiple selections allowed).
@@ -59,12 +60,14 @@ To export position information, follow these steps:
        - Select the mesh (transform node of the mesh) to export.
        - Additionally, select the nodes to export (multiple selections allowed).
     
-3. Enter the file name to export in `File Name`.  
+2. Enter the file name to export in `File Name`.  
   ![image005](images/position_import_export/image005.png)
 
-4. Press the `Export` button.  
-  Once the export is complete, the exported file name will be displayed in the list.  
+1. Press the `Export` button.  
+  When the export is complete, the exported file name will be displayed in the list.  
   ![image006](images/position_import_export/image006.png)
+
+* When the `Rbf` method is selected, you can set the radius for export with the `Rbf Radius` value. If the behavior differs from the intended one when reproducing the position, increasing this value may achieve the desired behavior.
 
 #### Import
 
@@ -79,14 +82,14 @@ To import position information, follow these steps:
      - `Barycentric`  
        - Select a mesh with the same topology as when exported.
      - `Rbf`  
-       - Select a mesh with the same topology as when exported.
+        - Select a mesh with the same topology as when exported.
 
 3. Set the options and press the `Import` button. By default, the position information will be applied to the nodes selected during export.  
   ![image007](images/position_import_export/image007.png)
 
 ### Import Options
 
-Options that can be set during import:
+Options that can be set during import.
 
 - `Is Rotation`  
   - Set whether to apply rotation information to the transform node.

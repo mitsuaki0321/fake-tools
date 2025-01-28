@@ -373,12 +373,13 @@ code {
 <h3 id="default">Default</h3>
 <p>トランスフォームノードの位置情報をワールド位置で取得し、ワールド位置で再現します。</p>
 <h3 id="barycentric">Barycentric</h3>
-<p>トランスフォームノードの位置情報をそのノードから一番近い三角ポリゴンのバリセントリック座標で取得し、メッシュのバリセントリック座標で再現します。
+<p>トランスフォームノードの位置情報をそのノードから一番近い三角ポリゴンのバリセントリック座標で取得し、メッシュのバリセントリック座標で再現します。<br>
 再現時は、同じトポロジーのメッシュを選択する必要があります。</p>
 <p>トランスフォームノードがメッシュの表面上にある場合に、有効な方法です。</p>
 <p><img src="images/position_import_export/image002.png" alt="image002"></p>
 <h3 id="rbf">Rbf</h3>
-<p>トランスフォームノードの位置情報を点群から取得し、メッシュの頂点座標で再現します。再現時は、同じトポロジーのメッシュを選択する必要があります。</p>
+<p>トランスフォームノードの位置情報を周りの Vertex 位置から取得し、同トポロジーのメッシュへ再現します。<br>
+再現時は、同じトポロジーのメッシュを選択する必要があります。</p>
 <p>トランスフォームノードがメッシュの内部にある場合に、有効な方法です。</p>
 <p><img src="images/position_import_export/image003.png" alt="image003"></p>
 <h2 id="%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">使用方法</h2>
@@ -392,7 +393,7 @@ faketools.position_import_export.show()
 <p>位置情報をエクスポートするには、以下の手順で行います。</p>
 <ol>
 <li>
-<p>上部のドロップダウンメニューからエクスポートする方法を選択します。<br>
+<p><code>Method</code> からエクスポートする方法を選択します。<br>
 <img src="images/position_import_export/image004.png" alt="image004"></p>
 </li>
 <li>
@@ -427,6 +428,7 @@ faketools.position_import_export.show()
 <img src="images/position_import_export/image006.png" alt="image006"></p>
 </li>
 </ol>
+<p>※ <code>Rbf</code> の方法を選択した時は、<code>Rbf Radius</code> の値でエクスポート時の半径を設定できます。位置を再現する際に目的の挙動と異なる場合は、この値を大きくすることで期待する挙動が得られる場合があります。</p>
 <h4 id="%E3%82%A4%E3%83%B3%E3%83%9D%E3%83%BC%E3%83%88">インポート</h4>
 <p>位置情報をインポートするには、以下の手順で行います。</p>
 <ol>
