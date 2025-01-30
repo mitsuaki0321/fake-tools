@@ -7,8 +7,8 @@ skinCluster のウエイトをコンポーネント単位でコピーしてペ�
 Skin Weights Utility のメニューを使用するか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.skinWeights_copy_paste
-faketools.tools.skinWeights_copy_paste.show_ui()
+import faketools.tools.skinWeights_copy_paste_ui
+faketools.tools.skinWeights_copy_paste_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_copy_paste/image001.png)

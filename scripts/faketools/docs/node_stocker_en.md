@@ -7,8 +7,8 @@ A tool that allows you to save selected nodes and recall them later.
 Launch the tool from the dedicated menu or with the following command:
 
 ```python
-import faketools.tools.node_stocker
-faketools.tools.node_stocker.show_ui()
+import faketools.tools.node_stocker_ui
+faketools.tools.node_stocker_ui.show_ui()
 ```
 
 ![image001](images/node_stocker/image001.png)

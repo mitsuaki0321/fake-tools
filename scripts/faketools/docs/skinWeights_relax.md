@@ -7,8 +7,8 @@
 専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.skinWeights_relax
-faketools.tools.skinWeights_relax.show_ui()
+import faketools.tools.skinWeights_relax_ui
+faketools.tools.skinWeights_relax_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_relax/image001.png)

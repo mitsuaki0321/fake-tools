@@ -7,8 +7,8 @@ Combine weights from multiple influences into a single influence.
 Use the Skin Weights Utility menu or start the tool with the following command:
 
 ```python
-import faketools.tools.skinWeights_combine
-faketools.tools.skinWeights_combine.show_ui()
+import faketools.tools.skinWeights_combine_ui
+faketools.tools.skinWeights_combine_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_combine/image001.png)

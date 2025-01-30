@@ -8,8 +8,8 @@
 Skin Weights Utility の上部分を使用するか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.skinWeights_bar
-faketools.tools.skinWeights_bar.show_ui()
+import faketools.tools.skinWeights_bar_ui
+faketools.tools.skinWeights_bar_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_bar/image001.png)

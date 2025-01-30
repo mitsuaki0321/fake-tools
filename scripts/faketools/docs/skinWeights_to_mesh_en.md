@@ -19,8 +19,8 @@ For NURBS surfaces, use the nurbsTessellate node to adjust the divisions and dup
 Use the Skin Weights Utility menu or start the tool with the following command:
 
 ```python
-import faketools.tools.skinWeights_to_mesh
-faketools.tools.skinWeights_to_mesh.show_ui()
+import faketools.tools.skinWeights_to_mesh_ui
+faketools.tools.skinWeights_to_mesh_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_to_mesh/image001.png)

@@ -12,8 +12,8 @@ skinCluster のウエイトを編集するためのツールです。
 専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.skinWeights_tools
-faketools.tools.skinWeights_tools.show_ui()
+import faketools.tools.skinWeights_tools_ui
+faketools.tools.skinWeights_tools_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_tools/image001.png)

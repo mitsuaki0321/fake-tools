@@ -7,8 +7,8 @@ Performs weight copying and mirroring.
 Use the top part of the Skin Weights Utility or start the tool with the following command.
 
 ```python
-import faketools.tools.skinWeights_bar
-faketools.tools.skinWeights_bar.show_ui()
+import faketools.tools.skinWeights_bar_ui
+faketools.tools.skinWeights_bar_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_bar/image001.png)

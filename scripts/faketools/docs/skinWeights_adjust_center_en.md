@@ -13,8 +13,8 @@ Adjust the weights of vertices mainly located at the center position. Here, "cen
 Use the Skin Weights Utility menu or start the tool with the following command:
 
 ```python
-import faketools.tools.skinWeights_adjust_center
-faketools.tools.skinWeights_adjust_center.show_ui()
+import faketools.tools.skinWeights_adjust_center_ui
+faketools.tools.skinWeights_adjust_center_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_adjust_center/image001.png)

@@ -12,8 +12,8 @@ It assumes that the skinCluster method is set to Classic Linear and does not sup
 Launch the tool using the dedicated menu or by executing the following command:
 
 ```python
-import faketools.tools.skinWeights_tools
-faketools.tools.skinWeights_tools.show_ui()
+import faketools.tools.skinWeights_tools_ui
+faketools.tools.skinWeights_tools_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_tools/image001.png)

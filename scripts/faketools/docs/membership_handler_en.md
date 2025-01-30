@@ -9,8 +9,8 @@ Only deformers of the WeightGeometryFilter type are targeted.
 Launch the tool from the dedicated menu or with the following command:
 
 ```python
-import faketools.tools.membership_handler
-faketools.tools.membership_handler.show_ui()
+import faketools.tools.membership_handler_ui
+faketools.tools.membership_handler_ui.show_ui()
 ```
 
 ![image001](images/membership_handler/image001.png)

@@ -12,8 +12,8 @@
 専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.connection_lister
-faketools.tools.connection_lister.show_ui()
+import faketools.tools.connection_lister_ui
+faketools.tools.connection_lister_ui.show_ui()
 ```
 
 ![image001](images/connection_lister/image001.png)

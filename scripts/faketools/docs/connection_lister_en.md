@@ -12,8 +12,8 @@ Additionally, you can perform specific operations on nodes using the provided co
 Launch the tool from the dedicated menu or with the following command:
 
 ```python
-import faketools.tools.connection_lister
-faketools.tools.connection_lister.show_ui()
+import faketools.tools.connection_lister_ui
+faketools.tools.connection_lister_ui.show_ui()
 ```
 
 ![image001](images/connection_lister/image001.png)

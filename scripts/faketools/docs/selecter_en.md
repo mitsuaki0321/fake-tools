@@ -21,8 +21,8 @@ Launch the tool from the dedicated menu or with the following command.
 The launched tool will dock at the bottom of the shelf.
 
 ```python
-import faketools.tools.selecter
-faketools.tools.selecter.show_ui()
+import faketools.tools.selecter_ui
+faketools.tools.selecter_ui.show_ui()
 ```
 
 ### Filter Selection by Name

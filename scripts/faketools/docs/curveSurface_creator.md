@@ -13,8 +13,8 @@
 専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.curveSurface_creator
-faketools.tools.curveSurface_creator.show_ui()
+import faketools.tools.curveSurface_creator_ui
+faketools.tools.curveSurface_creator_ui.show_ui()
 ```
 
 ![image001](images/curveSurface_creator/image001.png)

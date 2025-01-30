@@ -8,8 +8,8 @@ Optimize the scene.
 Launch from the dedicated menu or the following command:
 
 ```python
-import faketools.tools.scene_optimizer
-faketools.tools.scene_optimizer.show_ui()
+import faketools.tools.scene_optimizer_ui
+faketools.tools.scene_optimizer_ui.show_ui()
 ```
 
 ![alt text](images/scene_optimizer/image001.png)

@@ -11,8 +11,8 @@ You can save skin weights to a file and import them to another geometry. However
 Launch the tool from the dedicated menu or with the following command:
 
 ```python
-import faketools.tools.skinWeights_import_export
-faketools.tools.skinWeights_import_export.show_ui()
+import faketools.tools.skinWeights_import_export_ui
+faketools.tools.skinWeights_import_export_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_import_export/image001.png)

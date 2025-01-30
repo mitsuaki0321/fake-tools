@@ -8,8 +8,8 @@ Creates transform nodes for selected nodes or components.
 Launch from the dedicated menu or the following command:
 
 ```python
-import faketools.tools.transform_creater
-faketools.tools.transform_creater.show_ui()
+import faketools.tools.transform_creater_ui
+faketools.tools.transform_creater_ui.show_ui()
 ```
 
 ![image001](images/transform_creater/image001.png)

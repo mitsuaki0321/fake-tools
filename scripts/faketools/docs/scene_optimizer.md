@@ -7,8 +7,8 @@
 専用メニューか以下のコマンドで起動します。
 
 ```python
-import faketools.tools.scene_optimizer
-faketools.tools.scene_optimizer.show_ui()
+import faketools.tools.scene_optimizer_ui
+faketools.tools.scene_optimizer_ui.show_ui()
 ```
 
 

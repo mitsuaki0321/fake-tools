@@ -18,8 +18,8 @@ It mainly provides the following functions for set driven keys:
 Launch the tool from the dedicated menu or with the following command:
 
 ```python
-import faketools.tools.drivenkey_tools
-faketools.tools.drivenkey_tools.show_ui()
+import faketools.tools.drivenkey_tools_ui
+faketools.tools.drivenkey_tools_ui.show_ui()
 ```
 
 ![image001](images/drivenkey_tools/image001.png)

@@ -8,8 +8,8 @@ Transform ノードを接続、値のコピー、ゼロリセットを行うツ�
 専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.transform_connecter
-faketools.tools.transform_connecter.show_ui()
+import faketools.tools.transform_connecter_ui
+faketools.tools.transform_connecter_ui.show_ui()
 ```
 
 ![image001](images/transform_connecter/image001.png)

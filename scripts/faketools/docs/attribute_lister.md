@@ -12,8 +12,8 @@
 専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.attribute_lister
-faketools.tools.attribute_lister.show_ui()
+import faketools.tools.attribute_lister_ui
+faketools.tools.attribute_lister_ui.show_ui()
 ```
 
 ![image001](images/attribute_lister/image001.png)

@@ -7,8 +7,8 @@
 Skin Weights Utility のメニューを使用するか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.influence_exchanger
-faketools.tools.influence_exchanger.show_ui()
+import faketools.tools.influence_exchanger_ui
+faketools.tools.influence_exchanger_ui.show_ui()
 ```
 
 ![image001](images/influence_exchanger/image001.png)

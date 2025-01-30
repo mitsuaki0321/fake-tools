@@ -14,8 +14,8 @@
 Skin Weights Utility のメニューを使用するか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.skinWeights_adjust_center
-faketools.tools.skinWeights_adjust_center.show_ui()
+import faketools.tools.skinWeights_adjust_center_ui
+faketools.tools.skinWeights_adjust_center_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_adjust_center/image001.png)

@@ -19,8 +19,8 @@ NURBS サーフェースの場合は、nurbsTessellate ノードを使用し、�
 Skin Weights Utility のメニューを使用するか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.skinWeights_to_mesh
-faketools.tools.skinWeights_to_mesh.show_ui()
+import faketools.tools.skinWeights_to_mesh_ui
+faketools.tools.skinWeights_to_mesh_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_to_mesh/image001.png)

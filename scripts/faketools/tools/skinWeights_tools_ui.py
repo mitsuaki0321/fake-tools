@@ -12,12 +12,12 @@ from ..lib import lib_skinCluster
 from ..lib_ui import base_window, maya_qt, maya_ui
 from ..lib_ui.widgets import extra_widgets
 from . import (
-    influence_exchanger,
-    skinWeights_adjust_center,
-    skinWeights_bar,
-    skinWeights_combine,
-    skinWeights_copy_custom,
-    skinWeights_to_mesh,
+    influence_exchanger_ui,
+    skinWeights_adjust_center_ui,
+    skinWeights_bar_ui,
+    skinWeights_combine_ui,
+    skinWeights_copy_custom_ui,
+    skinWeights_to_mesh_ui,
 )
 
 logger = getLogger(__name__)
@@ -38,7 +38,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.__add_menu()
 
         # Add skinWeights bar
-        self.skinWeightsBar = skinWeights_bar.SkinWeightsBar()
+        self.skinWeightsBar = skinWeights_bar_ui.SkinWeightsBar()
         self.central_layout.addWidget(self.skinWeightsBar)
 
         separator = extra_widgets.HorizontalSeparator()
@@ -78,11 +78,11 @@ class MainWindow(base_window.BaseMainWindow):
     def widgets_data(self):
         """List of widgets data.
         """
-        return {'Copy Skin Weights Custom': skinWeights_copy_custom.SkinWeightsCopyCustomWidgets,
-                'Skin Weights to Mesh': skinWeights_to_mesh.SkinWeightsMeshConverterWidgets,
-                'Adjust Center Skin Weights': skinWeights_adjust_center.AdjustCenterSkinWeightsWidgets,
-                'Combine Skin Weights': skinWeights_combine.CombineSkinWeightsWidgets,
-                'Influence Exchange': influence_exchanger.InfluenceExchangerWidgets}
+        return {'Copy Skin Weights Custom': skinWeights_copy_custom_ui.SkinWeightsCopyCustomWidgets,
+                'Skin Weights to Mesh': skinWeights_to_mesh_ui.SkinWeightsMeshConverterWidgets,
+                'Adjust Center Skin Weights': skinWeights_adjust_center_ui.AdjustCenterSkinWeightsWidgets,
+                'Combine Skin Weights': skinWeights_combine_ui.CombineSkinWeightsWidgets,
+                'Influence Exchange': influence_exchanger_ui.InfluenceExchangerWidgets}
 
     def __add_menu(self):
         """Add menu.

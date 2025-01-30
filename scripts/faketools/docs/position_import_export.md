@@ -34,8 +34,8 @@
 専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.position_import_export
-faketools.position_import_export.show()
+import faketools.position_import_export_ui
+faketools.position_import_export_ui.show_ui()
 ```
 
 ![image001](images/position_import_export/image001.png)

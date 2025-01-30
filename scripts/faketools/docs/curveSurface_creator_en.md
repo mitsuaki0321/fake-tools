@@ -13,8 +13,8 @@ Additionally, if joint nodes are selected, the created objects can be smooth bou
 Launch the tool from the dedicated menu or with the following command:
 
 ```python
-import faketools.tools.curveSurface_creator
-faketools.tools.curveSurface_creator.show_ui()
+import faketools.tools.curveSurface_creator_ui
+faketools.tools.curveSurface_creator_ui.show_ui()
 ```
 
 ![image001](images/curveSurface_creator/image001.png)

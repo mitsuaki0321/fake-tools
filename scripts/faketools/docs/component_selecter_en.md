@@ -20,8 +20,8 @@ Each component can be selected across multiple geometries.
 Launch the tool from the dedicated menu or with the following command:
 
 ```python
-import faketools.tools.component_selecter
-faketools.tools.component_selecter.show_ui()
+import faketools.tools.component_selecter_ui
+faketools.tools.component_selecter_ui.show_ui()
 ```
 
 ![image001](images/component_selecter/image001.png)

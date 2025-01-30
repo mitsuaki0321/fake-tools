@@ -7,8 +7,8 @@ Copy weights with specified options.
 Use the Skin Weights Utility menu or start the tool with the following command:
 
 ```python
-import faketools.tools.skinWeights_copy_custom
-faketools.tools.skinWeights_copy_custom.show_ui()
+import faketools.tools.skinWeights_copy_custom_ui
+faketools.tools.skinWeights_copy_custom_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_copy_custom/image001.png)

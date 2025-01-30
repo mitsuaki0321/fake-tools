@@ -9,8 +9,8 @@ UI から トランスフォームノードのアトリビュートを操作し�
 専用メニューか以下のコマンドで起動します。
 
 ```python
-import faketools.tools.remote_slider
-faketools.tools.remote_slider.show_ui()
+import faketools.tools.remote_slider_ui
+faketools.tools.remote_slider_ui.show_ui()
 ```
 
 ### 基本的な使用方法

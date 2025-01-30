@@ -8,8 +8,8 @@
 専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.node_stocker
-faketools.tools.node_stocker.show_ui()
+import faketools.tools.node_stocker_ui
+faketools.tools.node_stocker_ui.show_ui()
 ```
 
 ![image001](images/node_stocker/image001.png)

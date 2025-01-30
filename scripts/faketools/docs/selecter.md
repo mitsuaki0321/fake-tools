@@ -22,8 +22,8 @@
 起動したツールは、シェフルの下部にドッキングされます。
 
 ```python
-import faketools.tools.selecter
-faketools.tools.selecter.show_ui()
+import faketools.tools.selecter_ui
+faketools.tools.selecter_ui.show_ui()
 ```
 
 ### 選択を名前でフィルタリング

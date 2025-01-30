@@ -7,8 +7,8 @@ Smooth and relax the weights.
 Launch the tool from the dedicated menu or with the following command:
 
 ```python
-import faketools.tools.skinWeights_relax
-faketools.tools.skinWeights_relax.show_ui()
+import faketools.tools.skinWeights_relax_ui
+faketools.tools.skinWeights_relax_ui.show_ui()
 ```
 
 ![image001](images/skinWeights_relax/image001.png)

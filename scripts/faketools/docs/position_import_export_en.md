@@ -34,8 +34,8 @@ This method is effective when the transform node is inside the mesh.
 Launch the tool from the dedicated menu or with the following command:
 
 ```python
-import faketools.position_import_export
-faketools.position_import_export.show()
+import faketools.position_import_export_ui
+faketools.position_import_export_ui.show_ui()
 ```
 
 ![image001](images/position_import_export/image001.png)

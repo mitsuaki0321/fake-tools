@@ -19,8 +19,8 @@
 専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.drivenkey_tools
-faketools.tools.drivenkey_tools.show_ui()
+import faketools.tools.drivenkey_tools_ui
+faketools.tools.drivenkey_tools_ui.show_ui()
 ```
 
 ![image001](images/drivenkey_tools/image001.png)

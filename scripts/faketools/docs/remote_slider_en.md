@@ -10,8 +10,8 @@ Operate the attributes of a transform node from the UI.
 Launch from the dedicated menu or the following command:
 
 ```python
-import faketools.tools.remote_slider
-faketools.tools.remote_slider.show_ui()
+import faketools.tools.remote_slider_ui
+faketools.tools.remote_slider_ui.show_ui()
 ```
 
 ### Basic Usage

@@ -12,8 +12,8 @@ Mainly, you can lock attributes, change the display state of nodes, and modify a
 You can launch the tool from the dedicated menu or by using the following command:
 
 ```python
-import faketools.tools.attribute_lister
-faketools.tools.attribute_lister.show_ui()
+import faketools.tools.attribute_lister_ui
+faketools.tools.attribute_lister_ui.show_ui()
 ```
 
 ![image001](images/attribute_lister/image001.png)

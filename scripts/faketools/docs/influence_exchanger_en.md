@@ -7,8 +7,8 @@ Exchange already bound influences with unbound influences.
 Use the Skin Weights Utility menu or start the tool with the following command:
 
 ```python
-import faketools.tools.influence_exchanger
-faketools.tools.influence_exchanger.show_ui()
+import faketools.tools.influence_exchanger_ui
+faketools.tools.influence_exchanger_ui.show_ui()
 ```
 
 ![image001](images/influence_exchanger/image001.png)

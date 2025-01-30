@@ -20,8 +20,8 @@ Vertex、NurbsCurveCV、NurbsSurfaceCV、LatticePoint の選択を補助する�
 専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.component_selecter
-faketools.tools.component_selecter.show_ui()
+import faketools.tools.component_selecter_ui
+faketools.tools.component_selecter_ui.show_ui()
 ```
 
 ![image001](images/component_selecter/image001.png)
