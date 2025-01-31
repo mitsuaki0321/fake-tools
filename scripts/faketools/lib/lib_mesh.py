@@ -30,11 +30,35 @@ class MeshComponent:
         selection_list = om.MSelectionList()
         selection_list.add(mesh)
 
-        self.mesh = mesh
-        self.dag_path = selection_list.getDagPath(0)
-        self.mesh_fn = om.MFnMesh(self.dag_path)
+        self._mesh_name = mesh
+        self._dag_path = selection_list.getDagPath(0)
+        self._mesh_fn = om.MFnMesh(self._dag_path)
 
-    def _get_components_indices(self, components: list[str], component_type: str) -> list[int]:
+    def get_mesh_name(self) -> str:
+        """Get the mesh name.
+
+        Returns:
+            str: The mesh name.
+        """
+        return self._mesh_name
+
+    def get_dag_path(self) -> om.MDagPath:
+        """Get the DAG path.
+
+        Returns:
+            om.MDagPath: The DAG path.
+        """
+        return self._dag_path
+
+    def get_mesh_fn(self) -> om.MFnMesh:
+        """Get the mesh function set.
+
+        Returns:
+            om.MFnMesh: The mesh function set.
+        """
+        return self._mesh_fn
+
+    def get_components_indices(self, components: list[str], component_type: str) -> list[int]:
         """Get the component indices.
 
         Args:
@@ -65,14 +89,14 @@ class MeshComponent:
         if component_obj.apiTypeStr != component_type_str[component_type]:
             raise ValueError(f'Invalid component type: {component_obj.apiTypeStr}')
 
-        if component_path != self.dag_path:
+        if component_path != self._dag_path:
             raise ValueError('Component does not belong to the mesh')
 
         component_indices = om.MFnSingleIndexedComponent(component_obj).getElements()
 
         return list(component_indices)
 
-    def _get_components_from_indices(self, indices: list[int], component_type: str) -> list[str]:
+    def get_components_from_indices(self, indices: list[int], component_type: str) -> list[str]:
         """Get the component names from the indices.
 
         Args:
@@ -85,24 +109,24 @@ class MeshComponent:
         if component_type not in ['face', 'edge', 'vertex']:
             raise ValueError(f'Invalid component type: {component_type}')
 
-        mesh_transform = cmds.listRelatives(self.mesh, parent=True, path=True)[0]
+        mesh_transform = cmds.listRelatives(self._mesh_name, parent=True, path=True)[0]
 
         if component_type == 'face':
-            num_faces = self.mesh_fn.numPolygons
+            num_faces = self._mesh_fn.numPolygons
             if min(indices) < 0 or max(indices) >= num_faces:
                 raise ValueError('Face index out of range.')
 
             return [f'{mesh_transform}.f[{index}]' for index in indices]
 
         elif component_type == 'edge':
-            num_edges = self.mesh_fn.numEdges
+            num_edges = self._mesh_fn.numEdges
             if min(indices) < 0 or max(indices) >= num_edges:
                 raise ValueError('Edge index out of range.')
 
             return [f'{mesh_transform}.e[{index}]' for index in indices]
 
         elif component_type == 'vertex':
-            num_vertices = self.mesh_fn.numVertices
+            num_vertices = self._mesh_fn.numVertices
             if min(indices) < 0 or max(indices) >= num_vertices:
                 raise ValueError('Vertex index out of range.')
 
@@ -123,14 +147,14 @@ class MeshVertex(MeshComponent):
             list[om.MPoint]: The vertex positions.
         """
         if vtx_indices is None:
-            positions = self.mesh_fn.getPoints(om.MSpace.kWorld)
+            positions = self._mesh_fn.getPoints(om.MSpace.kWorld)
         else:
-            num_vertices = self.mesh_fn.numVertices
+            num_vertices = self._mesh_fn.numVertices
             for index in vtx_indices:
                 if index >= num_vertices:
                     raise ValueError(f'Vertex index out of range: {index}')
 
-            positions = [self.mesh_fn.getPoint(index, om.MSpace.kWorld) for index in vtx_indices]
+            positions = [self._mesh_fn.getPoint(index, om.MSpace.kWorld) for index in vtx_indices]
 
         return positions
 
@@ -144,14 +168,14 @@ class MeshVertex(MeshComponent):
             list[om.MVector]: The vertex normals.
         """
         if vtx_indices is None:
-            normals = self.mesh_fn.getVertexNormals(False, om.MSpace.kWorld)
+            normals = self._mesh_fn.getVertexNormals(False, om.MSpace.kWorld)
         else:
-            num_vertices = self.mesh_fn.numVertices
+            num_vertices = self._mesh_fn.numVertices
             for index in vtx_indices:
                 if index >= num_vertices:
                     raise ValueError(f'Vertex index out of range: {index}')
 
-            normals = [self.mesh_fn.getVertexNormal(index, om.MSpace.kWorld) for index in vtx_indices]
+            normals = [self._mesh_fn.getVertexNormal(index, om.MSpace.kWorld) for index in vtx_indices]
 
         return normals
 
@@ -164,8 +188,8 @@ class MeshVertex(MeshComponent):
         Returns:
             list[om.MVector]: The vertex tangents.
         """
-        mit_vertex = om.MItMeshVertex(self.dag_path)
-        num_vertices = self.mesh_fn.numVertices
+        mit_vertex = om.MItMeshVertex(self._dag_path)
+        num_vertices = self._mesh_fn.numVertices
 
         if vtx_indices is None:
             vtx_indices = range(num_vertices)
@@ -181,7 +205,7 @@ class MeshVertex(MeshComponent):
 
             for face_id in connected_face_ids:
                 try:
-                    tangent += self.mesh_fn.getFaceVertexTangent(face_id, index, space=om.MSpace.kWorld)
+                    tangent += self._mesh_fn.getFaceVertexTangent(face_id, index, space=om.MSpace.kWorld)
                 except RuntimeError:
                     logger.warning(f'Failed to get tangent for vertex: {index}')
 
@@ -202,8 +226,8 @@ class MeshVertex(MeshComponent):
         Returns:
             list[om.MVector]: The vertex binormals.
         """
-        mit_vertex = om.MItMeshVertex(self.dag_path)
-        num_vertices = self.mesh_fn.numVertices
+        mit_vertex = om.MItMeshVertex(self._dag_path)
+        num_vertices = self._mesh_fn.numVertices
 
         if vtx_indices is None:
             vtx_indices = range(num_vertices)
@@ -219,7 +243,7 @@ class MeshVertex(MeshComponent):
 
             for face_id in connected_face_ids:
                 try:
-                    binormal += self.mesh_fn.getFaceVertexBinormal(face_id, index, om.MSpace.kWorld)
+                    binormal += self._mesh_fn.getFaceVertexBinormal(face_id, index, om.MSpace.kWorld)
                 except RuntimeError:
                     logger.warning(f'Failed to get binormal for vertex: {index}')
 
@@ -237,7 +261,7 @@ class MeshVertex(MeshComponent):
         Returns:
             list[list[int]]: The vertex shells.
         """
-        num_shells, shell_ids = self.mesh_fn.getMeshShellsIds(om.MFn.kMeshVertComponent)
+        num_shells, shell_ids = self._mesh_fn.getMeshShellsIds(om.MFn.kMeshVertComponent)
 
         shells = [[] for _ in range(num_shells)]
         for vertex_id, shell_id in enumerate(shell_ids):
@@ -254,8 +278,8 @@ class MeshVertex(MeshComponent):
         Returns:
             list[list[int]]: The connected vertices.
         """
-        mit_vertex = om.MItMeshVertex(self.dag_path)
-        num_vertices = self.mesh_fn.numVertices
+        mit_vertex = om.MItMeshVertex(self._dag_path)
+        num_vertices = self._mesh_fn.numVertices
 
         connected_vertices = []
         for index in vtx_indices:
@@ -276,7 +300,7 @@ class MeshVertex(MeshComponent):
         Returns:
             list[int]: The component indices.
         """
-        return self._get_components_indices(components, 'vertex')
+        return self.get_components_indices(components, 'vertex')
 
     def get_vertex_components(self, indices: list[int]) -> list[str]:
         """Get the component names from the indices.
@@ -287,7 +311,7 @@ class MeshVertex(MeshComponent):
         Returns:
             list[str]: The component names.
         """
-        return self._get_components_from_indices(indices, 'vertex')
+        return self.get_components_from_indices(indices, 'vertex')
 
     def num_vertices(self) -> int:
         """Get the number of vertices.
@@ -295,7 +319,7 @@ class MeshVertex(MeshComponent):
         Returns:
             int: The number of vertices.
         """
-        return self.mesh_fn.numVertices
+        return self._mesh_fn.numVertices
 
 
 class MeshFace(MeshComponent):
@@ -311,9 +335,9 @@ class MeshFace(MeshComponent):
         Returns:
             list[om.MPoint]: The face positions.
         """
-        num_faces = self.mesh_fn.numPolygons
+        num_faces = self._mesh_fn.numPolygons
 
-        mit_poly = om.MItMeshPolygon(self.dag_path)
+        mit_poly = om.MItMeshPolygon(self._dag_path)
 
         points = []
         for face_id in face_ids:
@@ -335,7 +359,7 @@ class MeshFace(MeshComponent):
         Returns:
             list[om.MVector]: The face normals.
         """
-        num_faces = self.mesh_fn.numPolygons
+        num_faces = self._mesh_fn.numPolygons
 
         normals = []
         for face_id in face_ids:
@@ -343,7 +367,7 @@ class MeshFace(MeshComponent):
                 logger.warning(f'Invalid face id: {face_id}')
                 continue
 
-            normal = self.mesh_fn.getPolygonNormal(face_id, om.MSpace.kWorld)
+            normal = self._mesh_fn.getPolygonNormal(face_id, om.MSpace.kWorld)
             normals.append(normal)
 
         return normals
@@ -357,9 +381,9 @@ class MeshFace(MeshComponent):
         Returns:
             list[om.MVector]: The face tangents.
         """
-        num_faces = self.mesh_fn.numPolygons
+        num_faces = self._mesh_fn.numPolygons
 
-        mit_poly = om.MItMeshPolygon(self.dag_path)
+        mit_poly = om.MItMeshPolygon(self._dag_path)
 
         tangents = []
         for face_id in face_ids:
@@ -373,7 +397,7 @@ class MeshFace(MeshComponent):
             tangent = om.MVector(0.0, 0.0, 0.0)
             for vertex_id in vertex_ids:
                 try:
-                    tangent += self.mesh_fn.getFaceVertexTangent(face_id, vertex_id, om.MSpace.kWorld)
+                    tangent += self._mesh_fn.getFaceVertexTangent(face_id, vertex_id, om.MSpace.kWorld)
                 except RuntimeError:
                     logger.warning(f'Failed to get tangent for face: {face_id}')
 
@@ -393,7 +417,7 @@ class MeshFace(MeshComponent):
         Returns:
             list[int]: The component indices.
         """
-        return self._get_components_indices(components, 'face')
+        return self.get_components_indices(components, 'face')
 
     def get_face_components(self, indices: list[int]) -> list[str]:
         """Get the component names from the indices.
@@ -404,7 +428,7 @@ class MeshFace(MeshComponent):
         Returns:
             list[str]: The component names.
         """
-        return self._get_components_from_indices(indices, 'face')
+        return self.get_components_from_indices(indices, 'face')
 
     def num_faces(self) -> int:
         """Get the number of faces.
@@ -412,7 +436,7 @@ class MeshFace(MeshComponent):
         Returns:
             int: The number of faces.
         """
-        return self.mesh_fn.numPolygons
+        return self._mesh_fn.numPolygons
 
 
 class MeshEdge(MeshComponent):
@@ -428,9 +452,9 @@ class MeshEdge(MeshComponent):
         Returns:
             list[om.MPoint]: The edge positions.
         """
-        num_edges = self.mesh_fn.numEdges
+        num_edges = self._mesh_fn.numEdges
 
-        mit_edge = om.MItMeshEdge(self.dag_path)
+        mit_edge = om.MItMeshEdge(self._dag_path)
 
         points = []
         for edge_id in edge_ids:
@@ -452,15 +476,15 @@ class MeshEdge(MeshComponent):
         Returns:
             list[om.MVector]: The edge normals.
         """
-        num_edges = self.mesh_fn.numEdges
+        num_edges = self._mesh_fn.numEdges
 
         normals = []
         for edge_id in edge_ids:
             if edge_id >= num_edges:
                 continue
 
-            edge_vertices = self.mesh_fn.getEdgeVertices(edge_id)
-            vertex_normals = [self.mesh_fn.getVertexNormal(vertex_id, om.MSpace.kWorld) for vertex_id in edge_vertices]
+            edge_vertices = self._mesh_fn.getEdgeVertices(edge_id)
+            vertex_normals = [self._mesh_fn.getVertexNormal(vertex_id, om.MSpace.kWorld) for vertex_id in edge_vertices]
             edge_normal = (vertex_normals[0] + vertex_normals[1]) / 2.0
 
             normals.append(edge_normal)
@@ -476,9 +500,9 @@ class MeshEdge(MeshComponent):
         Returns:
             list[om.MVector]: The edge tangents.
         """
-        num_edges = self.mesh_fn.numEdges
+        num_edges = self._mesh_fn.numEdges
 
-        mit_vertex = om.MItMeshVertex(self.dag_path)
+        mit_vertex = om.MItMeshVertex(self._dag_path)
 
         def __get_vertex_tangents(edge_vertices: list[int]) -> list[om.MVector]:
             """Get the vertex tangents.
@@ -491,7 +515,7 @@ class MeshEdge(MeshComponent):
 
                 for face_id in connected_face_ids:
                     try:
-                        tangent += self.mesh_fn.getFaceVertexTangent(face_id, index, om.MSpace.kWorld)
+                        tangent += self._mesh_fn.getFaceVertexTangent(face_id, index, om.MSpace.kWorld)
                     except RuntimeError:
                         logger.warning(f'Failed to get tangent for vertex: {index}')
 
@@ -508,7 +532,7 @@ class MeshEdge(MeshComponent):
             if edge_id >= num_edges:
                 continue
 
-            edge_vertices = self.mesh_fn.getEdgeVertices(edge_id)
+            edge_vertices = self._mesh_fn.getEdgeVertices(edge_id)
             vertex_tangents = __get_vertex_tangents(edge_vertices)
             edge_tangent = (vertex_tangents[0] + vertex_tangents[1]) / 2.0
 
@@ -526,15 +550,15 @@ class MeshEdge(MeshComponent):
         Returns:
             list[om.MVector]: The edge vectors.
         """
-        num_edges = self.mesh_fn.numEdges
+        num_edges = self._mesh_fn.numEdges
 
         vectors = []
         for edge_id in edge_ids:
             if edge_id >= num_edges:
                 continue
 
-            edge_vertices = self.mesh_fn.getEdgeVertices(edge_id)
-            vector = self.mesh_fn.getPoint(edge_vertices[1], om.MSpace.kWorld) - self.mesh_fn.getPoint(edge_vertices[0], om.MSpace.kWorld)
+            edge_vertices = self._mesh_fn.getEdgeVertices(edge_id)
+            vector = self._mesh_fn.getPoint(edge_vertices[1], om.MSpace.kWorld) - self._mesh_fn.getPoint(edge_vertices[0], om.MSpace.kWorld)
 
             if normalize:
                 vector.normalize()
@@ -552,7 +576,7 @@ class MeshEdge(MeshComponent):
         Returns:
             list[int]: The component indices.
         """
-        return self._get_components_indices(components, 'edge')
+        return self.get_components_indices(components, 'edge')
 
     def get_edge_components(self, indices: list[int]) -> list[str]:
         """Get the component names from the indices.
@@ -563,7 +587,7 @@ class MeshEdge(MeshComponent):
         Returns:
             list[str]: The component names.
         """
-        return self._get_components_from_indices(indices, 'edge')
+        return self.get_components_from_indices(indices, 'edge')
 
     def num_edges(self) -> int:
         """Get the number of edges.
@@ -571,7 +595,7 @@ class MeshEdge(MeshComponent):
         Returns:
             int: The number of edges.
         """
-        return self.mesh_fn.numEdges
+        return self._mesh_fn.numEdges
 
 
 class MeshPoint(MeshComponent):
@@ -589,7 +613,7 @@ class MeshPoint(MeshComponent):
             list[om.MPointOnMesh]: The closest points on the mesh.
         """
         mesh_intersector = om.MMeshIntersector()
-        mesh_intersector.create(self.dag_path.node(), self.dag_path.inclusiveMatrix())
+        mesh_intersector.create(self._dag_path.node(), self._dag_path.inclusiveMatrix())
 
         result_data = []
         for reference_point in reference_points:
@@ -625,10 +649,10 @@ class MeshPoint(MeshComponent):
         end_point = om.MFloatPoint(end_point)
         ray_direction = end_point - start_point
 
-        hit_data = self.mesh_fn.closestIntersection(start_point, ray_direction, om.MSpace.kWorld, max_param, test_both_directions)
+        hit_data = self._mesh_fn.closestIntersection(start_point, ray_direction, om.MSpace.kWorld, max_param, test_both_directions)
 
         if hit_data is None:
-            logger.warning(f'No intersection found for points: {start_point}, {end_point}, {self.mesh}')
+            logger.warning(f'No intersection found for points: {start_point}, {end_point}, {self._mesh_name}')
             return None
 
         return hit_data
@@ -648,7 +672,7 @@ class MeshComponentConversion(MeshComponent):
         Returns:
             list[list[int]]: The vertices.
         """
-        num_faces = self.mesh_fn.numPolygons
+        num_faces = self._mesh_fn.numPolygons
 
         vertices = []
         for face_id in face_ids:
@@ -657,12 +681,12 @@ class MeshComponentConversion(MeshComponent):
                 continue
 
             if flatten:
-                vertex_ids = self.mesh_fn.getPolygonVertices(face_id)
+                vertex_ids = self._mesh_fn.getPolygonVertices(face_id)
                 for vertex_id in vertex_ids:
                     if vertex_id not in vertices:
                         vertices.append(vertex_id)
             else:
-                vertices.append(list(self.mesh_fn.getPolygonVertices(face_id)))
+                vertices.append(list(self._mesh_fn.getPolygonVertices(face_id)))
 
         return vertices
 
@@ -675,7 +699,7 @@ class MeshComponentConversion(MeshComponent):
         Returns:
             list[list[int]]: The vertices.
         """
-        num_edges = self.mesh_fn.numEdges
+        num_edges = self._mesh_fn.numEdges
 
         vertices = []
         for edge_id in edge_ids:
@@ -684,12 +708,12 @@ class MeshComponentConversion(MeshComponent):
                 continue
 
             if flatten:
-                vertex_ids = self.mesh_fn.getEdgeVertices(edge_id)
+                vertex_ids = self._mesh_fn.getEdgeVertices(edge_id)
                 for vertex_id in vertex_ids:
                     if vertex_id not in vertices:
                         vertices.append(vertex_id)
             else:
-                vertices.append(list(self.mesh_fn.getEdgeVertices(edge_id)))
+                vertices.append(list(self._mesh_fn.getEdgeVertices(edge_id)))
 
         return vertices
 
@@ -703,8 +727,8 @@ class MeshComponentConversion(MeshComponent):
         Returns:
             list[list[int]]: The faces.
         """
-        mit_vertex = om.MItMeshVertex(self.dag_path)
-        num_vertices = self.mesh_fn.numVertices
+        mit_vertex = om.MItMeshVertex(self._dag_path)
+        num_vertices = self._mesh_fn.numVertices
 
         faces = []
         for vertex_id in vertex_ids:
@@ -722,3 +746,39 @@ class MeshComponentConversion(MeshComponent):
                 faces.append(list(face_ids))
 
         return faces
+
+
+def is_same_topology(mesh_a: str, mesh_b: str) -> bool:
+    """Check if two meshes have the same topology.
+
+    Args:
+        mesh_a (str): The first mesh.
+        mesh_b (str): The second mesh.
+
+    Returns:
+        bool: True if the meshes have the same topology.
+    """
+    mesh_fn_a = MeshComponent(mesh_a).get_mesh_fn()
+    mesh_fn_b = MeshComponent(mesh_b).get_mesh_fn()
+
+    if mesh_fn_a.numVertices != mesh_fn_b.numVertices:
+        logger.debug(f'Vertex count is different: {mesh_a}, {mesh_b}')
+        return False
+
+    if mesh_fn_a.numEdges != mesh_fn_b.numEdges:
+        logger.debug(f'Edge count is different: {mesh_a}, {mesh_b}')
+        return False
+
+    if mesh_fn_a.numPolygons != mesh_fn_b.numPolygons:
+        logger.debug(f'Face count is different: {mesh_a}, {mesh_b}')
+        return False
+
+    for i in range(mesh_fn_a.numPolygons):
+        vertices_a = list(mesh_fn_a.getPolygonVertices(i))
+        vertices_b = list(mesh_fn_b.getPolygonVertices(i))
+
+        if vertices_a != vertices_b:
+            logger.debug(f'The vertices that make up the face are different: {mesh_a}, {mesh_b} ({i})')
+            return False
+
+    return True

@@ -2,6 +2,7 @@
 """
 
 from logging import getLogger
+from typing import Optional
 
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
@@ -453,12 +454,32 @@ class ComponentSelection:
         return result_components
 
 
-def get_unique_selections() -> dict[str, float]:
+def get_unique_selections(filter_geometries: Optional[list[str]] = None) -> dict[str, float]:
     """Get the unique components.
+
+    Args:
+        filter_geometries (list[str]): List of geometry names to filter the components.
 
     Returns:
         dict[str, float]: The selected components with their weights.
     """
+    if filter_geometries is None:
+        filter_geometries = []
+    else:
+        filter_geometries_path = []
+        for geometry in filter_geometries:
+            if not cmds.objExists(geometry):
+                raise ValueError(f'Geometry does not exist: {geometry}')
+
+            if cmds.nodeType(geometry) != 'mesh':
+                raise ValueError(f'Geometry is not a mesh: {geometry}')
+
+            selection_list = om.MSelectionList()
+            selection_list.add(geometry)
+            dag_path = selection_list.getDagPath(0)
+
+            filter_geometries_path.append(dag_path)
+
     rich_selection = om.MGlobal.getRichSelection()
     selection = rich_selection.getSelection()
     sym_selection = rich_selection.getSymmetry()
@@ -476,13 +497,21 @@ def get_unique_selections() -> dict[str, float]:
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
                 dag_path, component = iterator.getComponent()
+                if filter_geometries_path:
+                    if dag_path not in filter_geometries_path:
+                        iterator.next()
+                        continue
+
                 dag_path.pop()  # Remove shape node
-                node = dag_path.fullPathName()
+                node = dag_path.partialPathName()
                 fn_comp = om.MFnSingleIndexedComponent(component)
                 for i in range(fn_comp.elementCount):
                     index = fn_comp.element(i)
                     weight = fn_comp.weight(i).influence if fn_comp.hasWeights else 1.0
                     elements[f"{node}.{attr}[{index}]"] = weight
+
+                logger.debug(f'Found components: {elements}')
+
                 iterator.next()
 
     def __process_double_indexed(selection_list, attr_list):
@@ -490,13 +519,21 @@ def get_unique_selections() -> dict[str, float]:
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
                 dag_path, component = iterator.getComponent()
+                if filter_geometries_path:
+                    if dag_path not in filter_geometries_path:
+                        iterator.next()
+                        continue
+
                 dag_path.pop()
-                node = dag_path.fullPathName()
+                node = dag_path.partialPathName()
                 fn_comp = om.MFnDoubleIndexedComponent(component)
                 for i in range(fn_comp.elementCount):
                     u, v = fn_comp.getElement(i)
                     weight = fn_comp.weight(i).influence if fn_comp.hasWeights else 1.0
                     elements[f"{node}.{attr}[{u}][{v}]"] = weight
+
+                logger.debug(f'Found components: {elements}')
+
                 iterator.next()
 
     def __process_triple_indexed(selection_list, attr_list):
@@ -504,13 +541,21 @@ def get_unique_selections() -> dict[str, float]:
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
                 dag_path, component = iterator.getComponent()
+                if filter_geometries_path:
+                    if dag_path not in filter_geometries_path:
+                        iterator.next()
+                        continue
+
                 dag_path.pop()
-                node = dag_path.fullPathName()
+                node = dag_path.partialPathName()
                 fn_comp = om.MFnTripleIndexedComponent(component)
                 for i in range(fn_comp.elementCount):
                     s, t, u = fn_comp.getElement(i)
                     weight = fn_comp.weight(i).influence if fn_comp.hasWeights else 1.0
                     elements[f"{node}.{attr}[{s}][{t}][{u}]"] = weight
+
+                logger.debug(f'Found components: {elements}')
+
                 iterator.next()
 
     __process_single_indexed(

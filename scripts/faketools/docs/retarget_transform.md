@@ -1,4 +1,4 @@
-# Position Import/Export
+# Retarget Transform
 
 選択したノードの位置情報をエクスポート、インポートするツールです。
 
@@ -18,7 +18,7 @@
 
 トランスフォームノードがメッシュの表面上にある場合に、有効な方法です。
 
-![image002](images/position_import_export/image002.png) 
+![image002](images/retarget_transform/image002.png) 
 
 ### Rbf
 
@@ -27,18 +27,18 @@
 
 トランスフォームノードがメッシュの内部にある場合に、有効な方法です。
 
-![image003](images/position_import_export/image003.png) 
+![image003](images/retarget_transform/image003.png) 
 
 ## 使用方法
 
 専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.position_import_export_ui
-faketools.position_import_export_ui.show_ui()
+import faketools.retarget_transform_ui
+faketools.retarget_transform_ui.show_ui()
 ```
 
-![image001](images/position_import_export/image001.png)
+![image001](images/retarget_transform/image001.png)
 
 ### 基本的な使用方法
 
@@ -47,7 +47,7 @@ faketools.position_import_export_ui.show_ui()
 位置情報をエクスポートするには、以下の手順で行います。
 
 1. `Method` からエクスポートする方法を選択します。  
-  ![image004](images/position_import_export/image004.png)
+  ![image004](images/retarget_transform/image004.png)
 
 1. 方法に応じて位置情報をエクスポートする対象のノードを選択します。  
 
@@ -61,11 +61,11 @@ faketools.position_import_export_ui.show_ui()
         - 追加でエクスポートするノードを選択してください ( 複数選択可 )。
     
 2. `File Name` にエクスポートするファイル名を入力します。  
-  ![image005](images/position_import_export/image005.png)
+  ![image005](images/retarget_transform/image005.png)
 
 1. `Export` ボタンを押します。  
   エクスポートが完了すると、エクスポートしたファイル名がリストに表示されます。  
-  ![image006](images/position_import_export/image006.png)
+  ![image006](images/retarget_transform/image006.png)
 
 ※ `Rbf` の方法を選択した時は、`Rbf Radius` の値でエクスポート時の半径を設定できます。位置を再現する際に目的の挙動と異なる場合は、この値を大きくすることで期待する挙動が得られる場合があります。
 
@@ -74,7 +74,7 @@ faketools.position_import_export_ui.show_ui()
 位置情報をインポートするには、以下の手順で行います。
 
 1. インポートするファイル名をリストから選択します。  
-  ![image006](images/position_import_export/image006.png)
+  ![image006](images/retarget_transform/image006.png)
 
 2. エクスポートした時の方法に応じて、インポートする対象のノードを選択します。  
      - `Default`  
@@ -85,7 +85,7 @@ faketools.position_import_export_ui.show_ui()
         - エクスポートした時と同トポロジーのメッシュを選択してください。
 
 3. オプションを設定し、`Import` ボタンを押します。デフォルトの設定では、エクスポート時に選択したノードに位置情報が適用されます。  
-  ![image007](images/position_import_export/image007.png)
+  ![image007](images/retarget_transform/image007.png)
 
 ### インポートオプション
 
@@ -105,7 +105,7 @@ faketools.position_import_export_ui.show_ui()
 
 リスト上で右クリックすると、コンテキストメニューが表示されます。
 
-![image008](images/position_import_export/image008.png)
+![image008](images/retarget_transform/image008.png)
 
 - `Select Nodes`  
   - リストで選択しているファイルに記録されているノードを選択します。

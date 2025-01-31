@@ -28,7 +28,8 @@ This is a collection of personal tools to streamline work in Maya.
 - [Attribute Lister](./attribute_lister.html)
 - [Connection Lister](./connection_lister.html)
 - [Node Stocker](./node_stocker.html)
-- [Position Import/Export](./position_import_export.html)
+- [Retarget Transform](./retarget_transform.html)
+- [Retarget Mesh](./retarget_mesh.html)
 
 ### English
 
@@ -50,4 +51,5 @@ This is a collection of personal tools to streamline work in Maya.
 - [Attribute Lister](./attribute_lister_en.html)
 - [Connection Lister](./connection_lister_en.html)
 - [Node Stocker](./node_stocker_en.html)
-- [Position Import/Export](./position_import_export_en.html)
+- [Retarget Transform](./retarget_transform_en.html)
+- [Retarget Mesh](./retarget_mesh_en.html)

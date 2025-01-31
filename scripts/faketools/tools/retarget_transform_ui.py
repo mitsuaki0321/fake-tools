@@ -1,5 +1,5 @@
 """
-Transform node position export and import tool.
+Retarget transforms tool.
 """
 
 import glob
@@ -21,7 +21,7 @@ from PySide2.QtWidgets import (
 )
 
 from .. import user_directory
-from ..command import object_morph
+from ..command import retarget_transforms
 from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
 from ..lib_ui.widgets import extra_widgets
 
@@ -178,10 +178,10 @@ class MainWindow(base_window.BaseMainWindow):
         if not file_name:
             cmds.error('File name is empty.')
 
-        object_morph.export_transform_position(output_directory=self.output_directory,
-                                               file_name=file_name,
-                                               method=method,
-                                               rbf_radius=rbf_radius)
+        retarget_transforms.export_transform_position(output_directory=self.output_directory,
+                                                      file_name=file_name,
+                                                      method=method,
+                                                      rbf_radius=rbf_radius)
 
         self.__update_file_list()
         self.__select_file(file_name)
@@ -201,12 +201,15 @@ class MainWindow(base_window.BaseMainWindow):
         object_type = self.object_type_box.currentText()
         object_size = self.object_size_box.value()
 
-        object_morph.import_transform_position(sel_file_path,
-                                               create_new=create_new,
-                                               is_rotation=is_rotation,
-                                               restore_hierarchy=restore_hierarchy,
-                                               creation_object_type=object_type,
-                                               creation_object_size=object_size)
+        result_transforms = retarget_transforms.import_transform_position(sel_file_path,
+                                                                          create_new=create_new,
+                                                                          is_rotation=is_rotation,
+                                                                          restore_hierarchy=restore_hierarchy,
+                                                                          creation_object_type=object_type,
+                                                                          creation_object_size=object_size)
+
+        if result_transforms:
+            cmds.select(result_transforms, r=True)
 
     @maya_ui.error_handler
     def _select_data_nodes(self) -> None:
@@ -216,7 +219,7 @@ class MainWindow(base_window.BaseMainWindow):
         if not sel_file_path:
             cmds.error('No file selected.')
 
-        transform_data = object_morph.load_transform_position_data(sel_file_path)
+        transform_data = retarget_transforms.load_transform_position_data(sel_file_path)
         transform_nodes = transform_data['transforms']
 
         not_exists_nodes = [node for node in transform_nodes if not cmds.objExists(node)]
@@ -299,7 +302,7 @@ class MainWindow(base_window.BaseMainWindow):
         """
         sel_file_path = self.__get_selected_file_path()
         try:
-            transform_data = object_morph.load_transform_position_data(sel_file_path)
+            transform_data = retarget_transforms.load_transform_position_data(sel_file_path)
         except Exception as e:
             logger.error(f'Failed to load transform data: {sel_file_path}\n{e}')
             self.node_length_label.setText(self.__get_node_length_label(0))
@@ -414,5 +417,5 @@ def show_ui():
     # Create the main window.
     main_window = MainWindow(parent=maya_qt.get_maya_pointer(),
                              object_name=window_name,
-                             window_title='Position Import/Export')
+                             window_title='Retarget Transform')
     main_window.show()

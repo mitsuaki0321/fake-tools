@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>index.md</title>
+<title>retarget_mesh_en.md</title>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 
 <style>
@@ -365,56 +365,38 @@ code {
           : 'default'
     });
   </script>
-<h1 id="faketools">FakeTools</h1>
+<h1 id="retarget-mesh">Retarget Mesh</h1>
+<p>This tool applies the deformation of one geometry to another geometry.</p>
+<p><img src="images/retarget_mesh/image001.gif" alt="image001"></p>
 <h2 id="overview">Overview</h2>
-<p>Maya での作業を効率化するための個人用ツール集です。</p>
-<p>This is a collection of personal tools to streamline work in Maya.</p>
-<h2 id="tools">Tools</h2>
-<h3 id="japanese">Japanese</h3>
+<p>It applies the deformation differences between the source mesh and the destination mesh to the target mesh. Multiple destination meshes and target meshes can be selected.</p>
+<h2 id="how-to-use">How to Use</h2>
+<p>Launch the tool from the dedicated menu or with the following command:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.retarget_mesh_ui
+faketools.retarget_mesh_ui.show_ui()
+</div></code></pre>
+<p><img src="images/retarget_mesh/image002.png" alt="image001"></p>
+<h3 id="basic-usage">Basic Usage</h3>
+<p>To use the tool, follow these steps:</p>
+<ol>
+<li>Select the original geometry to be used for deformation and press the <code>Set Source Mesh</code> button.</li>
+<li>Select the geometry to be used for deformation and press the <code>Set Destination Mesh</code> button (multiple selections possible).</li>
+<li>Select the geometry to be deformed and press the <code>Set Target Mesh</code> button.</li>
+<li>Press the <code>Retarget Mesh</code> button.</li>
+</ol>
+<h3 id="options">Options</h3>
 <ul>
-<li><a href="./single_commands.html">Single Commands</a></li>
-<li><a href="./remote_slider.html">Remort Slider</a></li>
-<li><a href="./scene_optimizer.html">Scene Optimizer</a></li>
-<li><a href="./selecter.html">Selecter</a></li>
-<li><a href="./transform_connecter.html">Transform Connecter</a></li>
-<li><a href="./transform_creater.html">Transform Creater</a></li>
-<li><a href="./transform_creater_on_curve.html">Transform on Curve Creater</a></li>
-<li><a href="./membership_handler.html">Membership Handler</a></li>
-<li><a href="./skinWeights_import_export.html">SkinWeights Import/Export</a></li>
-<li><a href="./skinWeights_tools.html">SkinWeights Tools</a></li>
-<li><a href="./skinWeights_relax.html">SkinWeights Relax</a></li>
-<li><a href="./skinWeights_copy_paste.html">SkinWeights CopyPaste</a></li>
-<li><a href="./curveSurface_creator.html">CurveSurface Creator</a></li>
-<li><a href="./drivenKey_tools.html">DrivenKey Tools</a></li>
-<li><a href="./component_selecter.html">Component Selecter</a></li>
-<li><a href="./attribute_lister.html">Attribute Lister</a></li>
-<li><a href="./connection_lister.html">Connection Lister</a></li>
-<li><a href="./node_stocker.html">Node Stocker</a></li>
-<li><a href="./retarget_transform.html">Retarget Transform</a></li>
-<li><a href="./retarget_mesh.html">Retarget Mesh</a></li>
+<li><strong>Create New Mesh</strong>
+<ul>
+<li>If the checkbox is on, a new geometry will be created. If off, the target mesh will be deformed.</li>
 </ul>
-<h3 id="english">English</h3>
+</li>
+</ul>
+<h2 id="notes">Notes</h2>
 <ul>
-<li><a href="./single_commands_en.html">Single Commands</a></li>
-<li><a href="./remote_slider_en.html">Remort Slider</a></li>
-<li><a href="./scene_optimizer_en.html">Scene Optimizer</a></li>
-<li><a href="./selecter_en.html">Selecter</a></li>
-<li><a href="./transform_connecter_en.html">Transform Connecter</a></li>
-<li><a href="./transform_creater_en.html">Transform Creater</a></li>
-<li><a href="./transform_creater_on_curve_en.html">Transform on Curve Creater</a></li>
-<li><a href="./membership_handler_en.html">Membership Handler</a></li>
-<li><a href="./skinWeights_import_export_en.html">SkinWeights Import/Export</a></li>
-<li><a href="./skinWeights_tools_en.html">SkinWeights Tools</a></li>
-<li><a href="./skinWeights_relax_en.html">SkinWeights Relax</a></li>
-<li><a href="./skinWeights_copy_paste_en.html">SkinWeights Copy Paste</a></li>
-<li><a href="./curveSurface_creator_en.html">CurveSurface Creator</a></li>
-<li><a href="./drivenKey_tools_en.html">DrivenKey Tools</a></li>
-<li><a href="./component_selecter_en.html">Component Selecter</a></li>
-<li><a href="./attribute_lister_en.html">Attribute Lister</a></li>
-<li><a href="./connection_lister_en.html">Connection Lister</a></li>
-<li><a href="./node_stocker_en.html">Node Stocker</a></li>
-<li><a href="./retarget_transform_en.html">Retarget Transform</a></li>
-<li><a href="./retarget_mesh_en.html">Retarget Mesh</a></li>
+<li>The topology of the source mesh and the destination mesh must be the same.</li>
+<li>If <code>Create New Mesh</code> is off and there are multiple destination meshes, they will not be created.</li>
+<li>Processing may take time if the target mesh has a large number of vertices.</li>
 </ul>
 
 </body>

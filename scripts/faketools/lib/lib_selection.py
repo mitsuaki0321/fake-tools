@@ -3,6 +3,7 @@ Node selection functions.
 """
 
 import re
+from contextlib import contextmanager
 from logging import getLogger
 from typing import Optional
 
@@ -596,3 +597,31 @@ class HiliteSelection:
             return
 
         cmds.hilite(hilite_nodes, unHilite=True)
+
+
+@contextmanager
+def restore_selection():
+    """Context manager to restore the existing selection state.
+    """
+    initial_selection = cmds.ls(selection=True, long=True)
+    try:
+        yield
+    finally:
+        if not initial_selection:
+            cmds.select(cl=True)
+        else:
+            exists_nodes = []
+            not_exists_nodes = []
+            for node in initial_selection:
+                if cmds.objExists(node):
+                    exists_nodes.append(node)
+                else:
+                    not_exists_nodes.append(node)
+
+            if not_exists_nodes:
+                cmds.warning(f'Nodes do not exist: {not_exists_nodes}')
+
+            if exists_nodes:
+                cmds.select(exists_nodes, replace=True)
+            else:
+                cmds.select(cl=True)

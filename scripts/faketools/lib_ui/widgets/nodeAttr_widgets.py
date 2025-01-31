@@ -27,19 +27,21 @@ from .. import base_window, maya_ui
 logger = getLogger(__name__)
 
 
-class NodeList(QListView):
+class NodeListView(QListView):
     """Node list view.
     """
 
     def __init__(self, parent=None):
         """Initialize the NodeList.
         """
-        super(NodeList, self).__init__(parent)
+        super(NodeListView, self).__init__(parent)
         self.setSelectionMode(QListView.ExtendedSelection)
         self.setEditTriggers(QListView.NoEditTriggers)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
         self.viewport().installEventFilter(self)
+
+        self.menu = QMenu()
 
     def eventFilter(self, source, event) -> bool:
         """Event filter to handle right-click context menu.
@@ -53,7 +55,7 @@ class NodeList(QListView):
             elif event.button() == Qt.MiddleButton:
                 return True
 
-        return super(NodeList, self).eventFilter(source, event)
+        return super(NodeListView, self).eventFilter(source, event)
 
     def show_context_menu(self, position) -> None:
         """Show context menu for node list.
@@ -61,14 +63,18 @@ class NodeList(QListView):
         Args:
             position (Qt.Pos): The position of the context menu
         """
-        menu = QMenu()
-        menu.addAction("Select Nodes", self.select_nodes)
-        menu.addAction("Select All Nodes", self.select_all_nodes)
-        menu.exec_(position)
+        self.menu.addAction("Select Nodes", self._select_nodes)
+        self.menu.addAction("Select All Nodes", self._select_all_nodes)
+
+        self.menu.addSeparator()
+
+        self.menu.addAction("Remove Nodes", self._remove_nodes)
+
+        self.menu.exec_(position)
 
     @maya_ui.undo_chunk('Select Nodes')
     @maya_ui.error_handler
-    def select_nodes(self) -> None:
+    def _select_nodes(self) -> None:
         """Select the nodes in Maya scene that are selected in the node list.
         """
         selected_nodes = self.get_selected_nodes()
@@ -79,7 +85,7 @@ class NodeList(QListView):
 
     @maya_ui.undo_chunk('Select All Nodes')
     @maya_ui.error_handler
-    def select_all_nodes(self) -> None:
+    def _select_all_nodes(self) -> None:
         """Select all nodes in the node list in Maya scene.
         """
         all_nodes = self.get_all_nodes()
@@ -87,6 +93,13 @@ class NodeList(QListView):
             cmds.select(all_nodes, replace=True)
         else:
             cmds.select(clear=True)
+
+    def _remove_nodes(self) -> None:
+        """Remove the selected nodes from the node list.
+        """
+        selected_indexes = self.selectionModel().selectedIndexes()
+        for index in selected_indexes:
+            self.model().removeRow(index.row())
 
     def get_selected_nodes(self) -> list[str]:
         """Get the selected nodes.
@@ -106,18 +119,18 @@ class NodeList(QListView):
         return [self.model().item(i).text() for i in range(self.model().rowCount())]
 
 
-class AttributeList(QListView):
+class AttributeListView(QListView):
     """Attribute list view.
     """
     attribute_lock_changed = Signal()
 
-    def __init__(self, node_widgets: NodeList, parent=None):
+    def __init__(self, node_widgets: NodeListView, parent=None):
         """Initialize the AttributeList.
 
         Args:
             node_widgets (NodeList): The node list widget.
         """
-        super(AttributeList, self).__init__(parent)
+        super(AttributeListView, self).__init__(parent)
         self.setSelectionMode(QListView.ExtendedSelection)
         self.setEditTriggers(QListView.NoEditTriggers)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -143,7 +156,7 @@ class AttributeList(QListView):
                 return True
             elif event.button() == Qt.MiddleButton:
                 return True
-        return super(AttributeList, self).eventFilter(source, event)
+        return super(AttributeListView, self).eventFilter(source, event)
 
     def show_context_menu(self, position) -> None:
         """Show context menu for attribute list.
@@ -255,10 +268,10 @@ class NodeAttributeWidgets(QWidget):
         load_button = QPushButton('Load')
         self.main_layout.addWidget(load_button)
 
-        self.node_list = NodeList()
+        self.node_list = NodeListView()
         self.main_layout.addWidget(self.node_list)
 
-        self.attr_list = AttributeList(self.node_list)
+        self.attr_list = AttributeListView(self.node_list)
         self.main_layout.addWidget(self.attr_list)
 
         self.filter_line_edit = QLineEdit()

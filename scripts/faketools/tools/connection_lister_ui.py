@@ -58,10 +58,10 @@ class MainWindow(base_window.BaseMainWindow):
         node_list_layout = QHBoxLayout()
         node_list_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.source_node_list = nodeAttr_widgets.NodeList()
+        self.source_node_list = nodeAttr_widgets.NodeListView()
         node_list_layout.addWidget(self.source_node_list)
 
-        self.dest_node_list = nodeAttr_widgets.NodeList()
+        self.dest_node_list = nodeAttr_widgets.NodeListView()
         node_list_layout.addWidget(self.dest_node_list)
 
         self.central_layout.addLayout(node_list_layout)
@@ -84,14 +84,14 @@ class MainWindow(base_window.BaseMainWindow):
 
         self.operation_stack_widget.addWidget(attr_layout)
 
-        self.source_attr_list = nodeAttr_widgets.AttributeList(self.source_node_list)
+        self.source_attr_list = nodeAttr_widgets.AttributeListView(self.source_node_list)
         layout.addWidget(self.source_attr_list, 0, 0)
 
         self.source_filter_line_edit = QLineEdit()
         self.source_filter_line_edit.setPlaceholderText("Filter attributes...")
         layout.addWidget(self.source_filter_line_edit, 1, 0)
 
-        self.dest_attr_list = nodeAttr_widgets.AttributeList(self.dest_node_list)
+        self.dest_attr_list = nodeAttr_widgets.AttributeListView(self.dest_node_list)
         layout.addWidget(self.dest_attr_list, 0, 1)
 
         self.dest_filter_line_edit = QLineEdit()
@@ -148,7 +148,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.operation_stack_widget.setCurrentIndex(index)
 
     @maya_ui.error_handler
-    def _list_nodes(self, node_list_widget: nodeAttr_widgets.NodeList,
+    def _list_nodes(self, node_list_widget: nodeAttr_widgets.NodeListView,
                     display_attributes_callback: callable) -> None:
         """Update the node list
 
@@ -201,8 +201,8 @@ class MainWindow(base_window.BaseMainWindow):
         """
         self.__display_attributes(self.dest_node_list, self.dest_attr_list, self.__dest_list_attributes)
 
-    def __display_attributes(self, node_list_widget: nodeAttr_widgets.NodeList,
-                             attr_list_widget: nodeAttr_widgets.AttributeList,
+    def __display_attributes(self, node_list_widget: nodeAttr_widgets.NodeListView,
+                             attr_list_widget: nodeAttr_widgets.AttributeListView,
                              list_attributes_callback: callable) -> None:
         """Display the attributes of the selected nodes
 

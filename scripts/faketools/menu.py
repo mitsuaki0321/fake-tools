@@ -29,7 +29,8 @@ tools = [{'label': 'Remote Slider', 'module': 'remote_slider_ui'},
          {'label': 'Attribute Lister', 'module': 'attribute_lister_ui'},
          {'label': 'Connection Lister', 'module': 'connection_lister_ui'},
          {'label': 'Node Stocker', 'module': 'node_stocker_ui'},
-         {'label': 'Position Import/Export', 'module': 'position_import_export_ui'},
+         {'label': 'Retarget Transform', 'module': 'retarget_transform_ui'},
+         {'label': 'Retarget Mesh', 'module': 'retarget_mesh_ui'},
          ]
 
 

@@ -1,8 +1,9 @@
-"""Geometry and transform morphing commands.
+"""Retarget transform positions command.
 """
 
 from __future__ import annotations
 
+import importlib
 import math
 import os
 import pickle
@@ -12,15 +13,13 @@ from logging import getLogger
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
 import numpy as np
-from scipy.linalg import pinv
-from scipy.sparse import csr_matrix
-from scipy.sparse.linalg import spsolve
-from scipy.spatial import cKDTree
-from scipy.spatial.distance import cdist
 
-from ..lib import lib_name, lib_skinCluster, lib_transform
+from ..lib import lib_name, lib_retarget, lib_transform
 
 logger = getLogger(__name__)
+
+
+importlib.reload(lib_retarget)
 
 
 class PositionBase(ABC):
@@ -282,7 +281,7 @@ class MeshRBFPosition(MeshPosition):
 
     _data_type = np.float32
 
-    def export_data(self, positions: list[list[float]], method_instance: IndexQueryMethod, **kwargs) -> dict:
+    def export_data(self, positions: list[list[float]], method_instance: lib_retarget.IndexQueryMethod, **kwargs) -> dict:
         """Export the positions to RBF-like interpolation.
 
         Args:
@@ -301,7 +300,7 @@ class MeshRBFPosition(MeshPosition):
         if method_instance is None:
             raise ValueError('Index query method instance not provided.')
 
-        if not isinstance(method_instance, IndexQueryMethod):
+        if not isinstance(method_instance, lib_retarget.IndexQueryMethod):
             raise ValueError('Invalid index query method instance.')
 
         rotations = kwargs.get('rotations', [])
@@ -335,7 +334,7 @@ class MeshRBFPosition(MeshPosition):
         # Add vertices if the number of elements in indices is less than 4
         index_counts = [len(index) for index in indices]
         if not all([count >= 4 for count in index_counts]):
-            distance_index_query = DistanceIndexQuery(num_vertices=4)
+            distance_index_query = lib_retarget.DistanceIndexQuery(num_vertices=4)
             distance_indices = distance_index_query.get_indices(vtx_positions, positions)
             for i, count in enumerate(index_counts):
                 if count < 4:
@@ -374,18 +373,18 @@ class MeshRBFPosition(MeshPosition):
         computed_position_list = []
         computed_rotation_list = []
         for i in range(len(trg_positions)):
-            src_positions = src_positions_list[trg_indices_list[i]]
-            dst_positions = dst_positions_list[trg_indices_list[i]]
+            src_positions = np.asarray(src_positions_list[trg_indices_list[i]])
+            dst_positions = np.asarray(dst_positions_list[trg_indices_list[i]])
 
             if trg_rotations_positions:
                 compute_positions = [trg_positions[i]] + trg_rotations_positions[i]
             else:
                 compute_positions = [trg_positions[i]]
+            compute_positions = np.asarray(compute_positions)
 
-            mesh_mat = _rbf_base_matrix(src_positions, dataType=self._data_type)
-            weight_point_x, weight_point_y, weight_point_z = _rbf_compute_weight(dst_positions, mesh_mat, dataType=self._data_type)
-            computed_positions = _rbf_compute_points(src_positions, compute_positions, weight_point_x,
-                                                     weight_point_y, weight_point_z, dataType=self._data_type)
+            rbf_deform = lib_retarget.RBFDeform(src_positions, data_type=self._data_type)
+            weight_point_x, weight_point_y, weight_point_z = rbf_deform.compute_weights(dst_positions)
+            computed_positions = rbf_deform.compute_points(compute_positions, weight_point_x, weight_point_y, weight_point_z)
 
             logger.debug(f'Computed positions: {computed_positions}')
 
@@ -453,278 +452,6 @@ class MeshRBFPosition(MeshPosition):
             return 0.0
 
         return hit_data[1]  # hitRayParam ( Parametric distance to the hit point along the ray. )
-
-
-class IndexQueryMethod:
-
-    def get_indices(self, mesh_points: list[list[float]], positions: list[list[float]]) -> list[list[int]]:
-        raise NotImplementedError('Method not implemented.')
-
-
-class DistanceIndexQuery(IndexQueryMethod):
-
-    def __init__(self, num_vertices=10):
-        """Initialize the DistanceIndexQuery class.
-
-        Args:
-            num_vertices (int): The number of vertices to return.
-        """
-        self.__num_vertices = num_vertices
-
-    def get_indices(self, mesh_points: list[list[float]], positions: list[list[float]]) -> list[list[int]]:
-        """Get the closest vertices to each specified position using a loop.
-
-        Args:
-            mesh_points (list[list[float]]): The mesh points.
-            positions (list[list[float]]): The positions.
-
-        Returns:
-            list[list[int]]: The closest vertices for each position.
-        """
-        mesh_points = np.array(mesh_points)
-        positions = np.array(positions)
-
-        result_indices = []
-        for position in positions:
-            distances = np.linalg.norm(mesh_points - position, axis=1)
-            closest_indices = np.argsort(distances)[:self.__num_vertices]
-
-            result_indices.append(closest_indices.tolist())
-
-        return result_indices
-
-
-class RadiusIndexQuery(IndexQueryMethod):
-
-    def __init__(self, radius: float = 1.0):
-        """Initialize the RadiusIndexQuery class.
-
-        Args:
-            radius (float): The radius.
-        """
-        self.__radius = radius
-
-    def get_indices(self, mesh_points: list[list[float]], positions: list[list[float]]) -> list[list[int]]:
-        """Get the vertices within the radius for each position.
-
-        Args:
-            mesh_points (list[list[float]]): The target mesh points.
-            positions (list[list[float]]): The radius center positions.
-
-        Returns:
-            list[list[int]]: The vertices within the radius for each position.
-        """
-        mesh_points = np.array(mesh_points)
-        positions = np.array(positions)
-
-        kd_tree = cKDTree(mesh_points)
-
-        result_indices = []
-        for position in positions:
-            indices = kd_tree.query_ball_point(position, self.__radius)
-            result_indices.append(indices)
-
-        return result_indices
-
-
-class NearestRadiusIndexQuery(IndexQueryMethod):
-
-    def __init__(self, radius_multiplier=1.5):
-        """Initialize the NearestRadiusIndexQuery class.
-
-        Args:
-            radius_multiplier (float): The radius multiplier.
-        """
-        self.__radius_multiplier = radius_multiplier
-
-    def get_indices(self, mesh_points: list[list[float]], positions: list[list[float]]) -> list[list[int]]:
-        """Get the vertices within the radius for each position.
-
-        Args:
-            mesh_points (list[list[float]]): The target mesh points.
-            positions (list[list[float]]): The radius center positions.
-
-        Returns:
-            list[list[int]]: The vertices within the radius for each position.
-        """
-        mesh_points = np.array(mesh_points)
-        positions = np.array(positions)
-
-        kd_tree = cKDTree(mesh_points)
-        result_indices = []
-        for position in positions:
-            dist, _ = kd_tree.query(position)
-            effective_radius = self.__radius_multiplier * dist
-            indices = kd_tree.query_ball_point(position, effective_radius)
-
-            result_indices.append(indices)
-
-        return result_indices
-
-
-class SkinClusterIndexQuery(IndexQueryMethod):
-
-    def __init__(self, mesh: str, max_vertices: int = 100):
-        """Initialize the SkinClusterIndexQuery class.
-
-        Args:
-            mesh (str): The mesh name.
-            max_vertices (int): The maximum vertices to consider. If 0, all vertices are considered.
-        """
-        if not cmds.objExists(mesh):
-            raise ValueError(f'Mesh does not exist: {mesh}')
-
-        if cmds.objectType(mesh) != 'mesh':
-            raise ValueError(f'Not a mesh: {mesh}')
-
-        self.__mesh = mesh
-        self.__max_vertices = max_vertices
-
-    def get_indices(self, mesh_points: list[list[float]], positions: list[list[float]]) -> list[list[int]]:
-        """Get the closest vertices to each specified position using the skin cluster.
-
-        Notes:
-            - If max_vertices is not 0, get up to max_vertices vertices.
-
-
-        Args:
-            mesh_points (list[list[float]]): The mesh points.
-            positions (list[list[float]]): The positions.
-
-        Returns:
-            list[list[int]]: The closest vertices for each position.
-        """
-        mesh_count = cmds.polyEvaluate(self.__mesh, vertex=True)
-        if len(mesh_points) != mesh_count:
-            raise cmds.error(f'Mesh vertex count mismatch: {len(mesh_points)} != {mesh_count}')
-
-        temp_mesh = cmds.duplicate(self.__mesh, name=f'{self.__mesh}_temp')[0]
-        temp_joints = []
-        for i, pos in enumerate(positions):
-            joint = cmds.createNode('joint', name=f'temp_joint_{i}', ss=True)
-            cmds.xform(joint, ws=True, t=pos)
-            temp_joints.append(joint)
-
-        skin_cluster = cmds.skinCluster(temp_joints, temp_mesh, tsb=True, mi=1, nw=1)[0]
-        skin_weights = np.asarray(lib_skinCluster.get_skin_weights(skin_cluster, all_components=True)).T
-        if self.__max_vertices == 0:
-            result_indices = [np.where(weights > 0.001)[0].tolist() for weights in skin_weights]
-        else:
-            mesh_points = np.array(mesh_points)
-            result_indices = []
-            for weights in skin_weights:
-                weight_indices = np.where(weights > 0.001)[0]
-                if weight_indices.size < self.__max_vertices:
-                    result_indices.append(weight_indices.tolist())
-                else:
-                    distances = np.linalg.norm(mesh_points[weight_indices] - positions, axis=1)
-                    closest_indices = weight_indices[np.argsort(distances)[:self.__max_vertices]]
-                    result_indices.append(closest_indices.tolist())
-
-        cmds.delete(temp_mesh)
-        cmds.delete(temp_joints)
-
-        return result_indices
-
-
-def _rbf_base_matrix(rbf_input_points, dataType=np.float32):
-    """Compute RBF Base Matrix with distance normalization.
-    """
-    mat_c = np.asarray(rbf_input_points, dtype=dataType)
-    mat_cc = np.insert(mat_c, 3, 1., axis=1)
-
-    mat_cct = mat_cc.transpose()
-    A = mat_cct[..., :, np.newaxis]
-    B = mat_cct[..., np.newaxis, :]
-    mat_k = np.sqrt(((A - B)**2).sum(axis=0))
-
-    mat_a = np.c_[mat_k, mat_cc]
-    mat_a = np.r_[mat_a, np.c_[mat_cct, np.zeros([4, 4])]]
-
-    return mat_a
-
-
-def _rbf_compute_weight(compute_points: list[list[float]],
-                        base_matrix: csr_matrix,
-                        dataType: type = np.float32) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Compute the RBF weights for the target points.
-
-    Args:
-        compute_points (list[list[float]]): Target points for which weights are computed.
-        base_matrix (csr_matrix): The precomputed RBF matrix.
-        dataType (type): Data type, default is np.float32.
-
-    Returns:
-        tuple[np.ndarray, np.ndarray, np.ndarray]: Arrays of weights for x, y, and z.
-    """
-    trg_x, trg_y, trg_z = np.asarray(compute_points, dtype=dataType).T
-    trg_x = np.append(trg_x, [.0, .0, .0, .0])
-    trg_y = np.append(trg_y, [.0, .0, .0, .0])
-    trg_z = np.append(trg_z, [.0, .0, .0, .0])
-
-    weights_x = _rbf_solve_weight(base_matrix, trg_x)
-    weights_y = _rbf_solve_weight(base_matrix, trg_y)
-    weights_z = _rbf_solve_weight(base_matrix, trg_z)
-
-    return weights_x, weights_y, weights_z
-
-
-def _rbf_solve_weight(base_matrix: csr_matrix,
-                      trg_points: np.ndarray) -> np.ndarray:
-    """Solve the system of linear equations for the RBF. Uses a sparse solver and falls back to pinv if necessary.
-
-    Args:
-        base_matrix (csr_matrix): The RBF base matrix.
-        trg_points (np.ndarray): The extended target array for one axis.
-
-    Returns:
-        np.ndarray: The resulting weight array.
-    """
-    try:
-        return spsolve(base_matrix, trg_points)
-    except np.linalg.LinAlgError:
-        logger.warning('Singular matrix detected. Using pinv instead.')
-        return np.dot(pinv(base_matrix), trg_points)
-
-
-def _rbf_compute_points(src_points: list[list[float]],
-                        trg_points: list[list[float]],
-                        weight_x: np.ndarray,
-                        weight_y: np.ndarray,
-                        weight_z: np.ndarray,
-                        dataType: type = np.float32) -> list[tuple[float, float, float]]:
-    """Generate final positions by applying the RBF weights to the source and target points.
-
-    Args:
-        src_points (list[list[float]]): The original source points.
-        trg_points (list[list[float]]): The comparison or target points.
-        weight_x (np.ndarray): Weights for x-axis.
-        weight_y (np.ndarray): Weights for y-axis.
-        weight_z (np.ndarray): Weights for z-axis.
-        dataType (type): Data type, default is np.float32.
-
-    Returns:
-        list[tuple[float, float, float]]: The transformed (x, y, z) positions.
-    """
-    num_out = len(src_points)
-    mat_c = np.asarray(src_points, dtype=dataType)
-
-    mat_g = np.asarray(trg_points, dtype=dataType)
-    mat_p = np.insert(mat_g, 3, 1., axis=1)
-
-    out_x = np.dot(mat_p, weight_x[num_out:])
-    out_y = np.dot(mat_p, weight_y[num_out:])
-    out_z = np.dot(mat_p, weight_z[num_out:])
-
-    A = mat_g
-    B = mat_c
-    AB = cdist(A, B, 'euclidean')
-
-    out_x = np.dot(AB, weight_x[:num_out]) + out_x
-    out_y = np.dot(AB, weight_y[:num_out]) + out_y
-    out_z = np.dot(AB, weight_z[:num_out]) + out_z
-
-    return [(float(px), float(py), float(pz)) for px, py, pz in zip(out_x, out_y, out_z)]
 
 
 def export_transform_position(output_directory: str, file_name: str, method: str = 'barycentric', *args, **kwargs) -> None:
@@ -803,7 +530,7 @@ def export_transform_position(output_directory: str, file_name: str, method: str
             rbf_radius = kwargs.get('rbf_radius', 1.5)
             print(f'Using RBF with radius: {rbf_radius}')
             method_instance = MeshRBFPosition(target_mesh)
-            index_query_method = NearestRadiusIndexQuery(radius_multiplier=rbf_radius)
+            index_query_method = lib_retarget.NearestRadiusIndexQuery(radius_multiplier=rbf_radius)
             position_data = method_instance.export_data(positions, rotations=rotations, method_instance=index_query_method)
 
     # Get the hierarchy data
@@ -879,7 +606,7 @@ def _create_transform_node(name: str, object_type: str = 'transform', size: int 
     return new_transform
 
 
-def import_transform_position(input_file_path: str, create_new: bool = False, is_rotation: bool = True, *args, **kwargs) -> None:
+def import_transform_position(input_file_path: str, create_new: bool = False, is_rotation: bool = True, *args, **kwargs) -> list[str]:
     """Import the transform positions from a file.
 
     Notes:
@@ -895,6 +622,9 @@ def import_transform_position(input_file_path: str, create_new: bool = False, is
         restore_hierarchy (bool): Restore the hierarchy only if create_new is True. Default is False.
         creation_object_type (str): The creation object type. Default is 'transform'. Options are 'transform', 'locator', 'joint'.
         creation_object_size (float): The creation object size. Default is 1.0.
+
+    Returns:
+        list[str]: The new transform nodes if create_new is True. Otherwise, the updated transform nodes.
     """
     restore_hierarchy = kwargs.get('restore_hierarchy', False)
     creation_object_type = kwargs.get('creation_object_type', 'transform')  # 'transform', 'locator', 'joint'
@@ -971,7 +701,7 @@ def import_transform_position(input_file_path: str, create_new: bool = False, is
 
             logger.debug(f'Restored transform hierarchy: {new_transforms}')
 
-        cmds.select(new_transforms, r=True)
+        return new_transforms
     else:
         reorder_transforms = lib_transform.reorder_transform_nodes(target_transforms)
         for i, transform in enumerate(reorder_transforms):
@@ -980,8 +710,6 @@ def import_transform_position(input_file_path: str, create_new: bool = False, is
             if is_rotation:
                 cmds.xform(transform, ws=True, ro=result_rotations[index])
 
-        cmds.select(reorder_transforms, r=True)
-
         logger.debug(f'Set transform positions: {reorder_transforms}')
 
-    logger.debug(f'Imported transform positions: {input_file_path}')
+        return reorder_transforms
