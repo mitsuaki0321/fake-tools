@@ -131,8 +131,9 @@ class MeshBaryPosition(MeshPosition):
 
         self.mit_polygon = om.MItMeshPolygon(self.dag_path)
 
+        # Unify calculations in object space
         self.mesh_intersector = om.MMeshIntersector()
-        self.mesh_intersector.create(self.dag_path.node(), self.dag_path.inclusiveMatrix())
+        self.mesh_intersector.create(self.dag_path.node(), om.MMatrix())
 
     def export_data(self, positions: list[list[float]], **kwargs) -> dict:
         """Export the positions to barycentric coordinates.
@@ -152,27 +153,26 @@ class MeshBaryPosition(MeshPosition):
             if len(rotations) != len(positions):
                 raise ValueError('Rotations and positions length mismatch.')
 
+        mesh_inverse_matrix = self.dag_path.inclusiveMatrixInverse()
+
         data = {}
         data['num_vertices'] = self.mesh_fn.numVertices
 
         weight_data = []
         for i, position in enumerate(positions):
             # Get the position data
-            position = om.MPoint(position)
+            position = om.MPoint(position) * mesh_inverse_matrix
+
             point_on_mesh = self.mesh_intersector.getClosestPoint(position)
-
             u, v = point_on_mesh.barycentricCoords
-
-            bary_data = {'weight': [u, v, 1.0 - u - v],
-                         'face': point_on_mesh.face,
-                         'triangle': point_on_mesh.triangle}
-
-            normal = om.MVector(point_on_mesh.normal)
+            bary_data = {'weight': [u, v, 1.0 - u - v]}
 
             self.mit_polygon.setIndex(point_on_mesh.face)
-            points, _ = self.mit_polygon.getTriangle(point_on_mesh.triangle)
-            tangent = points[0] - points[1]
+            points, indices = self.mit_polygon.getTriangle(point_on_mesh.triangle, space=om.MSpace.kObject)
+            bary_data['indices'] = list(indices)
 
+            normal = om.MVector(point_on_mesh.normal)
+            tangent = points[0] - points[1]
             rot_matrix = self._get_rotation_matrix(normal, tangent)
             closest_to_pos_vector = position - om.MPoint(point_on_mesh.point)
             if closest_to_pos_vector.length() < 1e-10:
@@ -207,35 +207,29 @@ class MeshBaryPosition(MeshPosition):
         Returns:
             tuple[list[list[float]], list[list[float]]]: The positions and rotations
         """
+        mesh_matrix = self.dag_path.inclusiveMatrix()
+
         restored_positions = []
         restored_rotations = []
 
         weights = data.get('weights', [])
 
         for bary_data in weights:
-            face_index = bary_data['face']
-            triangle_index = bary_data['triangle']
-            weight = bary_data['weight']
-
-            try:
-                self.mit_polygon.setIndex(face_index)
-                points, _ = self.mit_polygon.getTriangle(triangle_index)
-            except RuntimeError:
-                raise ValueError(f"Invalid face index {face_index} or triangle index {triangle_index} in the current mesh.")
-
             # Calculate the restored position
+            points = [self.mesh_fn.getPoint(i) for i in bary_data['indices']]
+            weight = bary_data['weight']
             restored_position = points[0] * weight[0]
             restored_position += points[1] * weight[1]
             restored_position += points[2] * weight[2]
 
             # Adjust position using the stored offset and rotation matrix
             offset_vector = om.MVector(bary_data['position'])
-            restored_position = om.MPoint(restored_position)
             point_on_mesh = self.mesh_intersector.getClosestPoint(restored_position)
             normal = om.MVector(point_on_mesh.normal)
             tangent = points[0] - points[1]
             rot_matrix = self._get_rotation_matrix(normal, tangent)
-            restored_position += offset_vector * rot_matrix  # Rotate the offset vector
+            restored_position += offset_vector * rot_matrix
+            restored_position *= mesh_matrix
 
             restored_positions.append([restored_position.x, restored_position.y, restored_position.z])
 
@@ -247,7 +241,7 @@ class MeshBaryPosition(MeshPosition):
                 euler_rotation = rotation_quat.asEulerRotation()
                 restored_rotations.append([math.degrees(euler_rotation.x), math.degrees(euler_rotation.y), math.degrees(euler_rotation.z)])
             else:
-                logger.debug(f'No rotation data found for face: {face_index}, triangle: {triangle_index}')
+                logger.debug('No rotation data found.')
                 restored_rotations.append([0.0, 0.0, 0.0])
 
         return restored_positions, restored_rotations

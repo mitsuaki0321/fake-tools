@@ -602,7 +602,7 @@ class MeshPoint(MeshComponent):
     """Mesh point class.
     """
 
-    def get_closest_points(self, reference_points: list[list[float]], max_distance: float = 100.0) -> list[om.MPointOnMesh]:
+    def get_closest_points(self, reference_points: list[list[float]], max_distance: float = 100.0) -> list[om.MPoint]:
         """Get the closest point on the mesh.
 
         Args:
@@ -610,21 +610,24 @@ class MeshPoint(MeshComponent):
             max_distance (float): The maximum distance. Default is 100.0.
 
         Returns:
-            list[om.MPointOnMesh]: The closest points on the mesh.
+            list[om.MPoint]: The closest points.
         """
         mesh_intersector = om.MMeshIntersector()
-        mesh_intersector.create(self._dag_path.node(), self._dag_path.inclusiveMatrix())
+        matrix = self._dag_path.inclusiveMatrix()
+        inverse_matrix = self._dag_path.inclusiveMatrixInverse()
+        mesh_intersector.create(self._dag_path.node(), matrix)
 
         result_data = []
         for reference_point in reference_points:
-            reference_point = om.MPoint(reference_point)
+            reference_point = inverse_matrix * om.MPoint(reference_point)
             point_on_mesh = mesh_intersector.getClosestPoint(reference_point, max_distance)
 
             if point_on_mesh is None:
                 logger.warning(f'No intersection found for point: {reference_point}')
                 continue
 
-            result_data.append(point_on_mesh)
+            closest_point = om.MPoint(point_on_mesh.point) * matrix
+            result_data.append(closest_point)
 
         return result_data
 

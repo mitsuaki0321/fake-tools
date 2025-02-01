@@ -290,7 +290,7 @@ class ComponentSelection:
         if not components:
             raise ValueError('Components are not specified.')
 
-        components = cmds.filterExpand(components, sm=[28, 31, 46], ex=True)
+        components = cmds.filterExpand(components, sm=[28, 31, 32, 34, 46], ex=True)
         if not components:
             raise ValueError('Components are not supported. Only mesh, nurbsCurve, nurbsSurface, and lattice components are supported.')
 
@@ -346,10 +346,13 @@ class ComponentSelection:
 
         if area == 'center':
             result_components = [component for component, position in zip(self.__components, positions) if 0.001 > position[0] > -0.001]
+            logger.debug(f'Center area components: {result_components}')
         elif area == 'left':
             result_components = [component for component, position in zip(self.__components, positions) if position[0] > 0.001]
+            logger.debug(f'Left area components: {result_components}')
         elif area == 'right':
-            result_components = [component for component, position in zip(self.__components, positions) if position[0] < 0.001]
+            result_components = [component for component, position in zip(self.__components, positions) if position[0] < -0.001]
+            logger.debug(f'Right area components: {result_components}')
 
         logger.debug(f'X area components: {result_components}')
 
@@ -464,7 +467,7 @@ def get_unique_selections(filter_geometries: Optional[list[str]] = None) -> dict
         dict[str, float]: The selected components with their weights.
     """
     if filter_geometries is None:
-        filter_geometries = []
+        filter_geometries_path = []
     else:
         filter_geometries_path = []
         for geometry in filter_geometries:
