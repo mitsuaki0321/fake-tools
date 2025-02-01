@@ -3,21 +3,21 @@
 ![Maya2023](https://img.shields.io/badge/Maya-2023-blue?&logo=Autodesk)
 ![NumPy](https://img.shields.io/badge/NumPy-2.0.2-blue?&logo=NumPy)
 ![SciPy](https://img.shields.io/badge/SciPy-1.13.1-blue?&logo=SciPy)
+![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.6.1-blue?&logo=Scikit-learn)
 
 ## Overview
 
-Maya での作業を効率化するための個人用ツール集です。  
+Maya での作業を効率化するための個人用ツールです。  
 
-This is a collection of personal tools to streamline work in Maya.
+This is a personal tool to streamline work in Maya.
 
 ## Installation
 
 - faketools.mod を MAYA_MODULE_PATH に追加してください。
-- NumPy と SciPy が必要です。
-
+- NumPy、SciPy、Scikit-learn が必要です。
 
 - Add faketools.mod to MAYA_MODULE_PATH.
-- NumPy and SciPy are required.
+- NumPy, SciPy, and Scikit-learn are required.
 
 ## Launch menu
 

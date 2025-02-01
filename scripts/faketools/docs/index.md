@@ -1,11 +1,5 @@
 # FakeTools
 
-## Overview
-
-Maya での作業を効率化するための個人用ツール集です。  
-
-This is a collection of personal tools to streamline work in Maya.
-
 ## Tools
 
 ### Japanese
