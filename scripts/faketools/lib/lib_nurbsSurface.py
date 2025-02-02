@@ -4,6 +4,7 @@ NurbsCurve and NurbsSurface functions.
 
 import re
 from logging import getLogger
+from typing import Union
 
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
@@ -43,33 +44,46 @@ class NurbsSurface:
         """
         return self.fn.knotDomainInU, self.fn.knotDomainInV
 
-    def get_cv_position(self, uv_indices: list[list[int]]) -> list[om.MPoint]:
+    def get_cv_position(self, uv_indices: list[list[int]], as_float: bool = False) -> Union[om.MPoint, list[float]]:
         """Get the CV positions.
 
         Args:
             uv_indices (list[list[int]]): The UV indices.
+            as_float (bool): Return the positions as float. Default is False.
 
         Returns:
-            list[om.MPoint]: The positions.
+            Union[om.MPoint, list[float]]: The positions.
         """
-        return [self.fn.cvPosition(uv_index[0], uv_index[1], om.MSpace.kWorld) for uv_index in uv_indices]
+        positions = [self.fn.cvPosition(uv_index[0], uv_index[1], om.MSpace.kWorld) for uv_index in uv_indices]
+        if as_float:
+            return [[p.x, p.y, p.z] for p in positions]
 
-    def get_cv_positions(self) -> list[om.MPoint]:
+        return positions
+
+    def get_cv_positions(self, as_float: bool = False) -> Union[list[om.MPoint], list[list[float]]]:
         """Get the CV positions.
 
-        Returns:
-            list[om.MPoint]: The positions.
-        """
-        return list(self.fn.cvPositions(om.MSpace.kWorld))
+        Args:
+            as_float (bool): Return the positions as float. Default is False.
 
-    def get_closest_positions(self, reference_positions: list[list[float]]) -> tuple[list[om.MPoint], list[list[float]]]:
+        Returns:
+            Union[list[om.MPoint], list[list[float]]]: The positions.
+        """
+        positions = list(self.fn.cvPositions(om.MSpace.kWorld))
+        if as_float:
+            return [[p.x, p.y, p.z] for p in positions]
+
+        return positions
+
+    def get_closest_positions(self, reference_positions: list[list[float]], as_float: bool = False) -> tuple[Union[list[om.MPoint], list[list[float]]], list[list[float]]]:  # noqa: E501
         """Get the closest CV positions.
 
         Args:
             reference_positions (list[list[float]]): The points.
+            as_float (bool): Return the positions as float. Default is False.
 
         Returns:
-            tuple[list[om.MPoint], list[list[float]]]: The positions and parameters.
+            tuple[Union[list[om.MPoint], list[list[float]]], list[list[float]]]: The closest positions and parameters.
         """
         positions = []
         params = []
@@ -78,6 +92,9 @@ class NurbsSurface:
 
             positions.append(closest_position)
             params.append([param_u, param_v])
+
+        if as_float:
+            return [[p.x, p.y, p.z] for p in positions], params
 
         return positions, params
 

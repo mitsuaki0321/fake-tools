@@ -3,6 +3,7 @@ NurbsCurve and NurbsSurface functions.
 """
 
 from logging import getLogger
+from typing import Union
 
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
@@ -87,22 +88,30 @@ class NurbsCurve:
         """
         return self.fn.length()
 
-    def get_cv_position(self, cv_ids: list[int]) -> list[om.MPoint]:
+    def get_cv_position(self, cv_ids: list[int], as_float: bool = False) -> Union[list[om.MPoint], list[list[float]]]:
         """Get the CV positions.
 
         Args:
             cv_ids (list[int]): The CV IDs.
+            as_float (bool): Return as float. Default is False.
 
         Returns:
-            list[om.MPoint]: The positions.
+            Union[list[om.MPoint], list[list[float]]]: The positions.
         """
-        return [self.fn.cvPosition(cv_id, om.MSpace.kWorld) for cv_id in cv_ids]
+        positions = [self.fn.cvPosition(cv_id, om.MSpace.kWorld) for cv_id in cv_ids]
+        if as_float:
+            return [[pos.x, pos.y, pos.z] for pos in positions]
 
-    def get_cv_positions(self) -> list[om.MPoint]:
+        return positions
+
+    def get_cv_positions(self, as_float: bool = False) -> Union[list[om.MPoint], list[list[float]]]:
         """Get the CV positions.
 
+        Args:
+            as_float (bool): Return as float. Default is False.
+
         Returns:
-            list[om.MPoint]: The positions.
+            Union[list[om.MPoint], list[list[float]]]: The positions.
         """
         cv_positions = list(self.fn.cvPositions(om.MSpace.kWorld))
         # Keeping the reference to the MPointArray pointer can cause errors in subsequent processing.
@@ -110,16 +119,21 @@ class NurbsCurve:
 
         if self.form == 'periodic':
             return cv_positions[:-self.fn.degree]
+
+        if as_float:
+            return [[pos.x, pos.y, pos.z] for pos in cv_positions]
+
         return cv_positions
 
-    def get_edit_position(self, edit_ids: list[int]) -> tuple[list[om.MPoint], list[float]]:
+    def get_edit_position(self, edit_ids: list[int], as_float: bool = False) -> tuple[Union[list[om.MPoint], list[list[float]]], list[float]]:
         """Get the edit points.
 
         Args:
             edit_ids (list[int]): The edit IDs.
+            as_float (bool): Return as float. Default is False.
 
         Returns:
-            tuple[list[om.MPoint], list[float]]: The positions and parameters.
+            tuple[Union[list[om.MPoint], list[list[float]]], list[float]]: The positions and parameters.
         """
         min_param, max_param = self.fn.knotDomain
         param_range = max_param - min_param
@@ -136,13 +150,19 @@ class NurbsCurve:
             params.append(param)
             positions.append(position)
 
+        if as_float:
+            return [[pos.x, pos.y, pos.z] for pos in positions], params
+
         return positions, params
 
-    def get_edit_positions(self) -> tuple[list[om.MPoint], list[float]]:
+    def get_edit_positions(self, as_float: bool = False) -> tuple[Union[list[om.MPoint], list[list[float]]], list[float]]:
         """Get the edit points.
 
+        Args:
+            as_float (bool): Return as float. Default is False.
+
         Returns:
-            tuple[list[om.MPoint], list[float]]: The positions and parameters.
+            tuple[Union[list[om.MPoint], list[list[float]]], list[float]]: The positions and parameters.
         """
         min_param, max_param = self.fn.knotDomain
         param_range = max_param - min_param
@@ -156,28 +176,37 @@ class NurbsCurve:
             params.append(param)
             positions.append(position)
 
+        if as_float:
+            return [[pos.x, pos.y, pos.z] for pos in positions], params
+
         return positions, params
 
-    def get_closest_position(self, reference_position: list[float]) -> tuple[om.MPoint, float]:
+    def get_closest_position(self, reference_position: list[float], as_float: bool = False) -> tuple[Union[om.MPoint, list[float]], float]:
         """Get the closest CV position.
 
         Args:
             reference_position (list[float]): The reference point.
+            as_float (bool): Return as float. Default is False.
 
         Returns:
-            tuple[om.MPoint, float]: The position and parameter.
+            tuple[Union[om.MPoint, list[float]], float]: The position and parameter.
         """
         closest_position, param = self.fn.closestPoint(om.MPoint(reference_position), space=om.MSpace.kWorld)
+
+        if as_float:
+            return [closest_position.x, closest_position.y, closest_position.z], param
+
         return closest_position, param
 
-    def get_closest_positions(self, reference_positions: list[list[float]]) -> tuple[list[om.MPoint], list[float]]:  # noqa
+    def get_closest_positions(self, reference_positions: list[list[float]], as_float: bool = False) -> tuple[Union[om.MPoint, list[float]], list[float]]:  # noqa
         """Get the closest CV positions.
 
         Args:
             reference_positions (list[list[float]]): The reference points.
+            as_float (bool): Return as float. Default is False.
 
         Returns:
-            tuple[list[om.MPoint], list[float]]: The positions and parameters.
+            tuple[Union[om.MPoint, list[float]], list[float]]: The positions and parameters.
         """
         positions = []
         params = []
@@ -185,6 +214,9 @@ class NurbsCurve:
             closest_position, param = self.fn.closestPoint(om.MPoint(reference_position), space=om.MSpace.kWorld)
             positions.append(closest_position)
             params.append(param)
+
+        if as_float:
+            return [[pos.x, pos.y, pos.z] for pos in positions], params
 
         return positions, params
 

@@ -3,7 +3,7 @@ Mesh functions.
 """
 
 from logging import getLogger
-from typing import Optional
+from typing import Optional, Union
 
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
@@ -137,17 +137,18 @@ class MeshVertex(MeshComponent):
     """Mesh vertex class.
     """
 
-    def get_vertex_positions(self, vtx_indices: Optional[list[int]] = None) -> list[list[float]]:
+    def get_vertex_positions(self, vtx_indices: Optional[list[int]] = None, as_float: bool = False) -> Union[list[om.MPoint], list[list[float]]]:
         """Get the vertex positions.
 
         Args:
             vtx_indices (Optional[list[int]], optional): The vertex indices. Defaults to None. If None, get all vertex positions.
+            as_float (bool, optional): Whether to return the positions as float. Defaults to False.
 
         Returns:
-            list[om.MPoint]: The vertex positions.
+            Union[list[om.MPoint], list[list[float]]]: The vertex positions.
         """
         if vtx_indices is None:
-            positions = self._mesh_fn.getPoints(om.MSpace.kWorld)
+            positions = [om.MPoint([p.x, p.y, p.z]) for p in self._mesh_fn.getPoints(om.MSpace.kWorld)]
         else:
             num_vertices = self._mesh_fn.numVertices
             for index in vtx_indices:
@@ -155,8 +156,12 @@ class MeshVertex(MeshComponent):
                     raise ValueError(f'Vertex index out of range: {index}')
 
             positions = [self._mesh_fn.getPoint(index, om.MSpace.kWorld) for index in vtx_indices]
+            positions = [om.MPoint([p.x, p.y, p.z]) for p in positions]
 
-        return positions
+        if not as_float:
+            return positions
+
+        return [[p.x, p.y, p.z] for p in positions]
 
     def get_vertex_normals(self, vtx_indices: Optional[list[int]] = None) -> list[om.MVector]:
         """Get the vertex normals.
@@ -602,22 +607,25 @@ class MeshPoint(MeshComponent):
     """Mesh point class.
     """
 
-    def get_closest_points(self, reference_points: list[list[float]], max_distance: float = 100.0) -> list[om.MPoint]:
+    def get_closest_points(self, reference_points: list[list[float]],
+                           max_distance: float = 100.0,
+                           as_float: bool = False) -> Union[list[om.MPoint], list[list[float]]]:
         """Get the closest point on the mesh.
 
         Args:
             reference_points (list[list[float]]): List of reference points.
             max_distance (float): The maximum distance. Default is 100.0.
+            as_float (bool): Whether to return the points as float. Default is False.
 
         Returns:
-            list[om.MPoint]: The closest points.
+            Union[list[om.MPoint], list[list[float]]]: The closest points.
         """
         mesh_intersector = om.MMeshIntersector()
         matrix = self._dag_path.inclusiveMatrix()
         inverse_matrix = self._dag_path.inclusiveMatrixInverse()
         mesh_intersector.create(self._dag_path.node(), matrix)
 
-        result_data = []
+        result_positions = []
         for reference_point in reference_points:
             reference_point = inverse_matrix * om.MPoint(reference_point)
             point_on_mesh = mesh_intersector.getClosestPoint(reference_point, max_distance)
@@ -627,9 +635,12 @@ class MeshPoint(MeshComponent):
                 continue
 
             closest_point = om.MPoint(point_on_mesh.point) * matrix
-            result_data.append(closest_point)
+            result_positions.append(closest_point)
 
-        return result_data
+        if as_float:
+            return [[p.x, p.y, p.z] for p in result_positions]
+
+        return result_positions
 
     def get_intersect_point(self, start_point: list[float], end_point: list[float], **kwargs) -> Optional[tuple]:
         """Get the intersection point on the mesh.

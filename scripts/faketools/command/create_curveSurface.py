@@ -8,7 +8,6 @@ import maya.api.OpenMaya as om
 import maya.cmds as cmds
 
 from ..lib import (
-    lib_conversion,
     lib_math,
     lib_mesh,
     lib_nurbsCurve,
@@ -721,7 +720,7 @@ def create_curve_from_vertices(target_vertices: list[str]) -> str:
     mesh = cmds.ls(target_vertices, objectsOnly=True)[0]
     mesh_vertex = lib_mesh.MeshVertex(mesh)
     num_vertices = mesh_vertex.num_vertices()
-    all_positions = lib_conversion.MPoint_to_float(mesh_vertex.get_vertex_positions())
+    all_positions = mesh_vertex.get_vertex_positions(as_float=True)
 
     target_vertices = cmds.ls(target_vertices, fl=True)
     if len(target_vertices) == num_vertices:
@@ -773,7 +772,7 @@ def move_cv_positions(target_cv: str) -> None:
     if nurbs_curve.form == 'open':
         cmds.error('Open curve is not supported.')
 
-    cv_positions = lib_conversion.MPoint_to_float(nurbs_curve.get_cv_positions())
+    cv_positions = nurbs_curve.get_cv_positions(as_float=True)
 
     cvs = cmds.ls(f'{curve_shape}.cv[*]', fl=True)
     target_cv = cmds.ls(target_cv, fl=True)[0]
