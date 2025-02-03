@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>index.md</title>
+<title>boundingbox_creator.md</title>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 
 <style>
@@ -365,55 +365,63 @@ code {
           : 'default'
     });
   </script>
-<h1 id="faketools">FakeTools</h1>
-<h2 id="tools">Tools</h2>
-<h3 id="japanese">Japanese</h3>
+<h1 id="boundingbox-creator">BoundingBox Creator</h1>
+<p>選択したジオメトリに対してバウンディングボックス用のジオメトリを作成するツールです。</p>
+<h2 id="%E6%A6%82%E8%A6%81">概要</h2>
+<p>選択したジオメトリに対してバウンディングボックス用のジオメトリを作成するツールです。
+それぞれ、ワールド座標系、最小体積、軸に沿った最小体積のバウンディングボックスを作成することができます。</p>
+<p>また、作成されたバウンディングボックスは、Translate、Rotate、Scale の値を保持します。</p>
+<p><img src="images/boundingbox_creator/image002.png" alt="image002">
+<img src="images/boundingbox_creator/image003.png" alt="image003">
+<img src="images/boundingbox_creator/image004.png" alt="image004"></p>
+<h2 id="%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">使用方法</h2>
+<p>専用のメニューか、以下のコマンドでツールを起動します。</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.tools.boundingbox_creator_ui
+faketools.tools.boundingbox_creator_ui.show_ui()
+</div></code></pre>
+<p><img src="images/boundingbox_creator/image001.png" alt="image001"></p>
+<h3 id="%E5%9F%BA%E6%9C%AC%E7%9A%84%E3%81%AA%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">基本的な使用方法</h3>
+<ol>
+<li>
+<p>バウンディングボックスを作成したいジオメトリを選択します ( 複数選択可 )。また、グループノード ( transform ) を選択すると、その子も含めたバウンディングボックスを作成します。</p>
+<p><img src="images/boundingbox_creator/image005.png" alt="image005"></p>
+</li>
+<li>
+<p>作成するバウンディングボックスのタイプを選択します。</p>
 <ul>
-<li><a href="./single_commands.html">Single Commands</a></li>
-<li><a href="./remote_slider.html">Remort Slider</a></li>
-<li><a href="./scene_optimizer.html">Scene Optimizer</a></li>
-<li><a href="./selecter.html">Selecter</a></li>
-<li><a href="./transform_connector.html">Transform Connecter</a></li>
-<li><a href="./transform_creator.html">Transform Creator</a></li>
-<li><a href="./transform_creator_on_curve.html">Transform on Curve Creator</a></li>
-<li><a href="./membership_handler.html">Membership Handler</a></li>
-<li><a href="./skinWeights_import_export.html">SkinWeights Import/Export</a></li>
-<li><a href="./skinWeights_tools.html">SkinWeights Tools</a></li>
-<li><a href="./skinWeights_relax.html">SkinWeights Relax</a></li>
-<li><a href="./skinWeights_copy_paste.html">SkinWeights CopyPaste</a></li>
-<li><a href="./curveSurface_creator.html">CurveSurface Creator</a></li>
-<li><a href="./drivenKey_tools.html">DrivenKey Tools</a></li>
-<li><a href="./component_selecter.html">Component Selecter</a></li>
-<li><a href="./attribute_lister.html">Attribute Lister</a></li>
-<li><a href="./connection_lister.html">Connection Lister</a></li>
-<li><a href="./node_stocker.html">Node Stocker</a></li>
-<li><a href="./retarget_transform.html">Retarget Transform</a></li>
-<li><a href="./retarget_mesh.html">Retarget Mesh</a></li>
-<li><a href="./boundingbox_creator.html">BoundingBox Creator</a></li>
+<li><code>World</code>: ワールド座標系でバウンディングボックスを作成します。</li>
+<li><code>Minimum</code>: 最小体積のバウンディングボックスを作成します。</li>
+<li><code>AxisAligned</code>: 指定した軸を基準として最小体積のバウンディングボックスを作成します。
+<ul>
+<li><code>Axis Direction</code>: 軸の方向を指定します。</li>
+<li><code>Axis</code>: <code>Axis Direction</code> で指定した軸を最終的にどの軸に変換するかを指定します。</li>
 </ul>
-<h3 id="english">English</h3>
+</li>
+</ul>
+<p><img src="images/boundingbox_creator/image007.png" alt="image007"></p>
+</li>
+<li>
+<p>作成されるバウンディングボックスジオメトリのタイプを選択します。</p>
 <ul>
-<li><a href="./single_commands_en.html">Single Commands</a></li>
-<li><a href="./remote_slider_en.html">Remort Slider</a></li>
-<li><a href="./scene_optimizer_en.html">Scene Optimizer</a></li>
-<li><a href="./selecter_en.html">Selecter</a></li>
-<li><a href="./transform_connector_en.html">Transform Connector</a></li>
-<li><a href="./transform_creator_en.html">Transform Creator</a></li>
-<li><a href="./transform_creator_on_curve_en.html">Transform on Curve Creator</a></li>
-<li><a href="./membership_handler_en.html">Membership Handler</a></li>
-<li><a href="./skinWeights_import_export_en.html">SkinWeights Import/Export</a></li>
-<li><a href="./skinWeights_tools_en.html">SkinWeights Tools</a></li>
-<li><a href="./skinWeights_relax_en.html">SkinWeights Relax</a></li>
-<li><a href="./skinWeights_copy_paste_en.html">SkinWeights Copy Paste</a></li>
-<li><a href="./curveSurface_creator_en.html">CurveSurface Creator</a></li>
-<li><a href="./drivenKey_tools_en.html">DrivenKey Tools</a></li>
-<li><a href="./component_selecter_en.html">Component Selecter</a></li>
-<li><a href="./attribute_lister_en.html">Attribute Lister</a></li>
-<li><a href="./connection_lister_en.html">Connection Lister</a></li>
-<li><a href="./node_stocker_en.html">Node Stocker</a></li>
-<li><a href="./retarget_transform_en.html">Retarget Transform</a></li>
-<li><a href="./retarget_mesh_en.html">Retarget Mesh</a></li>
-<li><a href="./boundingbox_creator_en.html">BoundingBox Creator</a></li>
+<li><code>mesh</code>: Cube メッシュをバウンディングボックスとして作成します。</li>
+<li><code>curve</code>: Cube 型のカーブをバウンディングボックスとして作成します。</li>
+<li><code>locator</code>: ロケーターをバウンディングボックスの位置に作成します。</li>
+</ul>
+<p><img src="images/boundingbox_creator/image008.png" alt="image008"></p>
+</li>
+<li>
+<p>オプションを設定します。</p>
+</li>
+<li>
+<p><code>Create</code> ボタンを押してバウンディングボックスを作成します。</p>
+<p><img src="images/boundingbox_creator/image006.png" alt="image006"></p>
+</li>
+</ol>
+<h3 id="%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3">オプション</h3>
+<ul>
+<li><code>Base Line</code>: 作成されるバウンディングボックスのピボット位置を指定します。</li>
+<li><code>Include Scale</code>: ジオメトリのスケールをバウンディングボックスに反映します。オフの場合は、スケール値を無視します。</li>
+<li><code>Parent</code>: 作成されるバウンディングボックスを選択したノードの親として作成します。</li>
 </ul>
 
 </body>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>index.md</title>
+<title>boundingbox_creator_en.md</title>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 
 <style>
@@ -365,55 +365,63 @@ code {
           : 'default'
     });
   </script>
-<h1 id="faketools">FakeTools</h1>
-<h2 id="tools">Tools</h2>
-<h3 id="japanese">Japanese</h3>
+<h1 id="boundingbox-creator">BoundingBox Creator</h1>
+<p>This tool creates geometry for bounding boxes for the selected geometry.</p>
+<h2 id="overview">Overview</h2>
+<p>This tool creates geometry for bounding boxes for the selected geometry.
+You can create bounding boxes in world coordinates, minimum volume, and minimum volume aligned to an axis.</p>
+<p>Additionally, the created bounding boxes retain the values of Translate, Rotate, and Scale.</p>
+<p><img src="images/boundingbox_creator/image002.png" alt="image002">
+<img src="images/boundingbox_creator/image003.png" alt="image003">
+<img src="images/boundingbox_creator/image004.png" alt="image004"></p>
+<h2 id="usage">Usage</h2>
+<p>Launch the tool from the dedicated menu or with the following command:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.tools.boundingbox_creator_ui
+faketools.tools.boundingbox_creator_ui.show_ui()
+</div></code></pre>
+<p><img src="images/boundingbox_creator/image001.png" alt="image001"></p>
+<h3 id="basic-usage">Basic Usage</h3>
+<ol>
+<li>
+<p>Select the geometry for which you want to create a bounding box (multiple selections are allowed). If you select a group node (transform), it will create a bounding box including its children.</p>
+<p><img src="images/boundingbox_creator/image005.png" alt="image005"></p>
+</li>
+<li>
+<p>Select the type of bounding box to create.</p>
 <ul>
-<li><a href="./single_commands.html">Single Commands</a></li>
-<li><a href="./remote_slider.html">Remort Slider</a></li>
-<li><a href="./scene_optimizer.html">Scene Optimizer</a></li>
-<li><a href="./selecter.html">Selecter</a></li>
-<li><a href="./transform_connector.html">Transform Connecter</a></li>
-<li><a href="./transform_creator.html">Transform Creator</a></li>
-<li><a href="./transform_creator_on_curve.html">Transform on Curve Creator</a></li>
-<li><a href="./membership_handler.html">Membership Handler</a></li>
-<li><a href="./skinWeights_import_export.html">SkinWeights Import/Export</a></li>
-<li><a href="./skinWeights_tools.html">SkinWeights Tools</a></li>
-<li><a href="./skinWeights_relax.html">SkinWeights Relax</a></li>
-<li><a href="./skinWeights_copy_paste.html">SkinWeights CopyPaste</a></li>
-<li><a href="./curveSurface_creator.html">CurveSurface Creator</a></li>
-<li><a href="./drivenKey_tools.html">DrivenKey Tools</a></li>
-<li><a href="./component_selecter.html">Component Selecter</a></li>
-<li><a href="./attribute_lister.html">Attribute Lister</a></li>
-<li><a href="./connection_lister.html">Connection Lister</a></li>
-<li><a href="./node_stocker.html">Node Stocker</a></li>
-<li><a href="./retarget_transform.html">Retarget Transform</a></li>
-<li><a href="./retarget_mesh.html">Retarget Mesh</a></li>
-<li><a href="./boundingbox_creator.html">BoundingBox Creator</a></li>
+<li><code>World</code>: Creates a bounding box in world coordinates.</li>
+<li><code>Minimum</code>: Creates a bounding box with the minimum volume.</li>
+<li><code>AxisAligned</code>: Creates a bounding box with the minimum volume aligned to the specified axis.
+<ul>
+<li><code>Axis Direction</code>: Specifies the direction of the axis.</li>
+<li><code>Axis</code>: Specifies which axis to convert the <code>Axis Direction</code> to.</li>
 </ul>
-<h3 id="english">English</h3>
+</li>
+</ul>
+<p><img src="images/boundingbox_creator/image007.png" alt="image007"></p>
+</li>
+<li>
+<p>Select the type of geometry for the bounding box to create.</p>
 <ul>
-<li><a href="./single_commands_en.html">Single Commands</a></li>
-<li><a href="./remote_slider_en.html">Remort Slider</a></li>
-<li><a href="./scene_optimizer_en.html">Scene Optimizer</a></li>
-<li><a href="./selecter_en.html">Selecter</a></li>
-<li><a href="./transform_connector_en.html">Transform Connector</a></li>
-<li><a href="./transform_creator_en.html">Transform Creator</a></li>
-<li><a href="./transform_creator_on_curve_en.html">Transform on Curve Creator</a></li>
-<li><a href="./membership_handler_en.html">Membership Handler</a></li>
-<li><a href="./skinWeights_import_export_en.html">SkinWeights Import/Export</a></li>
-<li><a href="./skinWeights_tools_en.html">SkinWeights Tools</a></li>
-<li><a href="./skinWeights_relax_en.html">SkinWeights Relax</a></li>
-<li><a href="./skinWeights_copy_paste_en.html">SkinWeights Copy Paste</a></li>
-<li><a href="./curveSurface_creator_en.html">CurveSurface Creator</a></li>
-<li><a href="./drivenKey_tools_en.html">DrivenKey Tools</a></li>
-<li><a href="./component_selecter_en.html">Component Selecter</a></li>
-<li><a href="./attribute_lister_en.html">Attribute Lister</a></li>
-<li><a href="./connection_lister_en.html">Connection Lister</a></li>
-<li><a href="./node_stocker_en.html">Node Stocker</a></li>
-<li><a href="./retarget_transform_en.html">Retarget Transform</a></li>
-<li><a href="./retarget_mesh_en.html">Retarget Mesh</a></li>
-<li><a href="./boundingbox_creator_en.html">BoundingBox Creator</a></li>
+<li><code>mesh</code>: Creates a cube mesh as the bounding box.</li>
+<li><code>curve</code>: Creates a cube-shaped curve as the bounding box.</li>
+<li><code>locator</code>: Creates a locator at the position of the bounding box.</li>
+</ul>
+<p><img src="images/boundingbox_creator/image008.png" alt="image008"></p>
+</li>
+<li>
+<p>Set the options.</p>
+</li>
+<li>
+<p>Press the <code>Create</code> button to create the bounding box.</p>
+<p><img src="images/boundingbox_creator/image006.png" alt="image006"></p>
+</li>
+</ol>
+<h3 id="options">Options</h3>
+<ul>
+<li><code>Base Line</code>: Specifies the pivot position of the created bounding box.</li>
+<li><code>Include Scale</code>: Reflects the scale of the geometry in the bounding box. If off, the scale value is ignored.</li>
+<li><code>Parent</code>: Creates the bounding box as a parent of the selected node.</li>
 </ul>
 
 </body>

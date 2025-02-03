@@ -24,6 +24,7 @@
 - [Node Stocker](./node_stocker.html)
 - [Retarget Transform](./retarget_transform.html)
 - [Retarget Mesh](./retarget_mesh.html)
+- [BoundingBox Creator](./boundingbox_creator.html)
 
 ### English
 
@@ -47,3 +48,4 @@
 - [Node Stocker](./node_stocker_en.html)
 - [Retarget Transform](./retarget_transform_en.html)
 - [Retarget Mesh](./retarget_mesh_en.html)
+- [BoundingBox Creator](./boundingbox_creator_en.html)

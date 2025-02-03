@@ -116,7 +116,7 @@ class FreezeTransformNode:
         """
         shape = cmds.listRelatives(self.node, ad=True, path=True, type='mesh')
         if not shape:
-            cmds.warning(f'No mesh found: {self.node}')
+            logger.warning(f'No mesh node found: {self.node}')
             return
 
         cmds.cluster(self.node)
