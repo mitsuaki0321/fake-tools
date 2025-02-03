@@ -8,11 +8,11 @@ Creates transform nodes on the selected curve.
 Launch from the dedicated menu or the following command:
 
 ```python
-import faketools.tools.transform_creater_on_curve_ui
-faketools.tools.transform_creater_on_curve_ui.show_ui()
+import faketools.tools.transform_creator_on_curve_ui
+faketools.tools.transform_creator_on_curve_ui.show_ui()
 ```
 
-![image001](images/transform_creater_on_curve/image001.png)
+![image001](images/transform_creator_on_curve/image001.png)
 
 ### Basic Usage
 

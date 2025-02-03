@@ -8,11 +8,11 @@
 専用のメニューか、以下のコマンドでツールを起動します。
 
 ```python
-import faketools.tools.transform_creater_on_curve_ui
-faketools.tools.transform_creater_on_curve_ui.show_ui()
+import faketools.tools.transform_creator_on_curve_ui
+faketools.tools.transform_creator_on_curve_ui.show_ui()
 ```
 
-![image001](images/transform_creater_on_curve/image001.png)
+![image001](images/transform_creator_on_curve/image001.png)
 
 ### 基本的な使用方法
 

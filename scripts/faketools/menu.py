@@ -15,9 +15,9 @@ MENU_NAME = 'FakeTools'
 tools = [{'label': 'Remote Slider', 'module': 'remote_slider_ui'},
          {'label': 'Scene Optimizer', 'module': 'scene_optimizer_ui'},
          {'label': 'Selecter', 'module': 'selecter_ui'},
-         {'label': 'Transform Connecter', 'module': 'transform_connecter_ui'},
-         {'label': 'Transform Creater', 'module': 'transform_creater_ui'},
-         {'label': 'Transform on Curve Creater', 'module': 'transform_creater_on_curve_ui'},
+         {'label': 'Transform Connector', 'module': 'transform_connector_ui'},
+         {'label': 'Transform Creator', 'module': 'transform_creator_ui'},
+         {'label': 'Transform on Curve Creator', 'module': 'transform_creator_on_curve_ui'},
          {'label': 'Membership Handler', 'module': 'membership_handler_ui'},
          {'label': 'SkinWeights Import/Export', 'module': 'skinWeights_import_export_ui'},
          {'label': 'SkinWeights Tools', 'module': 'skinWeights_tools_ui'},
@@ -31,6 +31,7 @@ tools = [{'label': 'Remote Slider', 'module': 'remote_slider_ui'},
          {'label': 'Node Stocker', 'module': 'node_stocker_ui'},
          {'label': 'Retarget Transform', 'module': 'retarget_transform_ui'},
          {'label': 'Retarget Mesh', 'module': 'retarget_mesh_ui'},
+         {'label': 'BoundingBox Creator', 'module': 'boundingbox_creator_ui'},
          ]
 
 

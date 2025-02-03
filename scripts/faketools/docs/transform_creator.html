@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>transform_creater_en.md</title>
+<title>transform_creator.md</title>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 
 <style>
@@ -366,84 +366,84 @@ code {
     });
   </script>
 <h1 id="transform-creater">Transform Creater</h1>
-<p>Creates transform nodes for selected nodes or components.</p>
-<h2 id="how-to-use">How to Use</h2>
-<p>Launch from the dedicated menu or the following command:</p>
-<pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.tools.transform_creater_ui
-faketools.tools.transform_creater_ui.show_ui()
+<p>選択したノードやコンポーネントに対して、トランスフォームノードを作成します。</p>
+<h2 id="%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">使用方法</h2>
+<p>専用のメニューか、以下のコマンドでツールを起動します。</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.tools.transform_creator_ui
+faketools.tools.transform_creator_ui.show_ui()
 </div></code></pre>
-<p><img src="images/transform_creater/image001.png" alt="image001"></p>
-<h3 id="basic-usage">Basic Usage</h3>
+<p><img src="images/transform_creator/image001.png" alt="image001"></p>
+<h3 id="%E5%9F%BA%E6%9C%AC%E7%9A%84%E3%81%AA%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">基本的な使用方法</h3>
 <ol>
-<li>Select the transform creation method from the dropdown menu at the top.</li>
-<li>Select the transform node or component in the scene.</li>
-<li>Configure the other options. Options that are not grayed out can be set.</li>
-<li>Press the <strong>[ Create ]</strong> button to create the transform nodes.</li>
+<li>上部のドロップダウンメニューから、トランスフォームの作成方法を選択します。</li>
+<li>シーン上のトランスフォームノードかコンポーネントを選択します。</li>
+<li>それ以外のオプションを設定します。グレーアウトされていないオプションを設定可能です。</li>
+<li><strong>[ Create ]</strong> ボタンを押すことでトランスフォームノードが作成されます。</li>
 </ol>
-<p>※ Selectable components include Vertex, Edge, Face, CurveCV, CurveEP, and SurfaceCV.</p>
-<h3 id="options">Options</h3>
+<p>※ 選択可能なコンポーネントは、Vertex, Edge, Face, CurveCV, CurveEP, SurfaceCV です。</p>
+<h3 id="%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3">オプション</h3>
 <ul>
-<li><strong>Node Type</strong>
+<li><strong>ノードタイプ</strong>
 <ul>
-<li>Choose between locator or transform.</li>
+<li>locator か transform のどちらかを選択します。</li>
 </ul>
 </li>
 <li><strong>Divisions</strong>
 <ul>
-<li>Valid only when the creation method is set to innerDivide. Specifies the number of divisions between selected nodes.</li>
+<li>作成方法が innerDivide の時のみ有効です。選択したノード間を何分割するかを設定します。</li>
 </ul>
 </li>
-<li><strong>Include Rotation</strong>
+<li><strong>IncludeRotation</strong>
 <ul>
-<li>Determines whether the created transform nodes include rotation attributes.</li>
+<li>作成するトランスフォームノードに回転属性を含めるかを設定します。</li>
 </ul>
 </li>
-<li><strong>Rotation Offset Value</strong>
+<li><strong>回転をオフセットする値</strong>
 <ul>
-<li>Sets the rotation offset value for the created transform nodes.</li>
+<li>作成されたトランスフォームノードに対して、回転をオフセットする値を設定します。</li>
 </ul>
 </li>
 <li><strong>Tangent from Component</strong>
 <ul>
-<li>For Vertex and Edge, the rotation is set by obtaining the tangent vector from the components connected to those components.</li>
+<li>Vertex, Edge の場合、そのコンポーネントに接続されているコンポーネントから接線ベクトルを取得し回転を設定します。</li>
 </ul>
 </li>
 <li><strong>Reverse</strong>
 <ul>
-<li>Reverses the order of the transform nodes if duplicated.</li>
+<li>トランスフォームノードが複製作成された場合、その順番を逆にするかを設定します。</li>
 </ul>
 </li>
 <li><strong>Chain</strong>
 <ul>
-<li>Arranges duplicated transform nodes into a chain hierarchy.</li>
+<li>トランスフォームノードが複製作成された場合、それらをチェーン状の階層構造にするかを設定します。</li>
 </ul>
 </li>
 <li><strong>Preview</strong>
 <ul>
-<li>Displays a preview of the transform nodes to be created.</li>
+<li>作成されるトランスフォームノードのプレビューを表示します。</li>
 </ul>
 </li>
 </ul>
-<h3 id="creation-methods">Creation Methods</h3>
+<h3 id="%E4%BD%9C%E6%88%90%E6%96%B9%E6%B3%95">作成方法</h3>
 <ul>
 <li><strong>GravityCenter</strong>
 <ul>
-<li>Creates transform nodes at the center of gravity of the selected nodes.</li>
+<li>選択したノードの重心にトランスフォームノードを作成します。</li>
 </ul>
 </li>
 <li><strong>BoundingBoxCenter</strong>
 <ul>
-<li>Creates transform nodes at the center of the bounding box of the selected nodes.</li>
+<li>選択したノードのバウンディングボックスの中心にトランスフォームノードを作成します。</li>
 </ul>
 </li>
 <li><strong>EachPositions</strong>
 <ul>
-<li>Creates transform nodes at each position of the selected nodes.</li>
+<li>選択したノードの各ポジションにトランスフォームノードを作成します。</li>
 </ul>
 </li>
 <li><strong>InnerDivide</strong>
 <ul>
-<li>Divides the space between the selected nodes and creates transform nodes at the intervals.</li>
+<li>選択したノード間を分割し、その間にトランスフォームノードを作成します。</li>
 </ul>
 </li>
 </ul>

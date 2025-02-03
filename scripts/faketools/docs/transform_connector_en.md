@@ -8,11 +8,11 @@ A tool to connect, copy values, and perform zero resets on transform nodes.
 Launch from the dedicated menu or the following command:
 
 ```python
-import faketools.tools.transform_connecter_ui
-faketools.tools.transform_connecter_ui.show_ui()
+import faketools.tools.transform_connector_ui
+faketools.tools.transform_connector_ui.show_ui()
 ```
 
-![image001](images/transform_connecter/image001.png)
+![image001](images/transform_connector/image001.png)
 
 ### Basic Usage
 

@@ -1,5 +1,5 @@
 """
-Create transform nodes on the curve tool.
+Create transform nodes at positions tool.
 """
 
 from functools import partial
@@ -101,27 +101,8 @@ class MainWindow(base_window.BaseMainWindow):
 
         self.central_layout.addLayout(layout)
 
-        layout = QHBoxLayout()
-
-        aim_label = QLabel('AimVector:')
-        layout.addWidget(aim_label)
-
-        self.aim_vector_box = QComboBox()
-        self.aim_vector_box.addItems(self.aim_vector_data().keys())
-        layout.addWidget(self.aim_vector_box, stretch=1)
-
-        self.central_layout.addLayout(layout)
-
-        layout = QHBoxLayout()
-
-        up_label = QLabel('UpVector:')
-        layout.addWidget(up_label)
-
-        self.up_vector_box = QComboBox()
-        self.up_vector_box.addItems(self.up_vector_data().keys())
-        layout.addWidget(self.up_vector_box, stretch=1)
-
-        self.central_layout.addLayout(layout)
+        self.tangent_from_component_cb = QCheckBox('Tangent from Component')
+        self.central_layout.addWidget(self.tangent_from_component_cb)
 
         self.central_layout.addWidget(extra_widgets.HorizontalSeparator())
 
@@ -150,8 +131,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.rotate_offset_field_x.setValue(self.tool_options.read('rotate_offsetX', 0.0))
         self.rotate_offset_field_y.setValue(self.tool_options.read('rotate_offsetY', 0.0))
         self.rotate_offset_field_z.setValue(self.tool_options.read('rotate_offsetZ', 0.0))
-        self.aim_vector_box.setCurrentIndex(self.tool_options.read('aim_vector', 0))
-        self.up_vector_box.setCurrentIndex(self.tool_options.read('up_vector', 0))
+        self.tangent_from_component_cb.setChecked(self.tool_options.read('tangent_from_component', False))
         self.reverse_cb.setChecked(self.tool_options.read('reverse', False))
         self.chain_cb.setChecked(self.tool_options.read('chain', False))
 
@@ -166,8 +146,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.rotate_offset_field_x.valueChanged.connect(partial(self.update_preview_options, sender=self.rotate_offset_field_x))
         self.rotate_offset_field_y.valueChanged.connect(partial(self.update_preview_options, sender=self.rotate_offset_field_y))
         self.rotate_offset_field_z.valueChanged.connect(partial(self.update_preview_options, sender=self.rotate_offset_field_z))
-        self.aim_vector_box.currentIndexChanged.connect(partial(self.update_preview_options, sender=self.aim_vector_box))
-        self.up_vector_box.currentIndexChanged.connect(partial(self.update_preview_options, sender=self.up_vector_box))
+        self.tangent_from_component_cb.stateChanged.connect(partial(self.update_preview_options, sender=self.tangent_from_component_cb))
         self.reverse_cb.stateChanged.connect(partial(self.update_preview_options, sender=self.reverse_cb))
         self.chain_cb.stateChanged.connect(partial(self.update_preview_options, sender=self.chain_cb))
 
@@ -180,39 +159,15 @@ class MainWindow(base_window.BaseMainWindow):
         # Initialize
         # Rearrange label width
         max_width = 0
-        for label in [size_label, div_label, aim_label, up_label]:
+        for label in [size_label, div_label]:
             max_width = max(max_width, label.sizeHint().width())
 
-        for label in [size_label, div_label, aim_label, up_label]:
+        for label in [size_label, div_label]:
             label.setFixedWidth(max_width)
             label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         # Initialize by method
         self.switch_method(self.method_box.currentIndex())
-
-    @staticmethod
-    def aim_vector_data() -> dict:
-        """Aim vector method list.
-
-        Returns:
-            dict: Aim vector label and method pairs.
-        """
-        return {'CurveTangent': 'tangent',
-                'NextPoint': 'next_point',
-                'PreviousPoint': 'previous_point'
-                }
-
-    @staticmethod
-    def up_vector_data() -> dict:
-        """Up vector method list.
-
-        Returns:
-            dict: Up vector label and method pairs.
-        """
-        return {'SceneUp': 'scene_up',
-                'CurveNormal': 'normal',
-                'SurfaceNormal': 'surface_normal'
-                }
 
     @staticmethod
     def method_data() -> dict:
@@ -221,12 +176,11 @@ class MainWindow(base_window.BaseMainWindow):
         Returns:
             dict: Label and function pairs.
         """
-        return {'CVPositions': {'function': 'cv_positions', 'divisions': False},
-                'EPPositions': {'function': 'ep_positions', 'divisions': False},
-                'CVClosestPositions': {'function': 'cv_closest_positions', 'divisions': False},
-                'ParameterPositions': {'function': 'param_positions', 'divisions': True},
-                'LengthPositions': {'function': 'length_positions', 'divisions': True},
-                'CloudPositions': {'function': 'cloud_positions', 'divisions': True},
+        return {'GravityCenter': {'function': 'gravity_center', 'include_rotation': False, 'divisions': False, 'tangent_from_component': False},
+                'BoundingBoxCenter': {'function': 'bounding_box_center', 'include_rotation': False, 'divisions': False, 'tangent_from_component': False},  # noqa: E501
+                'EachPositions': {'function': 'each_positions', 'include_rotation': True, 'divisions': False, 'tangent_from_component': True},
+                'ClosestPoints': {'function': 'closest_position', 'include_rotation': True, 'divisions': False, 'tangent_from_component': True},
+                'InnerDivide': {'function': 'inner_divide', 'include_rotation': True, 'divisions': True, 'tangent_from_component': False},
                 }
 
     def switch_method(self, index):
@@ -238,6 +192,11 @@ class MainWindow(base_window.BaseMainWindow):
         method_name = self.method_box.itemText(index)
         method_data = self.method_data()[method_name]
 
+        self.include_rotation_cb.setEnabled(method_data['include_rotation'])
+        self.rotate_offset_field_x.setEnabled(method_data['include_rotation'])
+        self.rotate_offset_field_y.setEnabled(method_data['include_rotation'])
+        self.rotate_offset_field_z.setEnabled(method_data['include_rotation'])
+        self.tangent_from_component_cb.setEnabled(method_data['tangent_from_component'])
         self.divisions_field.setEnabled(method_data['divisions'])
 
     @maya_ui.undo_chunk('Transform Creater: Create')
@@ -262,9 +221,8 @@ class MainWindow(base_window.BaseMainWindow):
 
         # Extra variables
         include_rotation = self.include_rotation_cb.isChecked()
+        tangent_from_component = self.tangent_from_component_cb.isChecked()
         divisions = self.divisions_field.value()
-        aim_vector_method = self.aim_vector_data()[self.aim_vector_box.currentText()]
-        up_vector_method = self.up_vector_data()[self.up_vector_box.currentText()]
 
         # Create transform nodes
         make_transform = create_transforms.CreateTransforms(func=function,
@@ -275,16 +233,14 @@ class MainWindow(base_window.BaseMainWindow):
                                                             rotation_offset=rotation_offset)
 
         result_nodes = make_transform.create(include_rotation=include_rotation,
-                                             divisions=divisions,
-                                             aim_vector_method=aim_vector_method,
-                                             up_vector_method=up_vector_method)
+                                             tangent_from_component=tangent_from_component,
+                                             divisions=divisions)
 
         if result_nodes:
             cmds.select(result_nodes, r=True)
 
         logger.debug(f'Create transform nodes: {result_nodes}')
 
-    @maya_ui.error_handler
     def toggle_preview(self, state):
         """Toggle preview result nodes.
         """
@@ -319,22 +275,20 @@ class MainWindow(base_window.BaseMainWindow):
                            self.rotate_offset_field_z.value()]
 
         # Extra variables
-        divisions = self.divisions_field.value()
         include_rotation = self.include_rotation_cb.isChecked()
-        aim_vector_method = self.aim_vector_data()[self.aim_vector_box.currentText()]
-        up_vector_method = self.up_vector_data()[self.up_vector_box.currentText()]
+        tangent_from_component = self.tangent_from_component_cb.isChecked()
+        divisions = self.divisions_field.value()
 
-        self.preview_locator = PreviewLocatorForTransformOnCurve(func=function,
-                                                                 size=size,
-                                                                 shape_type=node_type,
-                                                                 chain=chain,
-                                                                 reverse=reverse,
-                                                                 rotation_offset=rotation_offset)
+        self.preview_locator = create_transforms.PreviewLocatorForTransform(func=function,
+                                                                            size=size,
+                                                                            shape_type=node_type,
+                                                                            chain=chain,
+                                                                            reverse=reverse,
+                                                                            rotation_offset=rotation_offset)
 
         self.preview_locator.preview(include_rotation=include_rotation,
-                                     divisions=divisions,
-                                     aim_vector_method=aim_vector_method,
-                                     up_vector_method=up_vector_method)
+                                     tangent_from_component=tangent_from_component,
+                                     divisions=divisions)
 
         logger.debug('Update preview locator.')
 
@@ -370,10 +324,8 @@ class MainWindow(base_window.BaseMainWindow):
             self.preview_locator.change_rotation_offset([self.rotate_offset_field_x.value(),
                                                          self.rotate_offset_field_y.value(),
                                                          self.rotate_offset_field_z.value()])
-        elif sender == self.aim_vector_box:
-            self.update_preview_locator()
 
-        elif sender == self.up_vector_box:
+        elif sender == self.tangent_from_component_cb:
             self.update_preview_locator()
 
         elif sender == self.reverse_cb:
@@ -415,8 +367,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.tool_options.write('rotate_offsetX', self.rotate_offset_field_x.value())
         self.tool_options.write('rotate_offsetY', self.rotate_offset_field_y.value())
         self.tool_options.write('rotate_offsetZ', self.rotate_offset_field_z.value())
-        self.tool_options.write('aim_vector', self.aim_vector_box.currentIndex())
-        self.tool_options.write('up_vector', self.up_vector_box.currentIndex())
+        self.tool_options.write('tangent_from_component', self.tangent_from_component_cb.isChecked())
         self.tool_options.write('reverse', self.reverse_cb.isChecked())
         self.tool_options.write('chain', self.chain_cb.isChecked())
 
@@ -424,11 +375,6 @@ class MainWindow(base_window.BaseMainWindow):
         self.end_preview()
 
         super().closeEvent(event)
-
-
-class PreviewLocatorForTransformOnCurve(create_transforms.PreviewLocatorForTransform):
-
-    preview_locator_name = 'createTransformOnCurvePreview'
 
 
 def show_ui():
@@ -440,5 +386,5 @@ def show_ui():
     # Create the main window.
     main_window = MainWindow(parent=maya_qt.get_maya_pointer(),
                              object_name=window_name,
-                             window_title='Transform Creater on Curve')
+                             window_title='Transform Creator')
     main_window.show()

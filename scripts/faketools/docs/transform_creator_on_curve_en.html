@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>transform_connecter.md</title>
+<title>transform_creator_on_curve_en.md</title>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 
 <style>
@@ -365,20 +365,139 @@ code {
           : 'default'
     });
   </script>
-<h1 id="transform-connecter">Transform Connecter</h1>
-<p>Transform ノードを接続、値のコピー、ゼロリセットを行うツールです。</p>
-<h2 id="%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">使用方法</h2>
-<p>専用のメニューか、以下のコマンドでツールを起動します。</p>
-<pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.tools.transform_connecter_ui
-faketools.tools.transform_connecter_ui.show_ui()
+<h1 id="transform-creater-on-curve">Transform Creater on Curve</h1>
+<p>Creates transform nodes on the selected curve.</p>
+<h2 id="how-to-use">How to Use</h2>
+<p>Launch from the dedicated menu or the following command:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> faketools.tools.transform_creator_on_curve_ui
+faketools.tools.transform_creator_on_curve_ui.show_ui()
 </div></code></pre>
-<p><img src="images/transform_connecter/image001.png" alt="image001"></p>
-<h3 id="%E5%9F%BA%E6%9C%AC%E7%9A%84%E3%81%AA%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">基本的な使用方法</h3>
+<p><img src="images/transform_creator_on_curve/image001.png" alt="image001"></p>
+<h3 id="basic-usage">Basic Usage</h3>
 <ol>
-<li>ツールで操作したいノードを選択します。トランスフォームタイプのノードのみが有効です。</li>
-<li>それぞれ操作したいアトリビュートのチェックボックスを選択します。</li>
-<li>それぞれ、Copy Value ( 値のコピー )、Connect Value ( 接続 )、Zero Reset ( ゼロリセット ) のボタンを押して操作を行います。</li>
+<li>Select the transform creation method from the dropdown menu at the top.</li>
+<li>Select the nurbsCurve node and its transform node in the scene.</li>
+<li>Configure the other options. Options that are not grayed out can be set.</li>
+<li>Press the <strong>[ Create ]</strong> button to create the transform nodes.</li>
 </ol>
+<h3 id="options">Options</h3>
+<ul>
+<li><strong>Node Type</strong>
+<ul>
+<li>Choose between locator or transform.</li>
+</ul>
+</li>
+<li><strong>Divisions</strong>
+<ul>
+<li>Valid only when the creation method is set to innerDivide. Specifies the number of divisions between selected nodes.</li>
+</ul>
+</li>
+<li><strong>Include Rotation</strong>
+<ul>
+<li>Determines whether the created transform nodes include rotation attributes.</li>
+</ul>
+</li>
+<li><strong>Rotation Offset Value</strong>
+<ul>
+<li>Sets the rotation offset value for the created transform nodes.</li>
+</ul>
+</li>
+<li><strong>Aim Vector</strong>
+<ul>
+<li>Specifies how to determine the aim vector of the created transform nodes.
+<ul>
+<li><strong>CurveTangent</strong>
+<ul>
+<li>Uses the tangent vector of the curve.</li>
+</ul>
+</li>
+<li><strong>NextPoint</strong>
+<ul>
+<li>Uses the vector towards the position of the next node in the sequence of created transform nodes.</li>
+</ul>
+</li>
+<li><strong>PreviousPoint</strong>
+<ul>
+<li>Uses the vector towards the position of the previous node in the sequence of created transform nodes.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Up Vector</strong>
+<ul>
+<li>Specifies how to determine the up vector of the created transform nodes.
+<ul>
+<li><strong>SceneUp</strong>
+<ul>
+<li>Uses the scene's up vector, which is [0, 1, 0].</li>
+</ul>
+</li>
+<li><strong>CurveNormal</strong>
+<ul>
+<li>Uses the normal vector of the curve.</li>
+</ul>
+</li>
+<li><strong>SurfaceNormal</strong>
+<ul>
+<li>Uses the normal vector of the surface to which the curve belongs. The curve must be created using the duplicateCurve command; otherwise, CurveNormal is applied by default.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Reverse</strong>
+<ul>
+<li>Reverses the order of the transform nodes if duplicated.</li>
+</ul>
+</li>
+<li><strong>Chain</strong>
+<ul>
+<li>Arranges duplicated transform nodes into a chain hierarchy.</li>
+</ul>
+</li>
+<li><strong>Preview</strong>
+<ul>
+<li>Displays a preview of the transform nodes to be created.</li>
+</ul>
+</li>
+</ul>
+<h3 id="creation-methods">Creation Methods</h3>
+<ul>
+<li><strong>CVPositions</strong>
+<ul>
+<li>Creates transform nodes at the positions of the curve's CVs.</li>
+</ul>
+</li>
+<li><strong>EPPositions</strong>
+<ul>
+<li>Creates transform nodes at the positions of the curve's edit points.</li>
+</ul>
+</li>
+<li><strong>CVClosestPositions</strong>
+<ul>
+<li>Creates transform nodes at positions on the curve closest to its CVs.</li>
+</ul>
+</li>
+<li><strong>ParameterPositions</strong>
+<ul>
+<li>Creates transform nodes at equally spaced parameter values on the curve. The number of nodes is determined by the Divisions setting.</li>
+</ul>
+</li>
+<li><strong>LengthPositions</strong>
+<ul>
+<li>Creates transform nodes at equal intervals along the curve's length. The number of nodes is determined by the Divisions setting.</li>
+</ul>
+</li>
+<li><strong>CloudPositions</strong>
+<ul>
+<li>Creates transform nodes at equal chord lengths along the curve. The number of nodes is determined by the Divisions setting.</li>
+<li>If the target curve is closed, it is possible failed to create transform nodes. In that case, please use the open curve.</li>
+</ul>
+</li>
+</ul>
 
 </body>
 </html>

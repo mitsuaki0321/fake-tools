@@ -283,5 +283,5 @@ def show_ui():
     # Create the main window.
     main_window = MainWindow(parent=maya_qt.get_maya_pointer(),
                              object_name=window_name,
-                             window_title='Transform Connecter')
+                             window_title='Transform Connector')
     main_window.show()
