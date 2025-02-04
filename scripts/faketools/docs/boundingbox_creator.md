@@ -41,6 +41,7 @@ faketools.tools.boundingbox_creator_ui.show_ui()
    - `AxisAligned`: 指定した軸を基準として最小体積のバウンディングボックスを作成します。
      - `Axis Direction`: 軸の方向を指定します。
      - `Axis`: `Axis Direction` で指定した軸を最終的にどの軸に変換するかを指定します。
+     - `Sampling`: バウンディングボックスのサンプリング数を指定します。値が大きいほど精度は上がりますが、計算量が増えます。
   
     ![image007](images/boundingbox_creator/image007.png)
 

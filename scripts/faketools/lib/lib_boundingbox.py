@@ -278,7 +278,7 @@ class AxisAlignedBoundingBox(BoundingBox):
             theta_sampling (int): The number of divisions to evaluate θ (0 to 2π). Default is 360.
         """
         super().__init__(points)
-        self._axis_origin = np.mean(self._points, axis=0)
+        self._axis_origin = (np.min(self._points, axis=0) + np.max(self._points, axis=0)) / 2.0
         self._axis = np.array(axis_direction, dtype=float)
         self._axis = self._axis / np.linalg.norm(self._axis)
         self._axis_spec = axis.lower()

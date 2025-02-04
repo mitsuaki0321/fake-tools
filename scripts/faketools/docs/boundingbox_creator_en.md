@@ -36,6 +36,7 @@ faketools.tools.boundingbox_creator_ui.show_ui()
    - `AxisAligned`: Creates a bounding box with the minimum volume aligned to the specified axis.
      - `Axis Direction`: Specifies the direction of the axis.
      - `Axis`: Specifies which axis to convert the `Axis Direction` to.
+     - `Sampling`: Specifies the number of samples for the bounding box. The higher the value, the higher the accuracy, but the higher the computational cost.
 
     ![image007](images/boundingbox_creator/image007.png)
 

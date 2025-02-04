@@ -6,7 +6,7 @@ from logging import getLogger
 
 import maya.cmds as cmds
 from PySide2.QtCore import Qt
-from PySide2.QtGui import QDoubleValidator
+from PySide2.QtGui import QDoubleValidator, QIntValidator
 from PySide2.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -113,11 +113,19 @@ class AxisAlignedBoxWidget(BaseBoxWidget):
         self.axis_box.addItems(self._axis)
         layout.addWidget(self.axis_box, 1, 1, 1, 3)
 
+        label = QLabel('Sampling:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        layout.addWidget(label, 2, 0)
+
+        self.sampling = QLineEdit()
+        self.sampling.setValidator(QIntValidator(0, 36000))
+        layout.addWidget(self.sampling, 2, 1)
+
         self.main_layout.addLayout(layout)
 
         # Option settings
-        self.set_axis_direction(tool_options.read('axis_direction', [0, 1, 0]))
+        self.set_axis_direction(tool_options.read('axis_direction', [0.0, 1.0, 0.0]))
         self.set_axis(tool_options.read('axis', 'y'))
+        self.set_sampling(tool_options.read('sampling', 360))
 
     def get_options(self) -> dict:
         """Get the options.
@@ -126,11 +134,25 @@ class AxisAlignedBoxWidget(BaseBoxWidget):
             dict: Options for the bounding box type.
         """
         return {
-            'axis_direction': [float(self.x_axis_direction.text()),
-                               float(self.y_axis_direction.text()),
-                               float(self.z_axis_direction.text())],
-            'axis': self.axis_box.currentText()
+            'axis_direction': self.get_axis_direction(),
+            'axis': self.axis_box.currentText(),
+            'theta_samples': self.get_sampling()
         }
+
+    def get_axis_direction(self) -> list[float]:
+        """Get the axis direction.
+
+        Returns:
+            list[float]: Axis direction.
+        """
+        result_axis = []
+        for axis in [self.x_axis_direction, self.y_axis_direction, self.z_axis_direction]:
+            try:
+                result_axis.append(float(axis.text()))
+            except ValueError:
+                result_axis.append(0.0)
+
+        return result_axis
 
     def set_axis_direction(self, axis_direction: list[float]):
         """Set the axis direction.
@@ -159,6 +181,25 @@ class AxisAlignedBoxWidget(BaseBoxWidget):
 
         self.axis_box.setCurrentText(axis)
 
+    def get_sampling(self) -> int:
+        """Get the sampling.
+
+        Returns:
+            int: Sampling.
+        """
+        try:
+            return int(self.sampling.text())
+        except ValueError:
+            return 0
+
+    def set_sampling(self, sampling: int):
+        """Set the sampling.
+
+        Args:
+            sampling (int): Sampling.
+        """
+        self.sampling.setText(str(sampling))
+
     def closeEvent(self, event):
         """Override the close event.
         """
@@ -166,6 +207,7 @@ class AxisAlignedBoxWidget(BaseBoxWidget):
         options = self.get_options()
         tool_options.write('axis_direction', options['axis_direction'])
         tool_options.write('axis', options['axis'])
+        tool_options.write('sampling', options['theta_samples'])
 
         super().closeEvent(event)
 
@@ -243,6 +285,8 @@ class MainWindow(base_window.BaseMainWindow):
         create_button.clicked.connect(self.create_bounding_box)
 
         # Initialize the UI.
+        self.stock_widget.setCurrentIndex(self.bounding_type_box.currentIndex())
+
         size_hint = self.sizeHint()
         self.resize(size_hint.width() * 0.5, size_hint.height())
 
