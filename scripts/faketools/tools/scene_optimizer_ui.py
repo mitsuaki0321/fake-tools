@@ -2,6 +2,9 @@
 Maya scene optimize tool.
 """
 
+from functools import partial
+
+import maya.cmds as cmds
 from PySide2.QtWidgets import QCheckBox, QHBoxLayout, QPushButton, QSizePolicy
 
 from ..command import scene_optimize
@@ -30,7 +33,7 @@ class MainWindow(base_window.BaseMainWindow):
 
             button = QPushButton('Run')
             button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-            button.clicked.connect(lambda: optimizer.execute(echo=True))
+            button.clicked.connect(partial(optimizer.execute, echo=True))
             layout.addWidget(button)
 
             self.central_layout.addLayout(layout)
@@ -89,6 +92,10 @@ class MainWindow(base_window.BaseMainWindow):
     def __execute(self):
         """Execute.
         """
+        if not all([checkbox.isChecked() for checkbox in self.enable_checkboxes]):
+            cmds.warning('Please check the optimizer you want to execute.')
+            return
+
         start_msg = 'Start Optimize Scene'
         print('#' * len(start_msg))
         print(start_msg)
