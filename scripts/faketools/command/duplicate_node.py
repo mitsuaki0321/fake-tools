@@ -23,8 +23,6 @@ def substitute_duplicate(nodes: list[str], regex_name: str, replace_name: str, *
     Returns:
         list[str]: The substituted node list.
     """
-    logger.debug('Start')
-
     # Check node
     if not nodes:
         cmds.error('Nodes are not specified.')
@@ -57,24 +55,31 @@ def substitute_duplicate(nodes: list[str], regex_name: str, replace_name: str, *
                 transform_node = cmds.listRelatives(node, parent=True, f=True)[0]
                 transform_nodes.append(transform_node)
 
+        # Get only the top of the hierarchy for nodes with duplicate hierarchy
         transform_nodes = lib_selection.DagHierarchy(transform_nodes).get_hierarchy_tops()
-        dup_nodes = cmds.duplicate(transform_nodes, rc=True)
 
-        transform_local_names = [node.split('|')[-1] for node in transform_nodes]
-        new_names = lib_name.substitute_names(transform_local_names, regex_name, replace_name)
+        logger.debug(f'Before rename nodes: {transform_nodes}')
 
-        result_nodes = rename_node._rename_dag_nodes(dup_nodes, new_names)
+        result_nodes = []
+        for transform_node in transform_nodes:
+            dup_nodes = cmds.duplicate(transform_node, rc=True)
 
-        logger.debug('End dagNode')
+            hierarchy_nodes = lib_selection.DagHierarchy([transform_node]).get_hierarchy()
+            local_names = [lib_name.get_local_name(node) for node in hierarchy_nodes]
+            new_names = lib_name.substitute_names(local_names, regex_name, replace_name)
+
+            rename_nodes = rename_node._rename_dag_nodes(dup_nodes, new_names)
+
+            result_nodes.extend(rename_nodes)
 
         return result_nodes
 
     if non_dag_nodes:
+        logger.debug(f'Before rename nodes: {non_dag_nodes}')
+
         new_names = lib_name.substitute_names(non_dag_nodes, regex_name, replace_name)
         dup_nodes = cmds.duplicate(non_dag_nodes, rc=True)
         result_nodes = rename_node._rename_non_dag_nodes(dup_nodes, new_names)
-
-        logger.debug('End nonDagNode')
 
         return result_nodes
 

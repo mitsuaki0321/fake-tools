@@ -559,7 +559,7 @@ class SubstitutionSelectionWidget(QWidget):
 
         result_nodes = rename_node.substitute_rename(nodes, search_text, replace_text)
 
-        return result_nodes
+        cmds.select(result_nodes, r=True)
 
     @maya_ui.undo_chunk('Selecter: Mirror Position')
     @maya_ui.error_handler
@@ -620,7 +620,7 @@ class SubstitutionSelectionWidget(QWidget):
                 if freeze:
                     lib_transform.FreezeTransformNode(node).freeze()
 
-        return result_nodes
+        cmds.select(result_nodes, r=True)
 
     @maya_ui.undo_chunk('Selecter: Duplicate Original Substitution')
     @maya_ui.error_handler
@@ -635,7 +635,7 @@ class SubstitutionSelectionWidget(QWidget):
 
         result_nodes = duplicate_node.substitute_duplicate_original(nodes, search_text, replace_text)
 
-        return result_nodes
+        cmds.select(result_nodes, r=True)
 
     def __get_substitution_option(self):
         """Get the substitution option.
