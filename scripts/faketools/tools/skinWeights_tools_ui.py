@@ -116,12 +116,16 @@ class MainWindow(base_window.BaseMainWindow):
     def select_influences(self):
         """Select the influences.
         """
-        target_skinClusters = self.__get_skinClusters()
-        if not target_skinClusters:
-            cmds.error('Failed to get skinClusters')
+        sel_nodes = cmds.ls(sl=True)
+        if not sel_nodes:
+            cmds.error('Select geometry or components.')
 
-        select_infs = lib_skinCluster.get_skinCluster_influences(target_skinClusters)
-        cmds.select(select_infs, r=True)
+        influences = convert_weight.get_influences_from_objects(sel_nodes)
+        if not influences:
+            cmds.warning('No influences found.')
+            return
+
+        cmds.select(influences, r=True)
 
     @maya_ui.undo_chunk('Rebind SkinCluster')
     @maya_ui.error_handler
@@ -149,8 +153,8 @@ class MainWindow(base_window.BaseMainWindow):
 
         convert_weight.prune_small_weights(sel_components, threshold=0.005)
 
-    @ maya_ui.undo_chunk('Remove Unused Influences')
-    @ maya_ui.error_handler
+    @maya_ui.undo_chunk('Remove Unused Influences')
+    @maya_ui.error_handler
     def remove_unused_influences(self):
         """Remove unused influences.
         """
@@ -166,8 +170,8 @@ class MainWindow(base_window.BaseMainWindow):
 
             lib_skinCluster.remove_unused_influences(skinCluster)
 
-    @ maya_ui.undo_chunk('Average Skin Weights')
-    @ maya_ui.error_handler
+    @maya_ui.undo_chunk('Average Skin Weights')
+    @maya_ui.error_handler
     def average_skin_weights(self):
         """Average skin weights.
         """
@@ -177,8 +181,8 @@ class MainWindow(base_window.BaseMainWindow):
 
         convert_weight.average_skin_weights(sel_components)
 
-    @ maya_ui.undo_chunk('Average Skin Weights Shell')
-    @ maya_ui.error_handler
+    @maya_ui.undo_chunk('Average Skin Weights Shell')
+    @maya_ui.error_handler
     def average_skin_weights_shell(self):
         """Average skin weights shell.
         """

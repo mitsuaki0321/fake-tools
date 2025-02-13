@@ -14,6 +14,56 @@ from ..lib import lib_component, lib_mesh, lib_skinCluster
 logger = getLogger(__name__)
 
 
+def get_influences_from_objects(objs: list[str]) -> list[str]:
+    """Get the influences from the objects.
+
+    Args:
+        objs (list[str]): The Target objects.
+
+    Returns:
+        list[str]: The influences.
+    """
+    if not objs:
+        raise ValueError('No objects specified')
+
+    object_data = {}
+    for obj in objs:
+        components = cmds.filterExpand(obj, sm=[28, 31, 46])
+        if components:
+            shp = cmds.ls(components[0], objectsOnly=True)[0]
+            object_data.setdefault(shp, []).extend(components)
+        else:
+            shp = cmds.listRelatives(obj, shapes=True, type='deformableShape')
+            if not shp:
+                cmds.warning(f'No shape found: {obj}')
+                continue
+
+            if shp[0] not in object_data:
+                object_data[shp[0]] = []
+
+    result_infs = []
+    for shp, components in object_data.items():
+        skinCluster = lib_skinCluster.get_skinCluster(shp)
+        if not skinCluster:
+            cmds.warning(f'Object is not bound to a skinCluster: {shp}')
+            continue
+
+        infs = cmds.skinCluster(skinCluster, q=True, inf=True)
+        if not components:
+            result_infs.extend(infs)
+        else:
+            # Get only influences with weights greater than 0
+            weights = lib_skinCluster.get_skin_weights(skinCluster, components)
+            weights = [sum(w) for w in zip(*weights)]
+            result_infs.extend([infs[i] for i, w in enumerate(weights) if w > 0.0])
+
+    result_infs = list(dict.fromkeys(result_infs))
+
+    logger.debug(f'Get influences from objects: {objs} -> {result_infs}')
+
+    return result_infs
+
+
 def average_skin_weights(components: list[str]) -> None:
     """Average the weights of the components.
 

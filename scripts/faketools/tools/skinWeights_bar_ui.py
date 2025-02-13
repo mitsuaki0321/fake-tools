@@ -83,7 +83,7 @@ class SkinWeightsBar(QWidget):
     def copy_skin_weights(self):
         """Copy the skin weights.
         """
-        sel_nodes = cmds.ls(sl=True, type='transform')
+        sel_nodes = cmds.ls(sl=True)
         if not sel_nodes:
             cmds.error('No objects selected')
 
