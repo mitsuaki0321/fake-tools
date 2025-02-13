@@ -391,7 +391,7 @@ class SkinWeightsImportExport:
 
         logger.debug(f'Import skin weights: {file_path}')
 
-    @ staticmethod
+    @staticmethod
     def _is_skinCluster(node: str) -> bool:
         """Check if the node is a skinCluster.
 

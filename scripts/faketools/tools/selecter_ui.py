@@ -613,14 +613,20 @@ class SubstitutionSelectionWidget(QWidget):
             cmds.error('No object selected.')
 
         result_nodes = duplicate_node.substitute_duplicate(nodes, search_text, replace_text)
+        if not result_nodes:
+            return
 
-        if result_nodes and mirror:
-            for node in result_nodes:
-                lib_transform.mirror_transform(node, node, mirror_position=mirror_pos, mirror_rotation=mirror_rot)
-                if freeze:
-                    lib_transform.FreezeTransformNode(node).freeze()
+        if all(['dagNode' in cmds.nodeType(node, inherited=True) for node in result_nodes]):
+            result_top_nodes = lib_selection.DagHierarchy(result_nodes).get_hierarchy_tops()
+            if mirror:
+                for node in result_top_nodes:
+                    lib_transform.mirror_transform(node, node, mirror_position=mirror_pos, mirror_rotation=mirror_rot)
+                    if freeze:
+                        lib_transform.FreezeTransformNode(node).freeze()
 
-        cmds.select(result_nodes, r=True)
+            cmds.select(result_top_nodes, r=True)
+        else:
+            cmds.select(result_nodes, r=True)
 
     @maya_ui.undo_chunk('Selecter: Duplicate Original Substitution')
     @maya_ui.error_handler

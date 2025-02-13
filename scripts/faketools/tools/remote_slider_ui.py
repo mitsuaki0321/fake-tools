@@ -168,8 +168,8 @@ class RemoteSliderWindow:
         saved_nodes = self.tool_options.read(self.node_list, [])
 
         # Settings initial values
-        cmds.menuItem(self.local_absolute_radio_btn, e=True, rb=local_absolute)
-        cmds.menuItem(self.local_relative_radio_btn, e=True, rb=local_relative)
+        cmds.menuItem(self.local_absolute_radio_btn, e=True, rb=local_relative)
+        cmds.menuItem(self.local_relative_radio_btn, e=True, rb=local_absolute)
         cmds.menuItem(self.world_relative_radio_btn, e=True, rb=world_relative)
 
         cmds.floatField(self.min_field, e=True, v=min_value)

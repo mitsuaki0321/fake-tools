@@ -147,6 +147,8 @@ def mirror_transform_anim_curve(transform: str,
         for anim_curve in anim_curves:
             mirror_time = driven_attr in time_attrs
             mirror_value = driven_attr in value_attrs
+            if not mirror_time and not mirror_value:
+                continue
             lib_keyframe.mirror_anim_curve(anim_curve, mirror_time=mirror_time, mirror_value=mirror_value)
 
 

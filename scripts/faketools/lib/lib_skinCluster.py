@@ -196,8 +196,8 @@ def exchange_influences(skinCluster: str, src_infs: list[str], tgt_infs: list[st
     logger.debug(f'Exchange influences: {skinCluster}')
 
 
-def get_skinCluster_influences(skinClusters: list[str]) -> list[str]:
-    """Get the skinCluster influences.
+def get_influences_from_skinCluster(skinClusters: list[str]) -> list[str]:
+    """Get the influences from the skinCluster nodes.
 
     Args:
         skinClusters (list[str]): The skinCluster nodes.

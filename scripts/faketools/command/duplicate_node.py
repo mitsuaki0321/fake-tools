@@ -20,6 +20,9 @@ def substitute_duplicate(nodes: list[str], regex_name: str, replace_name: str, *
         regex_name (str): The name to substitute.
         replace_name (str): The new name.
 
+    Raises:
+        RuntimeError: DagNode and nonDagNode are mixed.
+
     Returns:
         list[str]: The substituted node list.
     """
