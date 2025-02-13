@@ -24,6 +24,7 @@ faketools.tools.skinWeights_tools_ui.show_ui()
 
 - **Select Influences**  
   Select geometry and vertices (multiple objects supported), then run the command to select influences associated with the skinCluster.  
+  If vertices are selected, only influences with weights greater than zero at the selected vertices are selected.
 
 - **Rebind SkinCluster**  
   Select geometry and vertices (multiple objects supported), then run the command to rebind the skinCluster to the influence positions.  

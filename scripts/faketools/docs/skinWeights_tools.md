@@ -24,6 +24,7 @@ faketools.tools.skinWeights_tools_ui.show_ui()
 
 - **Select Influences**
   - ジオメトリ及び頂点（複数オブジェクト選択可）を選択し実行すると、それに設定されている skinCluster のインフルエンスを選択します。
+  - 頂点を選択した場合は、その頂点でウエイトが 0 以上のインフルエンスのみを選択します。
 - **Rebind SkinCluster**
   - ジオメトリ及び頂点（複数オブジェクト選択可）を選択し実行すると、それに設定されている skinCluster をそのインフルエンスの位置で再バインドします。
 - **Prune Small Weights**
