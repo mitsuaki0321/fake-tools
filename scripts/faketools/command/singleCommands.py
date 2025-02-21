@@ -563,6 +563,6 @@ class Parent(PairCommand):
             cmds.warning(f'Already parented: {source_node} -> {target_node}')
             return
 
-        cmds.parent(source_node, target_node, r=True)
+        cmds.parent(source_node, target_node)
 
         logger.debug(f'Parented: {source_node} -> {target_node}')

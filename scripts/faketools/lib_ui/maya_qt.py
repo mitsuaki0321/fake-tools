@@ -7,7 +7,37 @@ import re
 import maya.OpenMayaUI as OpenMayaUI  # type: ignore
 import maya.OpenMayaUI as omui  # type: ignore
 import shiboken2 as shiboken
+from PySide2.QtCore import QObject
 from PySide2.QtWidgets import QApplication, QWidget
+
+
+def get_qt_control(name: str, qt_object: QObject = QWidget) -> QWidget:
+    """Get the control of the qt_object from the maya ui name.
+
+    Args:
+        name (str): Name of the control.
+        qt_object (QObject, optional): Qt object to wrap the control with. Defaults to QWidget.
+
+    Returns:
+        Mixed: The control of the qt object.
+    """
+    ptr = omui.MQtUtil.findControl(name)
+    if ptr is None:
+        raise RuntimeError(f'Failed to find control "{name}".')
+
+    return shiboken.wrapInstance(int(ptr), qt_object)
+
+
+def get_maya_control(qt_object: QObject) -> str:
+    """Get the full name of the ui maya object.
+
+    Args:
+        qt_object (QObject): Object to wrap.
+
+    Returns:
+        str: Full name of the ui maya object.
+    """
+    return OpenMayaUI.MQtUtil.fullName((int(shiboken.getCppPointer(qt_object)[0])))
 
 
 def get_maya_pointer() -> QWidget:
