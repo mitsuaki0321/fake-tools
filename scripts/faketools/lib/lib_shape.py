@@ -79,45 +79,7 @@ def get_original_shape(shape: str) -> str:
         if cmds.nodeType(node) == shape_type:
             return node
 
-
-def copy_topology(src_node: str, dest_node: str) -> None:
-    """Copy the topology src_node shape to dest_node original shape.
-
-    Args:
-        src_node (str): The source transform node.
-        dest_node (str): The destination transform node.
-    """
-    if not cmds.objExists(src_node):
-        raise ValueError(f'Node does not exist: {src_node}')
-
-    if not cmds.objExists(dest_node):
-        raise ValueError(f'Node does not exist: {dest_node}')
-
-    if 'transform' not in cmds.nodeType(src_node, inherited=True):
-        raise ValueError(f'Node is not a transform: {src_node}')
-
-    if 'transform' not in cmds.nodeType(dest_node, inherited=True):
-        raise ValueError(f'Node is not a transform: {dest_node}')
-
-    src_shapes = cmds.listRelatives(src_node, s=True, path=True)
-    dest_shapes = cmds.listRelatives(dest_node, s=True, path=True)
-
-    if not src_shapes:
-        raise ValueError(f'No shape found: {src_node}')
-
-    if not dest_shapes:
-        raise ValueError(f'No shape found: {dest_node}')
-
-    if cmds.nodeType(src_shapes[0]) != cmds.nodeType(dest_shapes[0]):
-        raise ValueError(f'Different shape type: {src_shapes[0]} != {dest_shapes[0]}')
-
-    original_shape = get_original_shape(dest_shapes[0])
-    if not original_shape:
-        raise ValueError(f'Failed to get the original shape: {dest_shapes[0]}')
-
-    connect_shapes(src_shapes[0], original_shape, only_copy=True)
-
-    logger.debug(f'Copied topology: {src_shapes[0]} -> {original_shape}')
+    return shape
 
 
 def connect_shapes(src_shape: str, dest_shape: str, **kwargs) -> None:
@@ -129,7 +91,6 @@ def connect_shapes(src_shape: str, dest_shape: str, **kwargs) -> None:
 
     Keyword Args:
         only_copy (bool): Whether to only copy the shapes. Default is False.
-        force_connect (bool): Whether to force connect the shapes. Default is False.
 
     Raises:
         ValueError: If the source shape is already connected.If the force_connect is False.
@@ -140,11 +101,11 @@ def connect_shapes(src_shape: str, dest_shape: str, **kwargs) -> None:
     if not cmds.objExists(dest_shape):
         raise ValueError(f'Node does not exist: {dest_shape}')
 
-    if 'surfaceShape' not in cmds.nodeType(src_shape, inherited=True):
-        raise ValueError(f'Node is not a shape: {src_shape}')
+    if 'geometryShape' not in cmds.nodeType(src_shape, inherited=True):
+        raise ValueError(f'Node is not a geometryShape: {src_shape}')
 
-    if 'surfaceShape' not in cmds.nodeType(dest_shape, inherited=True):
-        raise ValueError(f'Node is not a shape: {dest_shape}')
+    if 'geometryShape' not in cmds.nodeType(dest_shape, inherited=True):
+        raise ValueError(f'Node is not a geometryShape: {dest_shape}')
 
     src_node_type = cmds.nodeType(src_shape)
     dest_node_type = cmds.nodeType(dest_shape)
@@ -156,24 +117,36 @@ def connect_shapes(src_shape: str, dest_shape: str, **kwargs) -> None:
         raise ValueError(f'Unsupported shape type: {src_shape} and {dest_shape}')
 
     only_copy = kwargs.get('only_copy', False)
-    force_connect = kwargs.get('force', False)
 
     shape_plugs = {'mesh': ['outMesh', 'inMesh'],
                    'nurbsSurface': ['local', 'create'],
                    'nurbsCurve': ['local', 'create']}
 
-    src_plugs = cmds.listConnections(f'{src_shape}.{shape_plugs[src_node_type][1]}', s=True, d=False)
-    if not force_connect and src_plugs:
-        raise ValueError(f'Source shape is already connected: {src_shape}')
+    dest_orig_shape = dest_shape
+    plug_chains = cmds.geometryAttrInfo(f'{dest_shape}.{shape_plugs[src_node_type][1]}', outputPlugChain=True)
+    if plug_chains:
+        plug_nodes = cmds.ls(plug_chains, objectsOnly=True)
 
-    cmds.connectAttr(f'{src_shape}.{shape_plugs[src_node_type][0]}', f'{dest_shape}.{shape_plugs[dest_node_type][1]}', f=True)
+        # Check if the shape is already connected
+        for plug_node in plug_nodes:
+            if plug_node == src_shape:
+                cmds.warning(f'Shape is already connected: {src_shape} -> {dest_shape}')
+                return
+
+        # Check the connection node type
+        first_plug_type = cmds.nodeType(plug_nodes[0])
+        if first_plug_type != dest_node_type:
+            raise ValueError(f'The type of the found connection node does not match: {dest_node_type} != {first_plug_type}')
+        dest_orig_shape = plug_nodes[0]
+
+    cmds.connectAttr(f'{src_shape}.{shape_plugs[src_node_type][0]}', f'{dest_orig_shape}.{shape_plugs[dest_node_type][1]}', f=True)
     if only_copy:
         cmds.refresh()
-        cmds.disconnectAttr(f'{src_shape}.{shape_plugs[src_node_type][0]}', f'{dest_shape}.{shape_plugs[dest_node_type][1]}')
+        cmds.disconnectAttr(f'{src_shape}.{shape_plugs[src_node_type][0]}', f'{dest_orig_shape}.{shape_plugs[dest_node_type][1]}')
         cmds.refresh()
-        logger.debug(f'Copied shapes: {src_shape} -> {dest_shape}')
+        logger.debug(f'Copied shapes: {src_shape} -> {dest_orig_shape}')
     else:
-        logger.debug(f'Connected shapes: {src_shape} -> {dest_shape}')
+        logger.debug(f'Connected shapes: {src_shape} -> {dest_orig_shape}')
 
 
 def check_topology(src_shape: str, dest_shape: str) -> bool:

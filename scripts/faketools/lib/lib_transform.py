@@ -2,10 +2,8 @@
 Transform functions.
 """
 
-import math
 from logging import getLogger
 
-import maya.api.OpenMaya as om
 import maya.cmds as cmds
 
 logger = getLogger(__name__)
@@ -351,77 +349,6 @@ class TransformHierarchy:
         """Return the string representation of the hierarchy.
         """
         return f'{self._hierarchy}'
-
-
-def mirror_transform(source_node: str, target_node: str, axis: str = 'x', mirror_position: bool = True, mirror_rotation: bool = True) -> None:
-    """Mirror the transform.
-
-    Args:
-        source_node (str): The source node.
-        target_node (str): The target node.
-        axis (str): The axis to mirror. Default is 'x'.
-        mirror_position (bool): Whether to mirror position. Default is True.
-        mirror_rotation (bool): Whether to mirror rotation. Default is True.
-    """
-    if not source_node or not target_node:
-        raise ValueError('Node is not specified.')
-
-    # Check the node
-    if not cmds.objExists(source_node) or not cmds.objExists(target_node):
-        cmds.error(f'Node does not exist: {source_node} or {target_node}')
-
-    if axis not in ['x', 'y', 'z']:
-        raise ValueError(f'Invalid axis: {axis}')
-
-    if not mirror_position and not mirror_rotation:
-        raise ValueError('Position and rotation are both False')
-
-    # Mirror the transform
-    world_matrix = cmds.getAttr(f'{source_node}.worldMatrix')
-    world_matrix = om.MMatrix(world_matrix)
-
-    if axis == 'x':
-        mirror_matrix = om.MMatrix(
-            [
-                [-1, 0, 0, 0],
-                [0, 1, 0, 0],
-                [0, 0, 1, 0],
-                [0, 0, 0, 1]
-            ]
-        )
-    elif axis == 'y':
-        mirror_matrix = om.MMatrix(
-            [
-                [1, 0, 0, 0],
-                [0, -1, 0, 0],
-                [0, 0, 1, 0],
-                [0, 0, 0, 1]
-            ]
-        )
-    else:
-        mirror_matrix = om.MMatrix(
-            [
-                [1, 0, 0, 0],
-                [0, 1, 0, 0],
-                [0, 0, -1, 0],
-                [0, 0, 0, 1]
-            ]
-        )
-
-    new_matrix = world_matrix * mirror_matrix
-    transform_mat = om.MTransformationMatrix(new_matrix)
-    position = transform_mat.translation(om.MSpace.kWorld)
-    rotation = transform_mat.rotation()
-    rotation = [math.degrees(angle) for angle in [rotation.x, rotation.y, rotation.z]]
-    scale = transform_mat.scale(om.MSpace.kWorld)
-
-    if mirror_position:
-        cmds.xform(target_node, translation=position, worldSpace=True)
-        logger.debug(f'Mirrored position: {source_node} -> {target_node}')
-
-    if mirror_rotation:
-        cmds.xform(target_node, rotation=rotation, scale=scale, worldSpace=True)
-        logger.debug(f'Mirrored rotation: {source_node} -> {target_node}')
 
 
 def reorder_transform_nodes(nodes: list[str]) -> list:

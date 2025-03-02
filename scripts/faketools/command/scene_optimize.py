@@ -12,6 +12,7 @@ Optimizations:
     - DisplayLayers: Delete display layers.
     - AnimCurves: Delete animCurves from time.
     - UnusedInfluences: Optimize unused influences from skinCluster.
+    - DeleteDagPose: Delete dagPose nodes.
 """
 
 import maya.cmds as cmds
@@ -369,6 +370,30 @@ class OptimizeUnusedInfluences(OptimizeBase):
             print('No unused influences found.')
 
 
+class OptimizeDeleteDagPose(OptimizeBase):
+
+    _category = 'rigging'
+    _label = 'DeleteDagPose'
+    _description = 'Delete dagPose nodes.'
+
+    def optimize(self, echo: bool = False) -> None:
+        """Optimizes the scene dagPose nodes.
+
+        Args:
+            echo (bool): Whether to echo the optimization. Default is False.
+        """
+        nodes = cmds.ls(type='dagPose')
+        if not nodes:
+            if echo:
+                print('No dagPose nodes found.')
+            return
+
+        for node in nodes:
+            cmds.delete(node)
+            if echo:
+                print(node)
+
+
 def list_optimizers(category: str = None) -> list:
     """List all optimizers.
 
@@ -389,6 +414,7 @@ def list_optimizers(category: str = None) -> list:
         OptimizeDisplayLayers(),
         OptimizeAnimCurves(),
         OptimizeUnusedInfluences(),
+        OptimizeDeleteDagPose(),
     ]
 
     if category:

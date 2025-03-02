@@ -28,7 +28,7 @@ faketools.tools.skinWeights_tools_ui.show_ui()
 - **Rebind SkinCluster**
   - ジオメトリ及び頂点（複数オブジェクト選択可）を選択し実行すると、それに設定されている skinCluster をそのインフルエンスの位置で再バインドします。
 - **Prune Small Weights**
-  - 頂点を選択し実行すると、ウエイトが 0.005 未満のインフルエンスのウエイトを 0 に設定します。Maya の標準機能と違い、ロックされているインフルエンスを無視します。
+  - ジオメトリを選択し実行すると、ウエイトが 0.005 未満のインフルエンスのウエイトを 0 に設定します。Maya の標準機能と違い、ロックされているインフルエンスを無視します。
 - **Remove Unused Influences**
   - ジオメトリ（複数選択可）を選択し実行すると、ウエイトがすべて 0 のインフルエンスをその skinCluster から除外します。
 - **Average Skin Weights**

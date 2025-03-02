@@ -101,8 +101,6 @@ def substitute_duplicate_original(nodes: list[str], regex_name: str, replace_nam
     Returns:
         list[str]: The substituted node list.
     """
-    logger.debug('Start')
-
     # Check node
     if not nodes:
         cmds.error('Nodes are not specified.')
@@ -138,7 +136,5 @@ def substitute_duplicate_original(nodes: list[str], regex_name: str, replace_nam
     # Substitute name
     new_names = lib_name.substitute_names(name_nodes, regex_name, replace_name)
     result_nodes = rename_node._rename_non_dag_nodes(dup_nodes, new_names)
-
-    logger.debug('End')
 
     return result_nodes

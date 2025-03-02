@@ -30,6 +30,7 @@ logger = getLogger(__name__)
 class NodeListView(QListView):
     """Node list view.
     """
+    node_changed = Signal()
 
     def __init__(self, parent=None):
         """Initialize the NodeList.
@@ -41,7 +42,8 @@ class NodeListView(QListView):
         self.customContextMenuRequested.connect(self.show_context_menu)
         self.viewport().installEventFilter(self)
 
-        self.menu = QMenu()
+        self.node_model = QStandardItemModel(self)
+        self.setModel(self.node_model)
 
     def eventFilter(self, source, event) -> bool:
         """Event filter to handle right-click context menu.
@@ -63,18 +65,24 @@ class NodeListView(QListView):
         Args:
             position (Qt.Pos): The position of the context menu
         """
-        self.menu.addAction("Select Nodes", self._select_nodes)
-        self.menu.addAction("Select All Nodes", self._select_all_nodes)
+        menu = QMenu()
 
-        self.menu.addSeparator()
+        menu.addAction("Select All Nodes", self.selectAll)
 
-        self.menu.addAction("Remove Nodes", self._remove_nodes)
+        menu.addSeparator()
 
-        self.menu.exec_(position)
+        menu.addAction("Select Scene Nodes", self._select_scene_nodes)
+        menu.addAction("Select All Scene Nodes", self._select_all_scene_nodes)
+
+        menu.addSeparator()
+
+        menu.addAction("Remove Nodes", self.remove_nodes)
+
+        menu.exec_(position)
 
     @maya_ui.undo_chunk('Select Nodes')
     @maya_ui.error_handler
-    def _select_nodes(self) -> None:
+    def _select_scene_nodes(self) -> None:
         """Select the nodes in Maya scene that are selected in the node list.
         """
         selected_nodes = self.get_selected_nodes()
@@ -85,7 +93,7 @@ class NodeListView(QListView):
 
     @maya_ui.undo_chunk('Select All Nodes')
     @maya_ui.error_handler
-    def _select_all_nodes(self) -> None:
+    def _select_all_scene_nodes(self) -> None:
         """Select all nodes in the node list in Maya scene.
         """
         all_nodes = self.get_all_nodes()
@@ -94,12 +102,35 @@ class NodeListView(QListView):
         else:
             cmds.select(clear=True)
 
-    def _remove_nodes(self) -> None:
+    def add_nodes(self, nodes: str) -> None:
+        """Add the nodes to the node list.
+
+        Args:
+            nodes (str): The nodes to add.
+        """
+        for node in nodes:
+            item = QStandardItem(node)
+            self.node_model.appendRow(item)
+
+        self.node_changed.emit()
+
+    def replace_nodes(self, nodes: str) -> None:
+        """Replace the nodes in the node list.
+
+        Args:
+            nodes (str): The nodes to replace.
+        """
+        self.node_model.clear()
+        self.add_nodes(nodes)
+
+    def remove_nodes(self) -> None:
         """Remove the selected nodes from the node list.
         """
         selected_indexes = self.selectionModel().selectedIndexes()
-        for index in selected_indexes:
-            self.model().removeRow(index.row())
+        for index in sorted(selected_indexes, key=lambda x: x.row(), reverse=True):
+            self.node_model.removeRow(index.row())
+
+        self.node_changed.emit()
 
     def get_selected_nodes(self) -> list[str]:
         """Get the selected nodes.
@@ -110,13 +141,29 @@ class NodeListView(QListView):
         selected_indexes = self.selectionModel().selectedIndexes()
         return [index.data() for index in selected_indexes]
 
+    def get_selected_count(self) -> int:
+        """Get the number of selected nodes.
+
+        Returns:
+            int: The number of selected nodes.
+        """
+        return len(self.get_selected_nodes())
+
     def get_all_nodes(self) -> list[str]:
         """Get all the nodes.
 
         Returns:
             list[str]: All the nodes.
         """
-        return [self.model().item(i).text() for i in range(self.model().rowCount())]
+        return [self.node_model.item(i).text() for i in range(self.node_model.rowCount())]
+
+    def get_count(self) -> int:
+        """Get the number of nodes.
+
+        Returns:
+            int: The number of nodes.
+        """
+        return self.node_model.rowCount()
 
 
 class AttributeListView(QListView):
@@ -162,11 +209,15 @@ class AttributeListView(QListView):
         """Show context menu for attribute list.
         """
         menu = QMenu()
+
         menu.addAction("Lock", self.__lock_attributes)
         menu.addAction("Unlock", self.__unlock_attributes)
+
         menu.addSeparator()
+
         menu.addAction("Keyable", self.__keyable_attributes)
         menu.addAction("Unkeyable", self.__unkeyable_attributes)
+
         menu.exec_(position)
 
     @maya_ui.undo_chunk('Lock Attributes')
@@ -305,12 +356,7 @@ class NodeAttributeWidgets(QWidget):
         else:
             nodes = sel_nodes
 
-        self.node_list.setModel(QStandardItemModel(self.node_list))
-        model = self.node_list.model()
-
-        for node in nodes:
-            item = QStandardItem(node)
-            model.appendRow(item)
+        self.node_list.replace_nodes(nodes)
 
         # Connect the signal after setting the model
         selection_model = self.node_list.selectionModel()
@@ -321,7 +367,7 @@ class NodeAttributeWidgets(QWidget):
             for index in selection_indexes:
                 selection_model.select(index, QItemSelectionModel.Select)
         else:
-            selection_model.select(model.index(0, 0), QItemSelectionModel.Select)
+            selection_model.select(self.node_list.node_model.index(0, 0), QItemSelectionModel.Select)
 
     def _display_attributes(self) -> None:
         """Display the attributes of the selected nodes.
@@ -352,7 +398,7 @@ class NodeAttributeWidgets(QWidget):
         Returns:
             list[str]: The attributes of the node.
         """
-        except_attr_types = kwargs.get('except_attr_types', ['message', 'TdataCompound'])
+        except_attr_types = kwargs.pop('except_attr_types', ['message', 'TdataCompound'])
 
         result_attrs = []
 

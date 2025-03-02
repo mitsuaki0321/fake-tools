@@ -55,3 +55,8 @@ Remove all time-dependent animation curves present in the scene.
 ### UnusedInfluences
 
 Remove all unused influences present in the scene.
+
+### DeleteDagPose
+
+Remove all DAG poses present in the scene.
+```

@@ -134,3 +134,8 @@ Commands used to create/edit curves are stored here.
 * Creates a curve based on the selected vertices.
   
 ![image011](images/curveSurface_creator/image011.png) ![image012](images/curveSurface_creator/image012.png)
+
+### Create Curve on SurfaceU V
+
+* Select surfaces (multiple selections possible) and execute.
+* Creates curves at the center of each UV value on the selected surfaces.

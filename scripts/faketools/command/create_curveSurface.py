@@ -784,3 +784,37 @@ def move_cv_positions(target_cv: str) -> None:
         cmds.xform(cv, ws=True, t=move_position)
 
     logger.debug(f'Moved CV positions: {target_cv}')
+
+
+def create_curve_on_surface(suf: str, surface_axis: str = 'u') -> str:
+    """Create a center curve from the surface.
+
+    Args:
+        suf (str): Surface name.
+        surface_axis (str): Axis of the surface. ('u' or 'v')
+
+    Returns:
+        str: Created curve.
+    """
+    if not suf:
+        cmds.error('No surface specified.')
+
+    if not cmds.objExists(suf):
+        cmds.error(f'Surface not exists: {suf}')
+
+    if cmds.nodeType(suf) != 'nurbsSurface':
+        cmds.error(f'Invalid surface type: {suf}')
+
+    if surface_axis not in ['u', 'v']:
+        cmds.error('Invalid surface axis.')
+
+    nurbs_surface = lib_nurbsSurface.NurbsSurface(suf)
+    u_range, v_range = nurbs_surface.get_uv_range()
+    center_param = (u_range[0] + u_range[1]) / 2.0 if surface_axis == 'u' else (v_range[0] + v_range[1]) / 2.0
+
+    nodes = cmds.duplicateCurve(f"{suf}.{surface_axis == 'u' and 'v' or 'u'}[{center_param}]", ch=True, rn=False, local=False, n=f"{suf}_centerCurve")
+    cmds.rename(nodes[1], f'{suf}_curveFromSurfaceIso')
+
+    logger.debug(f'Created curve: {nodes[0]}')
+
+    return nodes[0]

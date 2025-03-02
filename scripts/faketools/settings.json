@@ -11,6 +11,10 @@
         "_L",
         "_R"
     ],
+    "ADJUST_CENTER_WEIGHT":[
+        "(.*)(L$)",
+        "\\g<1>R"
+    ],
     "SELECTER_SETTINGS": {
         "FILTER_COLOR": "#6D7B8D",
         "HIERARCHY_COLOR": "#4C516D",

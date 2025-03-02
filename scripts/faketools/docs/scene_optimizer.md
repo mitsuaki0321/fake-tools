@@ -55,3 +55,7 @@ faketools.tools.scene_optimizer_ui.show_ui()
 ### UnusedInfluences
 
 シーンに存在する未使用のインフルエンスをすべて削除します。
+
+### DeleteDagPose
+
+シーンに存在する DAG ポーズをすべて削除します。

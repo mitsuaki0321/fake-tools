@@ -2,7 +2,6 @@
 Maya scene selection tools.
 """
 
-import importlib
 import re
 
 import maya.cmds as cmds
@@ -21,12 +20,10 @@ from PySide2.QtWidgets import (
 )
 
 from .. import user_directory
-from ..command import duplicate_node, rename_node
+from ..command import duplicate_node, rename_node, rigging_setup
 from ..lib import lib_name, lib_selection, lib_transform
 from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
 from ..lib_ui.widgets import extra_widgets
-
-importlib.reload(extra_widgets)
 
 tool_options = optionvar.ToolOptionSettings(__name__)
 
@@ -587,7 +584,7 @@ class SubstitutionSelectionWidget(QWidget):
                 cmds.warning(f'Failed to name substitute: {node}')
                 continue
 
-            lib_transform.mirror_transform(node, name, mirror_position=mirror_pos, mirror_rotation=mirror_rot)
+            rigging_setup.mirror_dag_node(node, name, mirror_position=mirror_pos, mirror_rotation=mirror_rot)
 
             result_nodes.append(name)
 
@@ -620,7 +617,7 @@ class SubstitutionSelectionWidget(QWidget):
             result_top_nodes = lib_selection.DagHierarchy(result_nodes).get_hierarchy_tops()
             if mirror:
                 for node in result_top_nodes:
-                    lib_transform.mirror_transform(node, node, mirror_position=mirror_pos, mirror_rotation=mirror_rot)
+                    rigging_setup.mirror_dag_node(node, node, mirror_position=mirror_pos, mirror_rotation=mirror_rot)
                     if freeze:
                         lib_transform.FreezeTransformNode(node).freeze()
 

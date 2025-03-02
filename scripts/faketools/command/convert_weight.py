@@ -9,7 +9,7 @@ from typing import Optional
 
 import maya.cmds as cmds
 
-from ..lib import lib_component, lib_mesh, lib_skinCluster
+from ..lib import lib_mesh, lib_skinCluster
 
 logger = getLogger(__name__)
 
@@ -85,13 +85,10 @@ def average_skin_weights(components: list[str]) -> None:
 
     components = cmds.ls(components, flatten=True)
     weights = lib_skinCluster.get_skin_weights(skinCluster, components)
-    infs = cmds.skinCluster(skinCluster, q=True, inf=True)
-    num_infs = len(infs)
+    num_components = len(components)
 
-    average_weights = []
-    for ws in weights:
-        average_weight = [sum(ws) / num_infs] * num_infs
-        average_weights.append(average_weight)
+    average_weights = [sum(ws) / num_components for ws in list(zip(*weights))]
+    average_weights = [average_weights for _ in range(num_components)]
 
     lib_skinCluster.set_skin_weights(skinCluster, average_weights, components)
 
@@ -130,19 +127,24 @@ def average_skin_weights_shell(mesh: str) -> None:
     logger.debug(f'Averaged skin weights shell: {mesh}')
 
 
-def combine_pair_skin_weights(pair_infs: list[list[str, str]], components: list[str], static_inf: Optional[str]) -> None:
+def combine_pair_skin_weights(components: list[str], method: str = 'auto', static_inf: Optional[str] = None, **kwargs) -> None:
     """Combine the pair influences weights of the components.
 
     Args:
-        pair_infs (list[list[str, str]]): The pair influences.
         components (list[str]): The components. Only vertex, cv, or lattice points are supported.
+        method (str, optional): The combine method. Defaults to 'auto'. Options are 'auto', 'manual'.
         static_inf (str): The static influence. If specified, the combined weights will be applied to this influence.
-    """
-    if not pair_infs:
-        raise ValueError('No pair influences specified')
 
+    Keyword Args:
+        regex_name (str): The regex name. In case of 'auto' method.
+        replace_name (str): The replace name. In case of 'auto' method.
+        pair_infs (list[list[str, str]]): The pair influences. In case of 'manual' method.
+    """
     if not components:
         raise ValueError('No components specified')
+
+    if method not in ['auto', 'manual']:
+        raise ValueError('Invalid method')
 
     # Validate the components
     components = cmds.filterExpand(components, sm=[28, 31, 46], ex=True)
@@ -159,23 +161,50 @@ def combine_pair_skin_weights(pair_infs: list[list[str, str]], components: list[
     if not skinCluster:
         cmds.error(f'Object is not bound to a skinCluster: {obj}')
 
-    # Validate the influences
-    if not all([len(pair_inf) == 2 for pair_inf in pair_infs]):
-        cmds.error('Influence pairs must be 2 elements')
-
-    all_infs = list(itertools.chain(*pair_infs))
-    if len(all_infs) != len(set(all_infs)):
-        dup_infs = [inf for inf in all_infs if all_infs.count(inf) > 1]
-        cmds.error(f'Influence pairs must be unique: {dup_infs}')
-
-    not_exists_infs = [inf for inf in all_infs if not cmds.objExists(inf)]
-    if not_exists_infs:
-        cmds.error(f'Influences not found: {not_exists_infs}')
-
     infs = cmds.skinCluster(skinCluster, q=True, inf=True)
-    not_bound_infs = [inf for inf in all_infs if inf not in infs]
-    if not_bound_infs:
-        cmds.error(f'Influences not bound: {not_bound_infs}')
+
+    # Validate the influences
+    if method == 'auto':
+        regex_name = kwargs.get('regex_name', None)
+        if not regex_name:
+            raise ValueError('Regex name is not specified.')
+        replace_name = kwargs.get('replace_name', None)
+        if not replace_name:
+            raise ValueError('Replace name is not specified.')
+
+        p = re.compile(regex_name)
+        match_infs = [inf for inf in infs if p.match(inf)]
+        pair_infs = []
+        for inf in match_infs:
+            target_inf = p.sub(replace_name, inf)
+            if target_inf in infs:
+                pair_infs.append([inf, target_inf])
+            else:
+                logger.warning(f'No corresponding influence found for: {inf}')
+
+        logger.debug(f'Auto pair influences: {pair_infs}')
+    elif method == 'manual':
+        pair_infs = kwargs.get('pair_infs', [])
+        if not pair_infs:
+            raise ValueError('No pair influences specified')
+
+        if not all([len(pair_inf) == 2 for pair_inf in pair_infs]):
+            cmds.error('Influence pairs must be 2 elements')
+
+        all_infs = list(itertools.chain(*pair_infs))
+        if len(all_infs) != len(set(all_infs)):
+            dup_infs = [inf for inf in all_infs if all_infs.count(inf) > 1]
+            cmds.error(f'Influence pairs must be unique: {dup_infs}')
+
+        not_exists_infs = [inf for inf in all_infs if not cmds.objExists(inf)]
+        if not_exists_infs:
+            cmds.error(f'Influences not found: {not_exists_infs}')
+
+        not_bound_infs = [inf for inf in all_infs if inf not in infs]
+        if not_bound_infs:
+            cmds.error(f'Influences not bound: {not_bound_infs}')
+
+        logger.debug(f'Manual pair influences: {pair_infs}')
 
     if static_inf:
         if not cmds.objExists(static_inf):
@@ -292,26 +321,28 @@ def combine_skin_weights(src_infs: list[str], target_inf: str, components: list[
     lib_skinCluster.set_skin_weights(skinCluster, weights, components)
 
 
-def prune_small_weights(target_components: list[str], threshold: float = 0.0001) -> None:
+def prune_small_weights(shapes: list[str], threshold: float = 0.0001) -> None:
     """Prune the small weights of the skinCluster.
 
     Args:
-        target_components (list[str]): The components. Only vertex, curve CV, or surface CV components are supported.
+        shapes (list[str]): The deformable shapes.
         threshold (float): The threshold value.
 
     Notes:
         - Unlike Maya's pruneWeights, which considers skeleton locks, this function ignores them.
     """
-    if not target_components:
-        raise ValueError('No components specified')
+    if not shapes:
+        raise ValueError('No shapes specified')
 
-    filter_components = lib_component.ComponentFilter(target_components)
-    components_data = filter_components.get_components(component_type=['vertex', 'curve_cv', 'surface_cv', 'lattice_point'])
+    not_exist_shapes = [shape for shape in shapes if not cmds.objExists(shape)]
+    if not_exist_shapes:
+        raise ValueError(f'Nodes do not exist: {not_exist_shapes}')
 
-    if not components_data:
-        cmds.error('No components specified or unsupported component type')
+    for shape in shapes:
+        if 'deformableShape' not in cmds.nodeType(shape, inherited=True):
+            cmds.warning(f'Node is not a deformable shape: {shape}')
+            continue
 
-    for shape, components in components_data.items():
         skinCluster = lib_skinCluster.get_skinCluster(shape)
         if not skinCluster:
             cmds.warning(f'Object is not bound to a skinCluster: {shape}')
@@ -322,7 +353,7 @@ def prune_small_weights(target_components: list[str], threshold: float = 0.0001)
         for inf in infs:
             cmds.setAttr(f'{inf}.lockInfluenceWeights', False)
 
-        cmds.skinPercent(skinCluster, components, pruneWeights=threshold)
+        cmds.skinPercent(skinCluster, shape, pruneWeights=threshold)
 
         for i, inf in enumerate(infs):
             cmds.setAttr(f'{inf}.lockInfluenceWeights', lock_status[i])
@@ -407,20 +438,18 @@ def copy_skin_weights_with_bind(src_obj: str, dst_objs: list[str], uv: bool = Fa
             cmds.select(dst_shp, add=True)
 
         if node_type == 'mesh':
+            # When specifying a skinCluster, weights cannot be applied only to the components when components are selected.
+            # This is likely due to a specification change in Maya 2023 or later.
             if uv:
                 dst_uv_set = cmds.polyUVSet(dst_shp, query=True, currentUVSet=True)[0]
-                cmds.copySkinWeights(ss=src_skinCluster,
-                                     ds=dst_skinCluster,
-                                     noMirror=True,
+                cmds.copySkinWeights(noMirror=True,
                                      surfaceAssociation='closestPoint',
                                      influenceAssociation=['label', 'closestJoint'],
                                      uvSpace=[src_uv_set, dst_uv_set])
 
                 logger.debug(f'Copy UV skin weights: {src_shp} -> {dst_shp}')
             else:
-                cmds.copySkinWeights(ss=src_skinCluster,
-                                     ds=dst_skinCluster,
-                                     noMirror=True,
+                cmds.copySkinWeights(noMirror=True,
                                      surfaceAssociation='closestPoint',
                                      influenceAssociation=['label', 'closestJoint'])
 

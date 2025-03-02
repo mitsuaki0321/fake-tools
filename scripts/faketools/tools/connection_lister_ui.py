@@ -2,16 +2,19 @@
 Attribute connection tool.
 """
 
+from __future__ import annotations
+
 from functools import partial
 from logging import getLogger
 
 import maya.cmds as cmds
 from PySide2.QtCore import QItemSelectionModel, Qt, Signal
-from PySide2.QtGui import QStandardItem, QStandardItemModel
+from PySide2.QtGui import QStandardItem
 from PySide2.QtWidgets import (
     QApplication,
     QGridLayout,
     QHBoxLayout,
+    QLabel,
     QLineEdit,
     QPushButton,
     QScrollArea,
@@ -65,6 +68,18 @@ class MainWindow(base_window.BaseMainWindow):
         node_list_layout.addWidget(self.dest_node_list)
 
         self.central_layout.addLayout(node_list_layout)
+
+        # Node count
+        node_count_layout = QHBoxLayout()
+        node_count_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.source_node_count_label = NodeCountLabel()
+        node_count_layout.addWidget(self.source_node_count_label)
+
+        self.dest_node_count_label = NodeCountLabel()
+        node_count_layout.addWidget(self.dest_node_count_label)
+
+        self.central_layout.addLayout(node_count_layout)
 
         # Operation
         operation_layout = QVBoxLayout()
@@ -133,6 +148,10 @@ class MainWindow(base_window.BaseMainWindow):
         # Signal & Slot
         source_load_button.clicked.connect(lambda: self._list_nodes(self.source_node_list, self._source_display_attributes))
         dest_load_button.clicked.connect(lambda: self._list_nodes(self.dest_node_list, self._dest_display_attributes))
+        self.source_node_list.node_changed.connect(lambda: self._set_node_count(self.source_node_list, self.source_node_count_label))
+        self.dest_node_list.node_changed.connect(lambda: self._set_node_count(self.dest_node_list, self.dest_node_count_label))
+        self.source_node_list.selectionModel().selectionChanged.connect(lambda: self._set_node_count(self.source_node_list, self.source_node_count_label))  # noqa
+        self.dest_node_list.selectionModel().selectionChanged.connect(lambda: self._set_node_count(self.dest_node_list, self.dest_node_count_label))
         operation_switch_widget.button_changed.connect(self.__switch_operation)
         self.source_filter_line_edit.textChanged.connect(self.source_attr_list.attr_model.setFilterFixedString)
         self.dest_filter_line_edit.textChanged.connect(self.dest_attr_list.attr_model.setFilterFixedString)
@@ -173,12 +192,7 @@ class MainWindow(base_window.BaseMainWindow):
         else:
             nodes = sel_nodes
 
-        node_list_widget.setModel(QStandardItemModel(node_list_widget))
-        model = node_list_widget.model()
-
-        for node in nodes:
-            item = QStandardItem(node)
-            model.appendRow(item)
+        node_list_widget.replace_nodes(nodes)
 
         # Connect the signal after setting the model
         selection_model = node_list_widget.selectionModel()
@@ -189,7 +203,18 @@ class MainWindow(base_window.BaseMainWindow):
             for index in selection_indexes:
                 node_list_widget.selectionModel().select(index, QItemSelectionModel.Select)
         else:
-            selection_model.select(model.index(0, 0), QItemSelectionModel.Select)
+            selection_model.select(node_list_widget.node_model.index(0, 0), QItemSelectionModel.Select)
+
+    def _set_node_count(self, node_list_widget: nodeAttr_widgets.NodeListView, node_count_label: NodeCountLabel) -> None:
+        """Set the node count.
+
+        Args:
+            node_list_widget (NodeList): The node list widget.
+            node_count_label (NodeCountLabel): The node count label.
+        """
+        total_count = node_list_widget.get_count()
+        selected_count = node_list_widget.get_selected_count()
+        node_count_label.set_count(selected_count, total_count)
 
     def _source_display_attributes(self) -> None:
         """Display the attributes of the selected source nodes.
@@ -273,9 +298,9 @@ class MainWindow(base_window.BaseMainWindow):
         if user_attrs:
             result_attrs.extend(user_attrs)
 
-        write_attrs = cmds.listAttr(node, write=True) or []
+        attrs = cmds.listAttr(node) or []
         except_attr_types = ['TdataCompound']
-        for attr in write_attrs:
+        for attr in attrs:
             if attr in result_attrs:
                 continue
             try:
@@ -534,6 +559,27 @@ class OperationSwitchButton(QPushButton):
             self.setStyleSheet(stylesheet)
         else:
             self.setStyleSheet("")
+
+
+class NodeCountLabel(QLabel):
+    """Label to display the number of nodes.
+    """
+
+    def __init__(self, parent=None):
+        """Initialize the label.
+        """
+        super().__init__(parent=parent)
+        self.setText('0 / 0')
+        self.setAlignment(Qt.AlignCenter)
+
+    def set_count(self, current: int, total: int) -> None:
+        """Set the current and total count.
+
+        Args:
+            current (int): The current count.
+            total (int): The total count.
+        """
+        self.setText(f'{current} / {total}')
 
 
 def show_ui():

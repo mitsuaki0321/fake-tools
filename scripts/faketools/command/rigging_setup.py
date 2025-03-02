@@ -117,3 +117,84 @@ def zero_out_attributes(node: str, attributes: list) -> None:
         logger.debug(f'Zeroed out attribute: {node}.{attr} -> {default_value}')
 
     lock_handler.restore_lock_attrs(node)
+
+
+def mirror_dag_node(source_node: str, target_node: str, axis: str = 'x', mirror_position: bool = True, mirror_rotation: bool = True) -> None:
+    """Mirror the dag node.
+
+    Args:
+        source_node (str): The source node.
+        target_node (str): The target node.
+        axis (str): The axis to mirror. Default is 'x'.
+        mirror_position (bool): Whether to mirror position. Default is True.
+        mirror_rotation (bool): Whether to mirror rotation. Default is True.
+    """
+    if not source_node or not target_node:
+        raise ValueError('Node is not specified.')
+
+    # Check the node
+    if not cmds.objExists(source_node) or not cmds.objExists(target_node):
+        cmds.error(f'Node does not exist: {source_node} or {target_node}')
+
+    if axis not in ['x', 'y', 'z']:
+        raise ValueError(f'Invalid axis: {axis}')
+
+    if not mirror_position and not mirror_rotation:
+        raise ValueError('Position and rotation are both False')
+
+    # Check target node attributes
+    transform_attribute = ['translateX', 'translateY', 'translateZ', 'rotateX', 'rotateY', 'rotateZ', 'scaleX', 'scaleY', 'scaleZ']
+    lock_handler = lib_attribute.AttributeLockHandler()
+    lock_handler.stock_lock_attrs(target_node, transform_attribute, include_parent=True)
+    not_modifiable_attrs = [attr for attr in transform_attribute if not lib_attribute.is_modifiable(target_node, attr)]
+    if not_modifiable_attrs:
+        raise ValueError(f'Target node attributes are not modifiable: {target_node} -> {not_modifiable_attrs}')
+
+    # Mirror the transform
+    world_matrix = cmds.getAttr(f'{source_node}.worldMatrix')
+    world_matrix = om.MMatrix(world_matrix)
+
+    if axis == 'x':
+        mirror_matrix = om.MMatrix(
+            [
+                [-1, 0, 0, 0],
+                [0, 1, 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]
+            ]
+        )
+    elif axis == 'y':
+        mirror_matrix = om.MMatrix(
+            [
+                [1, 0, 0, 0],
+                [0, -1, 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]
+            ]
+        )
+    else:
+        mirror_matrix = om.MMatrix(
+            [
+                [1, 0, 0, 0],
+                [0, 1, 0, 0],
+                [0, 0, -1, 0],
+                [0, 0, 0, 1]
+            ]
+        )
+
+    new_matrix = world_matrix * mirror_matrix
+    transform_mat = om.MTransformationMatrix(new_matrix)
+    position = transform_mat.translation(om.MSpace.kWorld)
+    rotation = transform_mat.rotation()
+    rotation = [math.degrees(angle) for angle in [rotation.x, rotation.y, rotation.z]]
+    scale = transform_mat.scale(om.MSpace.kWorld)
+
+    if mirror_position:
+        cmds.xform(target_node, translation=position, worldSpace=True)
+        logger.debug(f'Mirrored position: {source_node} -> {target_node}')
+
+    if mirror_rotation:
+        cmds.xform(target_node, rotation=rotation, scale=scale, worldSpace=True)
+        logger.debug(f'Mirrored rotation: {source_node} -> {target_node}')
+
+    lock_handler.restore_lock_attrs(target_node)

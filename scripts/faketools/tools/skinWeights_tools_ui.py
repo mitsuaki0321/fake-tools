@@ -147,11 +147,11 @@ class MainWindow(base_window.BaseMainWindow):
     def prune_small_weights(self):
         """Prune small weights.
         """
-        sel_components = cmds.filterExpand(sm=[28, 31, 46])
-        if not sel_components:
-            cmds.error('Select components to prune small weights.')
+        sel_dag_nodes = cmds.ls(sl=True, dag=True, shapes=True, ni=True)
+        if not sel_dag_nodes:
+            cmds.error('Select geometry to prune small weights.')
 
-        convert_weight.prune_small_weights(sel_components, threshold=0.005)
+        convert_weight.prune_small_weights(sel_dag_nodes, threshold=0.005)
 
     @maya_ui.undo_chunk('Remove Unused Influences')
     @maya_ui.error_handler

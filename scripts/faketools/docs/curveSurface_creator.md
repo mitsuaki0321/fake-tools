@@ -137,3 +137,8 @@ faketools.tools.curveSurface_creator_ui.show_ui()
 * 選択した Vertex を基準にカーブを作成します。
   
 ![image011](images/curveSurface_creator/image011.png) ![image012](images/curveSurface_creator/image012.png)
+
+### Create Curve on SurfaceU V
+
+* サーフェースを選択し ( 複数選択可 ) 実行します。
+* 選択したサーフェース上の各 UV 値の中心にカーブを作成します。

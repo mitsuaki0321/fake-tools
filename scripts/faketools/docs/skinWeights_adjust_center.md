@@ -24,6 +24,16 @@ faketools.tools.skinWeights_adjust_center_ui.show_ui()
 
 ウエイトを調整するには、以下の手順を行います。
 
+#### Auto Search が有効な場合
+
+`Auto Search` が有効な場合、選択されている頂点のスキンクラスターから、ペアとなるインフルエンスを自動的に検索します。  
+自動的な検索は、`settings.json` に記述された `ADJUST_CENTER_WEIGHT` より正規表現にて検索されます。
+
+#### Auto Search が無効な場合
+
+![image002](images/skinWeights_adjust_center/image002.png)
+
+
 1. `Source Influences` に左右どちらかのインフルエンス（複数可）を選択し `SET` ボタンを押します。
 2. `Target Influences` に `Source Influences` とペアになるインフルエンスを選択し `SET` ボタンを押します。
 3. `Adjust Center Weights` ボタンを押します。

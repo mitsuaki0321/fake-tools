@@ -71,13 +71,17 @@ You can perform the following operations on the attributes of the selected nodes
 - **Unkeyable**
   - Hide the selected attributes from the channel box.
 
-### Selecting Nodes
+### Node List Operations
 
-Right-click on the node list to display a menu for selecting nodes.
+Right-click on the node list to display the node list operations menu.
 
 ![image007](images/attribute_lister/image007.png)
 
-- **Select Nodes**
-  - Select the selected nodes in the scene.
-- **Select All Nodes**
-  - Select all nodes loaded in the list in the scene.
+- **Select All Nodes**  
+  - Selects all nodes loaded in the list.
+- **Select Scene Nodes**
+  - Selects the nodes selected in the list within the scene.
+- **Select All Scene Nodes**
+  - Selects all nodes loaded in the list within the scene.
+- **Remove Nodes**
+  - Removes the nodes selected in the list from the list.

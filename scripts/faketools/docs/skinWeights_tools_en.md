@@ -30,7 +30,7 @@ faketools.tools.skinWeights_tools_ui.show_ui()
   Select geometry and vertices (multiple objects supported), then run the command to rebind the skinCluster to the influence positions.  
 
 - **Prune Small Weights**  
-  Select vertices and run the command to set the weights of influences below 0.005 to zero. Unlike Maya's standard feature, locked influences are ignored.  
+  Select geometry and run the command to set the weights of influences with weights less than 0.005 to zero. Unlike the standard Maya function, it ignores locked influences.
 
 - **Remove Unused Influences**  
   Select geometry (multiple objects supported) and run the command to remove influences with zero weight from the skinCluster.  

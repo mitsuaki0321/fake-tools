@@ -528,4 +528,4 @@ def remove_unused_influences(skinCluster: str) -> None:
     for inf in unused_infs:
         cmds.skinCluster(skinCluster, e=True, removeInfluence=inf)
 
-        logger.debug(f'Remove unused influences: {skinCluster} >> {unused_infs}')
+    logger.debug(f'Remove unused influences: {skinCluster} >> {unused_infs}')

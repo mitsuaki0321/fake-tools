@@ -2,6 +2,7 @@
 Create a curve from a surface tool.
 """
 
+from functools import partial
 from logging import getLogger
 
 import maya.cmds as cmds
@@ -293,6 +294,14 @@ class MainWindow(base_window.BaseMainWindow):
         action = menu.addAction('Create Curve to Vertices')
         action.triggered.connect(self.create_curve_to_vertices)
 
+        menu.addSeparator()
+
+        action = menu.addAction('Create Curve on Surface U')
+        action.triggered.connect(partial(self.create_curve_on_surface, 'u'))
+
+        action = menu.addAction('Create Curve on Surface V')
+        action.triggered.connect(partial(self.create_curve_on_surface, 'v'))
+
     def __change_bind_mode(self):
         """Change the bind method.
         """
@@ -450,6 +459,19 @@ class MainWindow(base_window.BaseMainWindow):
             logger.debug(f'Created curve: {mesh} --> {curve}')
 
         cmds.select(result_curves, r=True)
+
+    @maya_ui.undo_chunk('Create Curve on Surface')
+    @maya_ui.error_handler
+    def create_curve_on_surface(self, surface_axis: str):
+        """Create a curve on the surface.
+        """
+        nurbs_surfaces = cmds.ls(sl=True, dag=True, type='nurbsSurface')
+        if not nurbs_surfaces:
+            cmds.error('Select nurbsSurface.')
+            return
+
+        for nurbs_surface in nurbs_surfaces:
+            create_curveSurface.create_curve_on_surface(nurbs_surface, surface_axis)
 
     def closeEvent(self, event):
         """Close event.

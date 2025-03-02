@@ -363,7 +363,8 @@ class ChainJoints(AllCommand):
         elif not is_root_node_world:
             cmds.parent(root_node, w=True)
 
-        cmds.delete(dummy_parent_nodes)
+        if dummy_parent_nodes:
+            cmds.delete(dummy_parent_nodes)
 
         root_node = cmds.ls(uuids[0])[0]
         cmds.select(root_node, r=True)
@@ -548,7 +549,7 @@ class CopyTopology(PairCommand):
         if not target_shapes:
             raise ValueError(f'No shape found: {target_node}')
 
-        lib_shape.copy_topology(source_node, target_node)
+        lib_shape.connect_shapes(source_shapes[0], target_shapes[0], only_copy=True)
 
         logger.debug(f'Copied topology: {source_node} -> {target_node}')
 
