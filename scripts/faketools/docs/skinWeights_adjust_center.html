@@ -353,7 +353,7 @@ code {
 }
 
 </style>
-<link rel="stylesheet" href="./markdown-pdf.css" type="text/css">
+<link rel="stylesheet" href="file:///c%3A/Users/Mitsuaki/Documents/maya/mayagit/fake-tools/scripts/faketools/docs/markdown-pdf.css" type="text/css">
 <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
 </head>
 <body>
@@ -378,6 +378,11 @@ faketools.tools.skinWeights_adjust_center_ui.show_ui()
 <p><img src="images/skinWeights_adjust_center/image001.png" alt="image001"></p>
 <h3 id="%E5%9F%BA%E6%9C%AC%E7%9A%84%E3%81%AA%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">基本的な使用方法</h3>
 <p>ウエイトを調整するには、以下の手順を行います。</p>
+<h4 id="auto-search-%E3%81%8C%E6%9C%89%E5%8A%B9%E3%81%AA%E5%A0%B4%E5%90%88">Auto Search が有効な場合</h4>
+<p><code>Auto Search</code> が有効な場合、選択されている頂点のスキンクラスターから、ペアとなるインフルエンスを自動的に検索します。<br>
+自動的な検索は、<code>settings.json</code> に記述された <code>ADJUST_CENTER_WEIGHT</code> より正規表現にて検索されます。</p>
+<h4 id="auto-search-%E3%81%8C%E7%84%A1%E5%8A%B9%E3%81%AA%E5%A0%B4%E5%90%88">Auto Search が無効な場合</h4>
+<p><img src="images/skinWeights_adjust_center/image002.png" alt="image002"></p>
 <ol>
 <li><code>Source Influences</code> に左右どちらかのインフルエンス（複数可）を選択し <code>SET</code> ボタンを押します。</li>
 <li><code>Target Influences</code> に <code>Source Influences</code> とペアになるインフルエンスを選択し <code>SET</code> ボタンを押します。</li>

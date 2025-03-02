@@ -353,7 +353,7 @@ code {
 }
 
 </style>
-<link rel="stylesheet" href="./markdown-pdf.css" type="text/css">
+<link rel="stylesheet" href="file:///c%3A/Users/Mitsuaki/Documents/maya/mayagit/fake-tools/scripts/faketools/docs/markdown-pdf.css" type="text/css">
 <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
 </head>
 <body>
@@ -396,7 +396,7 @@ faketools.tools.attribute_lister_ui.show_ui()
 <p>接続がないアトリビュート。選択したノードとアトリビュートがひとつでも接続がある場合、値を変更できません。<br>
 接続がある場合は、フィールドが黄色く表示されます。</p>
 <p><img src="images/attribute_lister/image004.png" alt="image004"></p>
-<h4 id="%E5%90%8C%E3%81%98%E5%9E%8B%E3%81%AE%E3%82%A2%E3%83%88%E3%83%AA%E3%83%93%E3%83%A5%E3%83%BC%E3%83%88%E5%90%8C%E5%A3%AB">同じ型のアトリビュート同士</h4>
+<h4 id="%E5%90%8C%E3%81%98%E5%9E%8B%E3%81%AE%E3%82%A2%E3%83%88%E3%83%AA%E3%83%93%E3%83%A5%E3%83%BC%E3%83%88%E3%81%A9%E3%81%8A%E3%81%97">同じ型のアトリビュートどおし</h4>
 <p>同じ型のアトリビュート同士。選択したノードとアトリビュートがひとつでも異なる型のアトリビュートがある場合、値を変更できません。
 異なる型のアトリビュートがある場合は、フィールドが赤く表示されます。</p>
 <p><img src="images/attribute_lister/image005.png" alt="image005"></p>
@@ -426,18 +426,28 @@ faketools.tools.attribute_lister_ui.show_ui()
 </ul>
 </li>
 </ul>
-<h3 id="%E3%83%8E%E3%83%BC%E3%83%89%E3%82%92%E9%81%B8%E6%8A%9E%E3%81%99%E3%82%8B">ノードを選択する</h3>
-<p>ノードのリスト上で右クリックすると、ノードを選択するメニューが表示されます。</p>
+<h3 id="%E3%83%8E%E3%83%BC%E3%83%89%E3%83%AA%E3%82%B9%E3%83%88%E3%81%AE%E6%93%8D%E4%BD%9C">ノードリストの操作</h3>
+<p>ノードのリスト上で右クリックすると、ノードリストの操作メニューが表示されます。</p>
 <p><img src="images/attribute_lister/image007.png" alt="image007"></p>
 <ul>
-<li><strong>Select Nodes</strong>
-<ul>
-<li>選択したノードをシーン上で選択します。</li>
-</ul>
-</li>
 <li><strong>Select All Nodes</strong>
 <ul>
-<li>リストにロードされた全てのノードをシーン上で選択します。</li>
+<li>リストにロードされたノードをリスト内ですべて選択します。</li>
+</ul>
+</li>
+<li><strong>Select Scene Nodes</strong>
+<ul>
+<li>リストで選択されているノードをシーン内で選択します。</li>
+</ul>
+</li>
+<li><strong>Select All Scene Nodes</strong>
+<ul>
+<li>リストにロードされているノードをシーン内ですべて選択します。</li>
+</ul>
+</li>
+<li><strong>Remove Nodes</strong>
+<ul>
+<li>リストで選択されているノードをリストから削除します。</li>
 </ul>
 </li>
 </ul>
