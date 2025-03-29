@@ -4,11 +4,17 @@ This module contains Maya-specific functions in Qt.
 
 import re
 
-import maya.OpenMayaUI as OpenMayaUI  # type: ignore
-import maya.OpenMayaUI as omui  # type: ignore
-import shiboken2 as shiboken
-from PySide2.QtCore import QObject
-from PySide2.QtWidgets import QApplication, QWidget
+import maya.OpenMayaUI as OpenMayaUI
+import maya.OpenMayaUI as omui
+
+try:
+    import shiboken2 as shiboken
+    from PySide2.QtCore import QObject
+    from PySide2.QtWidgets import QApplication, QWidget
+except ImportError:
+    import shiboken6 as shiboken
+    from PySide6.QtCore import QObject
+    from PySide6.QtWidgets import QApplication, QWidget
 
 
 def get_qt_control(name: str, qt_object: QObject = QWidget) -> QWidget:

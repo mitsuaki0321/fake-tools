@@ -1,16 +1,28 @@
 """Node stock view widget.
 """
 
-from PySide2.QtCore import QObject, QPoint, QRectF, Qt, Signal
-from PySide2.QtGui import QBrush, QColor, QPen, QTransform
-from PySide2.QtWidgets import (
-    QGraphicsItem,
-    QGraphicsRectItem,
-    QGraphicsScene,
-    QGraphicsTextItem,
-    QGraphicsView,
-    QRubberBand,
-)
+try:
+    from PySide2.QtCore import QObject, QPoint, QRectF, Qt, Signal
+    from PySide2.QtGui import QBrush, QColor, QPen, QTransform
+    from PySide2.QtWidgets import (
+        QGraphicsItem,
+        QGraphicsRectItem,
+        QGraphicsScene,
+        QGraphicsTextItem,
+        QGraphicsView,
+        QRubberBand,
+    )
+except ImportError:
+    from PySide6.QtCore import QObject, QPoint, QRectF, Qt, Signal
+    from PySide6.QtGui import QBrush, QColor, QPen, QTransform
+    from PySide6.QtWidgets import (
+        QGraphicsItem,
+        QGraphicsRectItem,
+        QGraphicsScene,
+        QGraphicsTextItem,
+        QGraphicsView,
+        QRubberBand,
+    )
 
 
 class NodeStockTextItem(QGraphicsTextItem):

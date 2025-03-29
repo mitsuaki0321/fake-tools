@@ -5,20 +5,37 @@ Copy weights tool using custom plug-in.
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QDoubleValidator
-from PySide2.QtWidgets import (
-    QCheckBox,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QMainWindow,
-    QPushButton,
-    QSizePolicy,
-    QSlider,
-    QVBoxLayout,
-    QWidget,
-)
+
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtGui import QDoubleValidator
+    from PySide2.QtWidgets import (
+        QCheckBox,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QMainWindow,
+        QPushButton,
+        QSizePolicy,
+        QSlider,
+        QVBoxLayout,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtGui import QDoubleValidator
+    from PySide6.QtWidgets import (
+        QCheckBox,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QMainWindow,
+        QPushButton,
+        QSizePolicy,
+        QSlider,
+        QVBoxLayout,
+        QWidget,
+    )
 
 from ..lib import lib_skinCluster
 from ..lib_ui import base_window, maya_qt, maya_ui, optionvar

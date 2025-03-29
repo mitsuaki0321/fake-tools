@@ -8,22 +8,41 @@ from functools import partial
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import QItemSelectionModel, Qt, Signal
-from PySide2.QtGui import QStandardItem
-from PySide2.QtWidgets import (
-    QApplication,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QScrollArea,
-    QSizePolicy,
-    QSpacerItem,
-    QStackedWidget,
-    QVBoxLayout,
-    QWidget,
-)
+
+try:
+    from PySide2.QtCore import QItemSelectionModel, Qt, Signal
+    from PySide2.QtGui import QStandardItem
+    from PySide2.QtWidgets import (
+        QApplication,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QScrollArea,
+        QSizePolicy,
+        QSpacerItem,
+        QStackedWidget,
+        QVBoxLayout,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import QItemSelectionModel, Qt, Signal
+    from PySide6.QtGui import QStandardItem
+    from PySide6.QtWidgets import (
+        QApplication,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QScrollArea,
+        QSizePolicy,
+        QSpacerItem,
+        QStackedWidget,
+        QVBoxLayout,
+        QWidget,
+    )
 
 from ..command import singleCommands
 from ..lib.lib_singleCommand import PairCommand

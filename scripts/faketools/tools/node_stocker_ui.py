@@ -5,24 +5,45 @@ Node Stocker Tool.
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt, Signal
-from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import (
-    QButtonGroup,
-    QCheckBox,
-    QComboBox,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QRadioButton,
-    QSizePolicy,
-    QSpacerItem,
-    QStatusBar,
-    QStyle,
-    QVBoxLayout,
-    QWidget,
-)
+
+try:
+    from PySide2.QtCore import Qt, Signal
+    from PySide2.QtGui import QIcon
+    from PySide2.QtWidgets import (
+        QButtonGroup,
+        QCheckBox,
+        QComboBox,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QRadioButton,
+        QSizePolicy,
+        QSpacerItem,
+        QStatusBar,
+        QStyle,
+        QVBoxLayout,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt, Signal
+    from PySide6.QtGui import QIcon
+    from PySide6.QtWidgets import (
+        QButtonGroup,
+        QCheckBox,
+        QComboBox,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QRadioButton,
+        QSizePolicy,
+        QSpacerItem,
+        QStatusBar,
+        QStyle,
+        QVBoxLayout,
+        QWidget,
+    )
 
 from .. import user_directory
 from ..command import node_storage

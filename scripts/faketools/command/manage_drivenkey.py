@@ -49,7 +49,6 @@ def cleanup_driven_keys(node: str) -> None:
     for driven_plug in driven_plugs:
         driven_source_plugs = cmds.listConnections(driven_plug, s=True, d=False, p=True)
         driven_source_node = cmds.ls(driven_source_plugs, objectsOnly=True)[0]
-        print(driven_source_node)
         if cmds.nodeType(driven_source_node) not in ['animCurveUU', 'animCurveUL', 'animCurveUA', 'animCurveUT', 'blendWeighted']:
             continue
 

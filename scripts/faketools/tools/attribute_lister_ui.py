@@ -5,7 +5,11 @@ Attribute set tool.
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtWidgets import QLineEdit
+
+try:
+    from PySide2.QtWidgets import QLineEdit
+except ImportError:
+    from PySide6.QtWidgets import QLineEdit
 
 from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
 from ..lib_ui.widgets import nodeAttr_widgets

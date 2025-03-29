@@ -7,18 +7,33 @@ import os
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import QStringListModel, Qt
-from PySide2.QtWidgets import (
-    QCheckBox,
-    QComboBox,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QListView,
-    QMenu,
-    QPushButton,
-)
+
+try:
+    from PySide2.QtCore import QStringListModel, Qt
+    from PySide2.QtWidgets import (
+        QCheckBox,
+        QComboBox,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QListView,
+        QMenu,
+        QPushButton,
+    )
+except ImportError:
+    from PySide6.QtCore import QStringListModel, Qt
+    from PySide6.QtWidgets import (
+        QCheckBox,
+        QComboBox,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QListView,
+        QMenu,
+        QPushButton,
+    )
 
 from .. import user_directory
 from ..command import retarget_transforms
@@ -369,7 +384,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.object_size_box.setEnabled(state)
         self.restore_hierarchy_checkbox.setEnabled(state)
 
-    @ staticmethod
+    @staticmethod
     def __get_node_length_label(node_count: int) -> str:
         """Get the node length label.
 
@@ -381,7 +396,7 @@ class MainWindow(base_window.BaseMainWindow):
             """
         return f'Nodes: {node_count}'
 
-    @ staticmethod
+    @staticmethod
     def __get_method_label(method: str) -> str:
         """Get the method label.
 

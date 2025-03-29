@@ -5,8 +5,19 @@ Retarget mesh tool.
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import QStringListModel
-from PySide2.QtWidgets import QCheckBox, QLineEdit, QPushButton, QVBoxLayout, QWidget
+
+try:
+    from PySide2.QtCore import QStringListModel
+    from PySide2.QtWidgets import (
+        QCheckBox,
+        QLineEdit,
+        QPushButton,
+        QVBoxLayout,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import QStringListModel
+    from PySide6.QtWidgets import QCheckBox, QLineEdit, QPushButton, QVBoxLayout, QWidget
 
 from ..command import retarget_mesh
 from ..lib_ui import base_window, maya_qt, maya_ui, optionvar

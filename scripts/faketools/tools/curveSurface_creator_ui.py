@@ -6,17 +6,31 @@ from functools import partial
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (
-    QButtonGroup,
-    QCheckBox,
-    QDoubleSpinBox,
-    QGridLayout,
-    QLabel,
-    QPushButton,
-    QRadioButton,
-    QSpinBox,
-)
+
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtWidgets import (
+        QButtonGroup,
+        QCheckBox,
+        QDoubleSpinBox,
+        QGridLayout,
+        QLabel,
+        QPushButton,
+        QRadioButton,
+        QSpinBox,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtWidgets import (
+        QButtonGroup,
+        QCheckBox,
+        QDoubleSpinBox,
+        QGridLayout,
+        QLabel,
+        QPushButton,
+        QRadioButton,
+        QSpinBox,
+    )
 
 from ..command import create_curveSurface
 from ..lib import lib_component

@@ -8,16 +8,29 @@ import tempfile
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (
-    QFileSystemModel,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QMenu,
-    QPushButton,
-    QTreeView,
-)
+
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtWidgets import (
+        QFileSystemModel,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QMenu,
+        QPushButton,
+        QTreeView,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtWidgets import (
+        QFileSystemModel,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QMenu,
+        QPushButton,
+        QTreeView,
+    )
 
 from .. import user_directory
 from ..command import import_export_weight

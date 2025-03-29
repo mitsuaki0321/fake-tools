@@ -5,7 +5,11 @@ Maya scene optimize tool.
 from functools import partial
 
 import maya.cmds as cmds
-from PySide2.QtWidgets import QCheckBox, QHBoxLayout, QPushButton, QSizePolicy
+
+try:
+    from PySide2.QtWidgets import QCheckBox, QHBoxLayout, QPushButton, QSizePolicy
+except ImportError:
+    from PySide6.QtWidgets import QCheckBox, QHBoxLayout, QPushButton, QSizePolicy
 
 from ..command import scene_optimize
 from ..lib_ui import base_window, maya_qt, maya_ui, optionvar

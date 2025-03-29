@@ -1,24 +1,40 @@
 """
 Create a bounding box around the selected objects tool.
 """
-
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QDoubleValidator, QIntValidator
-from PySide2.QtWidgets import (
-    QCheckBox,
-    QComboBox,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QStackedWidget,
-    QVBoxLayout,
-    QWidget,
-)
+
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtGui import QDoubleValidator, QIntValidator, QPalette
+    from PySide2.QtWidgets import (
+        QCheckBox,
+        QComboBox,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QStackedWidget,
+        QVBoxLayout,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtGui import QDoubleValidator, QIntValidator, QPalette
+    from PySide6.QtWidgets import (
+        QCheckBox,
+        QComboBox,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QStackedWidget,
+        QVBoxLayout,
+        QWidget,
+    )
 
 from ..command import create_boundingbox
 from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
@@ -242,7 +258,8 @@ class MainWindow(base_window.BaseMainWindow):
 
         self.stock_widget = QStackedWidget()
         palette = self.stock_widget.palette()
-        color = palette.color(palette.Background)
+        role = QPalette.Background if hasattr(QPalette, 'Background') else QPalette.Window
+        color = palette.color(role)
         color = color.lighter(115)
         self.stock_widget.setStyleSheet(f'QStackedWidget {{ background-color: {color.name()}; }}')
 

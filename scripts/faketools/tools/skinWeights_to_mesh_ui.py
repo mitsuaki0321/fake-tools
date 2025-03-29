@@ -6,18 +6,33 @@ from functools import partial
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QIntValidator
-from PySide2.QtWidgets import (
-    QGridLayout,
-    QLabel,
-    QLineEdit,
-    QMainWindow,
-    QPushButton,
-    QSlider,
-    QVBoxLayout,
-    QWidget,
-)
+
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtGui import QIntValidator
+    from PySide2.QtWidgets import (
+        QGridLayout,
+        QLabel,
+        QLineEdit,
+        QMainWindow,
+        QPushButton,
+        QSlider,
+        QVBoxLayout,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtGui import QIntValidator
+    from PySide6.QtWidgets import (
+        QGridLayout,
+        QLabel,
+        QLineEdit,
+        QMainWindow,
+        QPushButton,
+        QSlider,
+        QVBoxLayout,
+        QWidget,
+    )
 
 from ..command import convert_weight
 from ..lib import lib_skinCluster

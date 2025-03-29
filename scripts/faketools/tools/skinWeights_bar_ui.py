@@ -5,14 +5,25 @@ SkinCluster weights utility tool.
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (
-    QHBoxLayout,
-    QMainWindow,
-    QPushButton,
-    QSizePolicy,
-    QWidget,
-)
+
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtWidgets import (
+        QHBoxLayout,
+        QMainWindow,
+        QPushButton,
+        QSizePolicy,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtWidgets import (
+        QHBoxLayout,
+        QMainWindow,
+        QPushButton,
+        QSizePolicy,
+        QWidget,
+    )
 
 from .. import user_directory
 from ..command import convert_weight

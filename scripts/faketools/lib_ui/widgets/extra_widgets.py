@@ -2,15 +2,26 @@
 Extra widgets for the UI.
 """
 
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QColor, QIcon, QPixmap
-from PySide2.QtWidgets import (
-    QApplication,
-    QDoubleSpinBox,
-    QFrame,
-    QPushButton,
-    QSizePolicy,
-)
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtGui import QColor, QIcon, QPixmap
+    from PySide2.QtWidgets import (
+        QApplication,
+        QDoubleSpinBox,
+        QFrame,
+        QPushButton,
+        QSizePolicy,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtGui import QColor, QIcon, QPixmap
+    from PySide6.QtWidgets import (
+        QApplication,
+        QDoubleSpinBox,
+        QFrame,
+        QPushButton,
+        QSizePolicy,
+    )
 
 from ..tool_icons import get_icon_path
 
@@ -65,10 +76,10 @@ class ToolIconButton(QPushButton):
         self.setIcon(icon)
 
         palette = self.palette()
-        background_color = palette.color(self.backgroundRole())  # 背景色
+        background_color = palette.color(self.backgroundRole())
         style = QApplication.style()
-        padding = style.pixelMetric(style.PM_ButtonMargin)
-
+        pm_button_margin = style.PM_ButtonMargin if hasattr(style, 'PM_ButtonMargin') else style.PixelMetric.PM_ButtonMargin
+        padding = style.pixelMetric(pm_button_margin)
         hover_color = self._get_lightness_color(background_color, 1.2)
         pressed_color = self._get_lightness_color(background_color, 0.5)
 

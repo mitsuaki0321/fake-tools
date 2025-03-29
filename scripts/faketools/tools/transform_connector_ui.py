@@ -5,15 +5,27 @@ Connection transform tool.
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (
-    QCheckBox,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QPushButton,
-    QSizePolicy,
-)
+
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtWidgets import (
+        QCheckBox,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QPushButton,
+        QSizePolicy,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtWidgets import (
+        QCheckBox,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QPushButton,
+        QSizePolicy,
+    )
 
 from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
 from ..lib_ui.widgets import extra_widgets

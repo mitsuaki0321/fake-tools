@@ -6,18 +6,33 @@ import re
 
 import maya.cmds as cmds
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QColor
-from PySide2.QtWidgets import (
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QSizePolicy,
-    QSpacerItem,
-    QVBoxLayout,
-    QWidget,
-)
+
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtGui import QColor
+    from PySide2.QtWidgets import (
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QSizePolicy,
+        QSpacerItem,
+        QVBoxLayout,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtGui import QColor
+    from PySide6.QtWidgets import (
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QSizePolicy,
+        QSpacerItem,
+        QVBoxLayout,
+        QWidget,
+    )
 
 from .. import user_directory
 from ..command import duplicate_node, rename_node, rigging_setup

@@ -9,20 +9,37 @@ from logging import getLogger
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaUI as omui
 import maya.cmds as cmds
-from PySide2.QtCore import Qt, QTimer, Signal
-from PySide2.QtGui import QColor, QIcon, QImage, QPainter, QPixmap
-from PySide2.QtWidgets import (
-    QApplication,
-    QColorDialog,
-    QComboBox,
-    QHBoxLayout,
-    QLabel,
-    QPushButton,
-    QScrollArea,
-    QSizePolicy,
-    QVBoxLayout,
-    QWidget,
-)
+
+try:
+    from PySide2.QtCore import Qt, QTimer, Signal
+    from PySide2.QtGui import QColor, QIcon, QImage, QPainter, QPixmap
+    from PySide2.QtWidgets import (
+        QApplication,
+        QColorDialog,
+        QComboBox,
+        QHBoxLayout,
+        QLabel,
+        QPushButton,
+        QScrollArea,
+        QSizePolicy,
+        QVBoxLayout,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt, QTimer, Signal
+    from PySide6.QtGui import QColor, QIcon, QImage, QPainter, QPixmap
+    from PySide6.QtWidgets import (
+        QApplication,
+        QColorDialog,
+        QComboBox,
+        QHBoxLayout,
+        QLabel,
+        QPushButton,
+        QScrollArea,
+        QSizePolicy,
+        QVBoxLayout,
+        QWidget,
+    )
 
 from ..lib_ui import base_window, maya_qt, optionvar, tool_icons
 from ..lib_ui.widgets import extra_widgets
@@ -477,7 +494,8 @@ class BackGroundColorButton(QPushButton):
         self.setIcon(self.write_icon)
 
         style = QApplication.style()
-        padding = style.pixelMetric(style.PM_ButtonMargin)
+        pm_button_margin = style.PM_ButtonMargin if hasattr(style, 'PM_ButtonMargin') else style.PixelMetric.PM_ButtonMargin
+        padding = style.pixelMetric(pm_button_margin)
 
         self.setStyleSheet("""
             QPushButton {{

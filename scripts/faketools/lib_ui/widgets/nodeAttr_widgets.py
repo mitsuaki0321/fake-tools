@@ -4,23 +4,43 @@
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import (
-    QEvent,
-    QItemSelectionModel,
-    QSortFilterProxyModel,
-    Qt,
-    Signal,
-)
-from PySide2.QtGui import QStandardItem, QStandardItemModel
-from PySide2.QtWidgets import (
-    QApplication,
-    QLineEdit,
-    QListView,
-    QMenu,
-    QPushButton,
-    QVBoxLayout,
-    QWidget,
-)
+
+try:
+    from PySide2.QtCore import (
+        QEvent,
+        QItemSelectionModel,
+        QSortFilterProxyModel,
+        Qt,
+        Signal,
+    )
+    from PySide2.QtGui import QStandardItem, QStandardItemModel
+    from PySide2.QtWidgets import (
+        QApplication,
+        QLineEdit,
+        QListView,
+        QMenu,
+        QPushButton,
+        QVBoxLayout,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import (
+        QEvent,
+        QItemSelectionModel,
+        QSortFilterProxyModel,
+        Qt,
+        Signal,
+    )
+    from PySide6.QtGui import QStandardItem, QStandardItemModel
+    from PySide6.QtWidgets import (
+        QApplication,
+        QLineEdit,
+        QListView,
+        QMenu,
+        QPushButton,
+        QVBoxLayout,
+        QWidget,
+    )
 
 from .. import base_window, maya_ui
 

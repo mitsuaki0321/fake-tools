@@ -6,9 +6,15 @@ from logging import getLogger
 
 import maya.cmds as cmds
 from maya.api.OpenMaya import MGlobal
-from PySide2.QtCore import Qt, Signal
-from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QPushButton, QSlider
+
+try:
+    from PySide2.QtCore import Qt, Signal
+    from PySide2.QtGui import QIcon
+    from PySide2.QtWidgets import QPushButton, QSlider
+except ImportError:
+    from PySide6.QtCore import Qt, Signal
+    from PySide6.QtGui import QIcon
+    from PySide6.QtWidgets import QPushButton, QSlider
 
 from ..command.transfer_weight import SkinWeightsCopyPaste
 from ..lib_ui import base_window, maya_qt, maya_ui, tool_icons

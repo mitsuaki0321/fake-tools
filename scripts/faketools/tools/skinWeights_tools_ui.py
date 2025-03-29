@@ -5,7 +5,11 @@ SkinWeights Tools. All skinWeights tools are integrated into one tool.
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtWidgets import QComboBox, QGroupBox, QStackedWidget, QVBoxLayout
+
+try:
+    from PySide2.QtWidgets import QComboBox, QGroupBox, QStackedWidget, QVBoxLayout
+except ImportError:
+    from PySide6.QtWidgets import QComboBox, QGroupBox, QStackedWidget, QVBoxLayout
 
 from ..command import convert_weight
 from ..lib import lib_skinCluster

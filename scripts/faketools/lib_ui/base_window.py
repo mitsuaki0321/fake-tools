@@ -2,14 +2,24 @@
 Tool base window class.
 """
 
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (
-    QApplication,
-    QHBoxLayout,
-    QMainWindow,
-    QVBoxLayout,
-    QWidget,
-)
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtWidgets import (
+        QApplication,
+        QHBoxLayout,
+        QMainWindow,
+        QVBoxLayout,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtWidgets import (
+        QApplication,
+        QHBoxLayout,
+        QMainWindow,
+        QVBoxLayout,
+        QWidget,
+    )
 
 
 class BaseMainWindow(QMainWindow):
@@ -69,10 +79,15 @@ def get_margins(widget: QWidget) -> tuple:
     style = QApplication.style()
 
     # Retrieve default margins from the style
-    left = style.pixelMetric(style.PM_LayoutLeftMargin, None, widget)
-    top = style.pixelMetric(style.PM_LayoutTopMargin, None, widget)
-    right = style.pixelMetric(style.PM_LayoutRightMargin, None, widget)
-    bottom = style.pixelMetric(style.PM_LayoutBottomMargin, None, widget)
+    left_margin_style = style.PM_LayoutLeftMargin if hasattr(style, 'PM_LayoutLeftMargin') else style.PixelMetric.PM_LayoutLeftMargin
+    top_margin_style = style.PM_LayoutTopMargin if hasattr(style, 'PM_LayoutTopMargin') else style.PixelMetric.PM_LayoutTopMargin
+    right_margin_style = style.PM_LayoutRightMargin if hasattr(style, 'PM_LayoutRightMargin') else style.PixelMetric.PM_LayoutRightMargin
+    bottom_margin_style = style.PM_LayoutBottomMargin if hasattr(style, 'PM_LayoutBottomMargin') else style.PixelMetric.PM_LayoutBottomMargin
+
+    left = style.pixelMetric(left_margin_style, None, widget)
+    top = style.pixelMetric(top_margin_style, None, widget)
+    right = style.pixelMetric(right_margin_style, None, widget)
+    bottom = style.pixelMetric(bottom_margin_style, None, widget)
 
     # Return as a tuple
     return (left, top, right, bottom)

@@ -6,16 +6,29 @@ from functools import partial
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (
-    QGridLayout,
-    QLabel,
-    QLineEdit,
-    QMainWindow,
-    QPushButton,
-    QVBoxLayout,
-    QWidget,
-)
+
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtWidgets import (
+        QGridLayout,
+        QLabel,
+        QLineEdit,
+        QMainWindow,
+        QPushButton,
+        QVBoxLayout,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtWidgets import (
+        QGridLayout,
+        QLabel,
+        QLineEdit,
+        QMainWindow,
+        QPushButton,
+        QVBoxLayout,
+        QWidget,
+    )
 
 from ..command import convert_weight
 from ..lib_ui import base_window, maya_qt, maya_ui
@@ -88,7 +101,7 @@ class CombineSkinWeightsWidgets(QWidget):
 
         field.setText(' '.join(nodes))
 
-    @ maya_ui.error_handler
+    @maya_ui.error_handler
     def __set_selected_node(self, field):
         """Set the selected node to the field.
         """
@@ -101,8 +114,8 @@ class CombineSkinWeightsWidgets(QWidget):
 
         field.setText(nodes[0])
 
-    @ maya_ui.undo_chunk('Combine Skin Weights')
-    @ maya_ui.error_handler
+    @maya_ui.undo_chunk('Combine Skin Weights')
+    @maya_ui.error_handler
     def combine_skin_weights(self):
         """Combine the skin weights.
         """

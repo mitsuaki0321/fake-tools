@@ -6,16 +6,29 @@ from functools import partial
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (
-    QCheckBox,
-    QComboBox,
-    QDoubleSpinBox,
-    QHBoxLayout,
-    QLabel,
-    QPushButton,
-    QSpinBox,
-)
+
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtWidgets import (
+        QCheckBox,
+        QComboBox,
+        QDoubleSpinBox,
+        QHBoxLayout,
+        QLabel,
+        QPushButton,
+        QSpinBox,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtWidgets import (
+        QCheckBox,
+        QComboBox,
+        QDoubleSpinBox,
+        QHBoxLayout,
+        QLabel,
+        QPushButton,
+        QSpinBox,
+    )
 
 from ..command import create_transforms
 from ..lib_ui import base_window, maya_qt, maya_ui, optionvar

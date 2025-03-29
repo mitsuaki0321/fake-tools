@@ -7,16 +7,29 @@ import tempfile
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtWidgets import (
-    QCheckBox,
-    QFileDialog,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QWidget,
-)
+
+try:
+    from PySide2.QtWidgets import (
+        QCheckBox,
+        QFileDialog,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtWidgets import (
+        QCheckBox,
+        QFileDialog,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QWidget,
+    )
 
 from .. import user_directory
 from ..command import manage_drivenkey, transfer_drivenkey

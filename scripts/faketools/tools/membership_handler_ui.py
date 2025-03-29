@@ -5,7 +5,11 @@ Membership Handler for deformer tags tool.
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtWidgets import QLineEdit
+
+try:
+    from PySide2.QtWidgets import QLineEdit
+except ImportError:
+    from PySide6.QtWidgets import QLineEdit
 
 from ..lib import lib_memberShip, lib_selection
 from ..lib_ui import base_window, maya_qt, maya_ui

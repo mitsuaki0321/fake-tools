@@ -5,24 +5,45 @@ Copy weights relax tool.
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QDoubleValidator, QIntValidator
-from PySide2.QtWidgets import (
-    QCheckBox,
-    QComboBox,
-    QGridLayout,
-    QGroupBox,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QSizePolicy,
-    QSlider,
-    QSpacerItem,
-    QStackedWidget,
-    QVBoxLayout,
-    QWidget,
-)
+
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtGui import QDoubleValidator, QIntValidator, QPalette
+    from PySide2.QtWidgets import (
+        QCheckBox,
+        QComboBox,
+        QGridLayout,
+        QGroupBox,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QSizePolicy,
+        QSlider,
+        QSpacerItem,
+        QStackedWidget,
+        QVBoxLayout,
+        QWidget,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtGui import QDoubleValidator, QIntValidator, QPalette
+    from PySide6.QtWidgets import (
+        QCheckBox,
+        QComboBox,
+        QGridLayout,
+        QGroupBox,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QPushButton,
+        QSizePolicy,
+        QSlider,
+        QSpacerItem,
+        QStackedWidget,
+        QVBoxLayout,
+        QWidget,
+    )
 
 from ..command import relax_weight
 from ..lib import lib_skinCluster
@@ -379,7 +400,8 @@ class MainWindow(base_window.BaseMainWindow):
         self.method_stack_widget = QStackedWidget()
 
         palette = self.method_stack_widget.palette()
-        color = palette.color(palette.Background)
+        role = QPalette.Background if hasattr(QPalette, 'Background') else QPalette.Window
+        color = palette.color(role)
         color = color.lighter(115)
         self.method_stack_widget.setStyleSheet(f'QStackedWidget {{ background-color: {color.name()}; }}')
 

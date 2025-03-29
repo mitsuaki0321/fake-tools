@@ -5,16 +5,29 @@ Component selection tool.
 from logging import getLogger
 
 import maya.cmds as cmds
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (
-    QButtonGroup,
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QPushButton,
-    QRadioButton,
-    QSpinBox,
-)
+
+try:
+    from PySide2.QtCore import Qt
+    from PySide2.QtWidgets import (
+        QButtonGroup,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QPushButton,
+        QRadioButton,
+        QSpinBox,
+    )
+except ImportError:
+    from PySide6.QtCore import Qt
+    from PySide6.QtWidgets import (
+        QButtonGroup,
+        QGridLayout,
+        QHBoxLayout,
+        QLabel,
+        QPushButton,
+        QRadioButton,
+        QSpinBox,
+    )
 
 from ..lib import lib_component
 from ..lib_ui import base_window, maya_qt, maya_ui, optionvar
