@@ -1,6 +1,7 @@
 # fake-tools
 
 ![Maya2023](https://img.shields.io/badge/Maya-2023-blue?&logo=Autodesk)
+![Maya2025](https://img.shields.io/badge/Maya-2025-blue?&logo=Autodesk)
 ![NumPy](https://img.shields.io/badge/NumPy-2.0.2-blue?&logo=NumPy)
 ![SciPy](https://img.shields.io/badge/SciPy-1.13.1-blue?&logo=SciPy)
 ![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.6.1-blue?&logo=Scikit-learn)
