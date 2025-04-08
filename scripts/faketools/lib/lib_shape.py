@@ -141,9 +141,9 @@ def connect_shapes(src_shape: str, dest_shape: str, **kwargs) -> None:
 
     cmds.connectAttr(f'{src_shape}.{shape_plugs[src_node_type][0]}', f'{dest_orig_shape}.{shape_plugs[dest_node_type][1]}', f=True)
     if only_copy:
-        cmds.refresh()
+        cmds.dgdirty(dest_orig_shape)
+        cmds.dgeval(f'{dest_orig_shape}.{shape_plugs[dest_node_type][1]}')
         cmds.disconnectAttr(f'{src_shape}.{shape_plugs[src_node_type][0]}', f'{dest_orig_shape}.{shape_plugs[dest_node_type][1]}')
-        cmds.refresh()
         logger.debug(f'Copied shapes: {src_shape} -> {dest_orig_shape}')
     else:
         logger.debug(f'Connected shapes: {src_shape} -> {dest_orig_shape}')
