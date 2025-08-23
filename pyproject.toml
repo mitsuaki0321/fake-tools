@@ -8,11 +8,11 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.ruff.lint]
-select = ["E", "F", "I"]    # E/F: Flake8 相当, I: isort 相当
-ignore = ["E203", "E501", "E701"]  # いまの flake8 と同じ無視設定
+select = ["E", "F", "UP", "B", "SIM", "I", "ARG"]
+ignore = ["E203", "E501", "E701"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
 force-sort-within-sections = true
 # プロジェクト名があれば↓を指定（相対順序が安定）
-# known-first-party = ["your_package"]
+# known-first-party = ["fake-tools"]
