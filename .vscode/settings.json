@@ -8,5 +8,16 @@
     "python.analysis.diagnosticSeverityOverrides": {
         "reportMissingModuleSource": false,
         "reportMissingImports": false
-    }
+    },
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+            "source.fixAll": "explicit"
+        },
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "cSpell.words": [
+        "isort"
+    ]
 }
