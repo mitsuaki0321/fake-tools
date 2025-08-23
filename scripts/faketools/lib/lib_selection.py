@@ -2,10 +2,9 @@
 Node selection functions.
 """
 
-import re
 from contextlib import contextmanager
 from logging import getLogger
-from typing import Optional
+import re
 
 import maya.cmds as cmds
 
@@ -13,8 +12,7 @@ logger = getLogger(__name__)
 
 
 class NodeFilter:
-    """Node selection by filter. (by type, by regex)
-    """
+    """Node selection by filter. (by type, by regex)"""
 
     def __init__(self, nodes: list[str]):
         """Constructor.
@@ -23,13 +21,13 @@ class NodeFilter:
             nodes (list[str]): The node list.
         """
         if not nodes:
-            raise ValueError('Nodes are not specified.')
+            raise ValueError("Nodes are not specified.")
         elif not isinstance(nodes, list):
-            raise ValueError('Nodes must be a list.')
+            raise ValueError("Nodes must be a list.")
 
         not_exists_nodes = [node for node in nodes if not cmds.objExists(node)]
         if not_exists_nodes:
-            raise ValueError(f'Nodes do not exist: {not_exists_nodes}')
+            raise ValueError(f"Nodes do not exist: {not_exists_nodes}")
 
         self.nodes = nodes
 
@@ -45,7 +43,7 @@ class NodeFilter:
         Returns:
             list: The filtered nodes.
         """
-        invert_match = kwargs.get('invert_match', False)
+        invert_match = kwargs.get("invert_match", False)
 
         nodes = []
         for node in self.nodes:
@@ -71,8 +69,8 @@ class NodeFilter:
         Returns:
             list: The filtered nodes.
         """
-        invert_match = kwargs.get('invert_match', False)
-        ignorecase = kwargs.get('ignorecase', False)
+        invert_match = kwargs.get("invert_match", False)
+        ignorecase = kwargs.get("ignorecase", False)
 
         p = re.compile(regex, re.IGNORECASE) if ignorecase else re.compile(regex)
 
@@ -89,8 +87,7 @@ class NodeFilter:
 
 
 class DagHierarchy:
-    """Get the hierarchy nodes for dagNodes.
-    """
+    """Get the hierarchy nodes for dagNodes."""
 
     def __init__(self, nodes: list[str]):
         """Constructor.
@@ -99,17 +96,17 @@ class DagHierarchy:
             nodes (list[str]): The node list.
         """
         if not nodes:
-            raise ValueError('Nodes are not specified.')
+            raise ValueError("Nodes are not specified.")
         elif not isinstance(nodes, list):
-            raise ValueError('Nodes must be a list.')
+            raise ValueError("Nodes must be a list.")
 
         not_exists_nodes = [node for node in nodes if not cmds.objExists(node)]
         if not_exists_nodes:
-            cmds.error(f'Nodes do not exist: {not_exists_nodes}')
+            cmds.error(f"Nodes do not exist: {not_exists_nodes}")
 
-        not_dag_nodes = [node for node in nodes if 'dagNode' not in cmds.nodeType(node, inherited=True)]
+        not_dag_nodes = [node for node in nodes if "dagNode" not in cmds.nodeType(node, inherited=True)]
         if not_dag_nodes:
-            cmds.error(f'Nodes are not dagNode: {not_dag_nodes}')
+            cmds.error(f"Nodes are not dagNode: {not_dag_nodes}")
 
         self.nodes = nodes
 
@@ -145,7 +142,7 @@ class DagHierarchy:
             if include_shape:
                 children = cmds.listRelatives(node, children=True, path=True)
             else:
-                children = cmds.listRelatives(node, children=True, path=True, type='transform')
+                children = cmds.listRelatives(node, children=True, path=True, type="transform")
 
             if children:
                 for child in children:
@@ -162,12 +159,12 @@ class DagHierarchy:
         """
         result_nodes = []
         for node in self.nodes:
-            if 'transform' not in cmds.nodeType(node, inherited=True):
+            if "transform" not in cmds.nodeType(node, inherited=True):
                 continue
 
             parent = cmds.listRelatives(node, parent=True, path=True)
             if parent:
-                children = cmds.listRelatives(parent[0], children=True, path=True, type='transform')
+                children = cmds.listRelatives(parent[0], children=True, path=True, type="transform")
                 if children:
                     for child in children:
                         if child not in result_nodes:
@@ -175,7 +172,7 @@ class DagHierarchy:
             else:
                 world_nodes = cmds.ls(assemblies=True, long=True)
                 for world_node in world_nodes:
-                    if world_node in ['|persp', '|top', '|front', '|side']:
+                    if world_node in ["|persp", "|top", "|front", "|side"]:
                         continue
 
                     if world_node not in result_nodes:
@@ -183,7 +180,7 @@ class DagHierarchy:
 
         return result_nodes
 
-    def get_shapes(self, shape_type: Optional[str] = None) -> list[str]:
+    def get_shapes(self, shape_type: str | None = None) -> list[str]:
         """Get the shapes.
 
         Args:
@@ -216,18 +213,17 @@ class DagHierarchy:
         result_nodes = []
 
         def __get_children_recursive(node: str):
-            """Get the children nodes recursively.
-            """
+            """Get the children nodes recursively."""
             if node not in result_nodes:
                 result_nodes.append(node)
 
-            if 'transform' not in cmds.nodeType(node, inherited=True):
+            if "transform" not in cmds.nodeType(node, inherited=True):
                 return
 
             if include_shape:
                 children = cmds.listRelatives(node, children=True, path=True)
             else:
-                children = cmds.listRelatives(node, children=True, path=True, type='transform')
+                children = cmds.listRelatives(node, children=True, path=True, type="transform")
 
             if children:
                 for child in children:
@@ -248,7 +244,7 @@ class DagHierarchy:
 
         result_nodes = []
         for node in nodes:
-            children = cmds.listRelatives(node, children=True, path=True, type='transform')
+            children = cmds.listRelatives(node, children=True, path=True, type="transform")
             if not children:
                 result_nodes.append(node)
 
@@ -264,7 +260,7 @@ class DagHierarchy:
             list[str]: The top nodes.
         """
         nodes = cmds.ls(self.nodes, l=True)
-        nodes = sorted(nodes, key=lambda x: x.count('|'), reverse=True)
+        nodes = sorted(nodes, key=lambda x: x.count("|"), reverse=True)
 
         except_nodes = []
         for node in nodes:
@@ -280,8 +276,7 @@ class DagHierarchy:
 
 
 class SelectionMode:
-    """Selection mode.
-    """
+    """Selection mode."""
 
     @property
     def object_mode_types(self) -> list[str]:
@@ -290,46 +285,47 @@ class SelectionMode:
         Returns:
             list[str]: The object mode types.
         """
-        return ['byName',
-                'camera',
-                'cluster',
-                'collisionModel',
-                'curve',
-                'curveOnSurface',
-                'dimension',
-                'dynamicConstraint',
-                'emitter',
-                'field',
-                'fluid',
-                'follicle',
-                'hairSystem',
-                'handle',
-                'ikEndEffector',
-                'ikHandle',
-                'implicitGeometry',
-                'joint',
-                'lattice',
-                'light',
-                'locator',
-                'locatorUV',
-                'locatorXYZ',
-                'nCloth',
-                'nParticleShape',
-                'nRigid',
-                'nonlinear',
-                'nurbsCurve',
-                'nurbsSurface',
-                'orientationLocator',
-                'particleShape',
-                'plane',
-                'polymesh',
-                'rigidBody',
-                'rigidConstraint',
-                'sculpt',
-                'spring',
-                'subdiv',
-                'texture',
-                ]
+        return [
+            "byName",
+            "camera",
+            "cluster",
+            "collisionModel",
+            "curve",
+            "curveOnSurface",
+            "dimension",
+            "dynamicConstraint",
+            "emitter",
+            "field",
+            "fluid",
+            "follicle",
+            "hairSystem",
+            "handle",
+            "ikEndEffector",
+            "ikHandle",
+            "implicitGeometry",
+            "joint",
+            "lattice",
+            "light",
+            "locator",
+            "locatorUV",
+            "locatorXYZ",
+            "nCloth",
+            "nParticleShape",
+            "nRigid",
+            "nonlinear",
+            "nurbsCurve",
+            "nurbsSurface",
+            "orientationLocator",
+            "particleShape",
+            "plane",
+            "polymesh",
+            "rigidBody",
+            "rigidConstraint",
+            "sculpt",
+            "spring",
+            "subdiv",
+            "texture",
+        ]
 
     @property
     def component_mode_types(self) -> list[str]:
@@ -338,41 +334,42 @@ class SelectionMode:
         Returns:
             list[str]: The component mode types.
         """
-        return ['controlVertex',
-                'curveKnot',
-                'curveParameterPoint',
-                'edge',
-                'editPoint',
-                'facet',
-                'hull',
-                'imagePlane',
-                'isoparm',
-                'jointPivot',
-                'latticePoint',
-                'localRotationAxis',
-                'nParticle',
-                'particle',
-                'polymeshEdge',
-                'polymeshFace',
-                'polymeshUV',
-                'polymeshVertex',
-                'polymeshVtxFace',
-                'rotatePivot',
-                'scalePivot',
-                'selectHandle',
-                'springComponent',
-                'subdivMeshEdge',
-                'subdivMeshFace',
-                'subdivMeshPoint',
-                'subdivMeshUV',
-                'surfaceEdge',
-                'surfaceFace',
-                'surfaceKnot',
-                'surfaceParameterPoint',
-                'surfaceRange',
-                'surfaceUV',
-                'vertex'
-                ]
+        return [
+            "controlVertex",
+            "curveKnot",
+            "curveParameterPoint",
+            "edge",
+            "editPoint",
+            "facet",
+            "hull",
+            "imagePlane",
+            "isoparm",
+            "jointPivot",
+            "latticePoint",
+            "localRotationAxis",
+            "nParticle",
+            "particle",
+            "polymeshEdge",
+            "polymeshFace",
+            "polymeshUV",
+            "polymeshVertex",
+            "polymeshVtxFace",
+            "rotatePivot",
+            "scalePivot",
+            "selectHandle",
+            "springComponent",
+            "subdivMeshEdge",
+            "subdivMeshFace",
+            "subdivMeshPoint",
+            "subdivMeshUV",
+            "surfaceEdge",
+            "surfaceFace",
+            "surfaceKnot",
+            "surfaceParameterPoint",
+            "surfaceRange",
+            "surfaceUV",
+            "vertex",
+        ]
 
     def get_mode(self) -> str:
         """Get the current selection mode. (object or component)
@@ -381,13 +378,12 @@ class SelectionMode:
             str: The selection mode.
         """
         if cmds.selectMode(q=True, object=True):
-            return 'object'
+            return "object"
         elif cmds.selectMode(q=True, component=True):
-            return 'component'
+            return "component"
 
     def to_object(self) -> list[str]:
-        """Change the selection to the object mode.
-        """
+        """Change the selection to the object mode."""
         cmds.selectMode(object=True)
 
     def get_object_mode(self, mode: str) -> bool:
@@ -398,13 +394,13 @@ class SelectionMode:
 
         """
         if not mode:
-            ValueError('Mode is not specified.')
+            ValueError("Mode is not specified.")
 
         if not self.__validate_object_mode():
             return None
 
         if mode not in self.object_mode_types:
-            cmds.error(f'Unsupported mode: {mode}')
+            cmds.error(f"Unsupported mode: {mode}")
 
         return cmds.selectType(q=True, **{mode: True})
 
@@ -416,16 +412,16 @@ class SelectionMode:
             value (bool): If True, the mode is enabled. If False, the mode is disabled.
         """
         if not mode:
-            ValueError('Mode is not specified.')
+            ValueError("Mode is not specified.")
 
         self.to_object()
 
         if mode not in self.object_mode_types:
-            cmds.error(f'Unsupported mode: {mode}')
+            cmds.error(f"Unsupported mode: {mode}")
 
         cmds.selectType(**{mode: value})
 
-        logger.debug(f'Set the object mode to: {mode} -> {value}')
+        logger.debug(f"Set the object mode to: {mode} -> {value}")
 
     def toggle_object_mode(self, modes: list[str]) -> None:
         """Toggle the object mode.
@@ -434,18 +430,18 @@ class SelectionMode:
             modes (list[str]): The object mode.
         """
         if not modes:
-            ValueError('Modes are not specified.')
+            ValueError("Modes are not specified.")
 
         if not self.__validate_object_mode():
             return
 
         for mode in modes:
             if mode not in self.object_mode_types:
-                cmds.error(f'Unsupported mode: {mode}')
+                cmds.error(f"Unsupported mode: {mode}")
 
             cmds.selectType(**{mode: not self.get_object_mode(mode)})
 
-            logger.debug(f'Toggle the object mode: {mode}')
+            logger.debug(f"Toggle the object mode: {mode}")
 
     def list_current_object_mode(self) -> list[str]:
         """Get the current object mode.
@@ -465,8 +461,7 @@ class SelectionMode:
         return modes
 
     def to_component(self) -> list[str]:
-        """Change the selection to the component mode.
-        """
+        """Change the selection to the component mode."""
         cmds.selectMode(component=True)
 
     def get_component_mode(self, mode: str) -> bool:
@@ -477,13 +472,13 @@ class SelectionMode:
 
         """
         if not mode:
-            ValueError('Mode is not specified.')
+            ValueError("Mode is not specified.")
 
         if not self.__validate_component_mode():
             return None
 
         if mode not in self.component_mode_types:
-            cmds.error(f'Unsupported mode: {mode}')
+            cmds.error(f"Unsupported mode: {mode}")
 
         return cmds.selectType(q=True, **{mode: True})
 
@@ -495,16 +490,16 @@ class SelectionMode:
             value (bool): If True, the mode is enabled. If False, the mode is disabled.
         """
         if not mode:
-            ValueError('Mode is not specified.')
+            ValueError("Mode is not specified.")
 
         self.to_component()
 
         if mode not in self.component_mode_types:
-            cmds.error(f'Unsupported mode: {mode}')
+            cmds.error(f"Unsupported mode: {mode}")
 
         cmds.selectType(**{mode: value})
 
-        logger.debug(f'Set the component mode to: {mode} -> {value}')
+        logger.debug(f"Set the component mode to: {mode} -> {value}")
 
     def toggle_component_mode(self, modes: list[str]) -> None:
         """Toggle the component mode.
@@ -513,18 +508,18 @@ class SelectionMode:
             modes (list[str]): The component mode.
         """
         if not modes:
-            ValueError('Modes are not specified.')
+            ValueError("Modes are not specified.")
 
         if not self.__validate_component_mode():
             return
 
         for mode in modes:
             if mode not in self.component_mode_types:
-                cmds.error(f'Unsupported mode: {mode}')
+                cmds.error(f"Unsupported mode: {mode}")
 
             cmds.selectType(**{mode: not self.get_component_mode(mode)})
 
-            logger.debug(f'Toggle the component mode: {mode}')
+            logger.debug(f"Toggle the component mode: {mode}")
 
     def list_current_component_mode(self) -> list[str]:
         """Get the current component mode.
@@ -543,26 +538,23 @@ class SelectionMode:
         return modes
 
     def __validate_object_mode(self) -> bool:
-        """Validate the object mode.
-        """
-        if self.get_mode() != 'object':
-            logger.debug('The current mode is not object.')
+        """Validate the object mode."""
+        if self.get_mode() != "object":
+            logger.debug("The current mode is not object.")
             return False
 
         return True
 
     def __validate_component_mode(self):
-        """Validate the component mode.
-        """
-        if self.get_mode() != 'component':
-            logger.debug('The current mode is not component.')
+        """Validate the component mode."""
+        if self.get_mode() != "component":
+            logger.debug("The current mode is not component.")
             return False
 
         return True
 
 
 class HiliteSelection:
-
     def list_nodes(self, full_path: bool = False) -> list[str]:
         """List the hilite nodes.
 
@@ -582,16 +574,15 @@ class HiliteSelection:
             replace (bool): If True, replace the current hilite. If False, add to the current hilite. Default is True.
         """
         if not nodes:
-            ValueError('Nodes are not specified.')
+            ValueError("Nodes are not specified.")
 
         if not isinstance(nodes, list):
-            ValueError('Nodes must be a list.')
+            ValueError("Nodes must be a list.")
 
         cmds.hilite(nodes, replace=replace)
 
     def clear(self) -> None:
-        """Clear the hilite.
-        """
+        """Clear the hilite."""
         hilite_nodes = self.list_nodes()
         if not hilite_nodes:
             return
@@ -601,8 +592,7 @@ class HiliteSelection:
 
 @contextmanager
 def restore_selection():
-    """Context manager to restore the existing selection state.
-    """
+    """Context manager to restore the existing selection state."""
     initial_selection = cmds.ls(selection=True, long=True)
     try:
         yield
@@ -619,7 +609,7 @@ def restore_selection():
                     not_exists_nodes.append(node)
 
             if not_exists_nodes:
-                cmds.warning(f'Nodes do not exist: {not_exists_nodes}')
+                cmds.warning(f"Nodes do not exist: {not_exists_nodes}")
 
             if exists_nodes:
                 cmds.select(exists_nodes, replace=True)

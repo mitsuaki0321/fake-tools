@@ -1,19 +1,16 @@
-"""Node Storage Tool.
-"""
+"""Node Storage Tool."""
 
 import json
-import os
 from logging import getLogger
-from typing import Optional
+import os
 
 logger = getLogger(__name__)
 
 
 class NodeStockFile:
-    """Node Stock File.
-    """
+    """Node Stock File."""
 
-    __file_suffix = 'stockData'
+    __file_suffix = "stockData"
 
     def __init__(self, file_path: str):
         """Constructor.
@@ -32,7 +29,7 @@ class NodeStockFile:
         Returns:
             str: The file suffix.
         """
-        return f'.{cls.__file_suffix}.json'
+        return f".{cls.__file_suffix}.json"
 
     @property
     def name(self) -> str:
@@ -62,7 +59,7 @@ class NodeStockFile:
         Returns:
             str: The file name.
         """
-        return f'{name}{cls._get_file_suffix()}'
+        return f"{name}{cls._get_file_suffix()}"
 
     @classmethod
     def perse_file_name(cls, file_name: str) -> str:
@@ -77,7 +74,7 @@ class NodeStockFile:
         if not file_name.endswith(cls._get_file_suffix()):
             return file_name
 
-        return file_name[:-len(cls._get_file_suffix())]
+        return file_name[: -len(cls._get_file_suffix())]
 
     @classmethod
     def validate_file(cls, file_path: str) -> bool:
@@ -116,7 +113,7 @@ class NodeStockFile:
             cls(file_path)
 
         # Make file
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
             json.dump({}, f)
 
         logger.debug(f"Created file: {file_path}")
@@ -130,9 +127,9 @@ class NodeStockFile:
             dict: The data.
         """
         try:
-            with open(self.__file_path, 'r') as f:
+            with open(self.__file_path) as f:
                 data = json.load(f)
-        except (IOError, json.JSONDecodeError) as e:
+        except (OSError, json.JSONDecodeError) as e:
             logger.error(f"Failed to load data: {self.__file_path} {e}")
             data = {}
 
@@ -153,11 +150,11 @@ class NodeStockFile:
         if key not in data:
             return []
 
-        logger.debug(f'Get nodes: {key} {data[key]}')
+        logger.debug(f"Get nodes: {key} {data[key]}")
 
         return data[key]
 
-    def add_nodes(self, key: str, nodes: Optional[list[str]], overwrite: bool = False) -> None:
+    def add_nodes(self, key: str, nodes: list[str] | None, overwrite: bool = False) -> None:
         """Set the nodes to file.
 
         Args:
@@ -193,7 +190,7 @@ class NodeStockFile:
             else:
                 data[key] = nodes
 
-        with open(self.__file_path, 'w') as f:
+        with open(self.__file_path, "w") as f:
             json.dump(data, f, indent=4)
 
         logger.debug(f"Set nodes: {key} {nodes}")
@@ -211,19 +208,17 @@ class NodeStockFile:
         else:
             data.pop(key)
 
-        with open(self.__file_path, 'w') as f:
+        with open(self.__file_path, "w") as f:
             json.dump(data, f, indent=4)
 
         logger.debug(f"Removed nodes: {key}")
 
 
-class NodeStorage(object):
-    """Node Storage.
-    """
+class NodeStorage:
+    """Node Storage."""
 
     def __init__(self, storage_directory: str):
-        """Constructor.
-        """
+        """Constructor."""
         if not os.path.exists(storage_directory):
             raise ValueError(f"Storage directory does not exist: {storage_directory}")
 

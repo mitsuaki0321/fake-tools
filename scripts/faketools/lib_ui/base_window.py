@@ -23,12 +23,7 @@ except ImportError:
 
 
 class BaseMainWindow(QMainWindow):
-
-    def __init__(self,
-                 parent=None,
-                 object_name: str = 'MainWindow',
-                 window_title: str = 'Main Window',
-                 central_layout: str = 'vertical'):
+    def __init__(self, parent=None, object_name: str = "MainWindow", window_title: str = "Main Window", central_layout: str = "vertical"):
         """Constructor.
 
         Args:
@@ -45,14 +40,14 @@ class BaseMainWindow(QMainWindow):
 
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
-        self.central_layout = QVBoxLayout() if central_layout == 'vertical' else QHBoxLayout()
+        self.central_layout = QVBoxLayout() if central_layout == "vertical" else QHBoxLayout()
         self.central_widget.setLayout(self.central_layout)
 
         default_widget_spacing = get_spacing(self.central_widget)
         self.central_layout.setSpacing(int(default_widget_spacing * 0.75))
 
 
-def get_spacing(widget: QWidget = QWidget(), direction: str = 'vertical') -> int:
+def get_spacing(widget: QWidget = QWidget(), direction: str = "vertical") -> int:
     """Get default widget spacing.
 
     Args:
@@ -60,9 +55,7 @@ def get_spacing(widget: QWidget = QWidget(), direction: str = 'vertical') -> int
         direction (str): Direction. Default is 'vertical'. 'horizontal' is also available.
     """
     return QApplication.style().layoutSpacing(
-        widget.sizePolicy().controlType(),
-        widget.sizePolicy().controlType(),
-        direction == 'vertical' and Qt.Vertical or Qt.Horizontal
+        widget.sizePolicy().controlType(), widget.sizePolicy().controlType(), direction == "vertical" and Qt.Vertical or Qt.Horizontal
     )
 
 
@@ -79,10 +72,10 @@ def get_margins(widget: QWidget) -> tuple:
     style = QApplication.style()
 
     # Retrieve default margins from the style
-    left_margin_style = style.PM_LayoutLeftMargin if hasattr(style, 'PM_LayoutLeftMargin') else style.PixelMetric.PM_LayoutLeftMargin
-    top_margin_style = style.PM_LayoutTopMargin if hasattr(style, 'PM_LayoutTopMargin') else style.PixelMetric.PM_LayoutTopMargin
-    right_margin_style = style.PM_LayoutRightMargin if hasattr(style, 'PM_LayoutRightMargin') else style.PixelMetric.PM_LayoutRightMargin
-    bottom_margin_style = style.PM_LayoutBottomMargin if hasattr(style, 'PM_LayoutBottomMargin') else style.PixelMetric.PM_LayoutBottomMargin
+    left_margin_style = style.PM_LayoutLeftMargin if hasattr(style, "PM_LayoutLeftMargin") else style.PixelMetric.PM_LayoutLeftMargin
+    top_margin_style = style.PM_LayoutTopMargin if hasattr(style, "PM_LayoutTopMargin") else style.PixelMetric.PM_LayoutTopMargin
+    right_margin_style = style.PM_LayoutRightMargin if hasattr(style, "PM_LayoutRightMargin") else style.PixelMetric.PM_LayoutRightMargin
+    bottom_margin_style = style.PM_LayoutBottomMargin if hasattr(style, "PM_LayoutBottomMargin") else style.PixelMetric.PM_LayoutBottomMargin
 
     left = style.pixelMetric(left_margin_style, None, widget)
     top = style.pixelMetric(top_margin_style, None, widget)

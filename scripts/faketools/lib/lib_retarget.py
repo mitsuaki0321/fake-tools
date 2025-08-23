@@ -2,7 +2,6 @@
 Retargeting functions.
 """
 
-
 from logging import getLogger
 
 import numpy as np
@@ -42,20 +41,20 @@ class RBFDeform:
         Returns:
             tuple[np.ndarray, np.ndarray, np.ndarray]: The weights for x, y, and z.
         """
-        mat_cc = np.insert(self.__src_points, 3, 1., axis=1)
+        mat_cc = np.insert(self.__src_points, 3, 1.0, axis=1)
 
         mat_cct = mat_cc.transpose()
         A = mat_cct[..., :, np.newaxis]
         B = mat_cct[..., np.newaxis, :]
-        mat_k = np.sqrt(((A - B)**2).sum(axis=0))
+        mat_k = np.sqrt(((A - B) ** 2).sum(axis=0))
 
         mat_a = np.c_[mat_k, mat_cc]
         mat_a = np.r_[mat_a, np.c_[mat_cct, np.zeros([4, 4])]]  # base matrix
 
         trg_x, trg_y, trg_z = np.asarray(trg_points, dtype=self.__data_type).T
-        trg_x = np.append(trg_x, [.0, .0, .0, .0])
-        trg_y = np.append(trg_y, [.0, .0, .0, .0])
-        trg_z = np.append(trg_z, [.0, .0, .0, .0])
+        trg_x = np.append(trg_x, [0.0, 0.0, 0.0, 0.0])
+        trg_y = np.append(trg_y, [0.0, 0.0, 0.0, 0.0])
+        trg_z = np.append(trg_z, [0.0, 0.0, 0.0, 0.0])
 
         weights_x = self._solve_weight(mat_a, trg_x)
         weights_y = self._solve_weight(mat_a, trg_y)
@@ -63,11 +62,9 @@ class RBFDeform:
 
         return weights_x, weights_y, weights_z
 
-    def compute_points(self,
-                       deform_points: list[list[float]],
-                       weight_x: np.ndarray,
-                       weight_y: np.ndarray,
-                       weight_z: np.ndarray) -> list[tuple[float, float, float]]:
+    def compute_points(
+        self, deform_points: list[list[float]], weight_x: np.ndarray, weight_y: np.ndarray, weight_z: np.ndarray
+    ) -> list[tuple[float, float, float]]:
         """Generate final positions by applying the RBF weights to the source and target points.
 
         Args:
@@ -83,19 +80,19 @@ class RBFDeform:
         # num_out = np.size(self.__src_points, 0)
         num_out = len(self.__src_points)
 
-        mat_p = np.insert(deform_points, 3, 1., axis=1)
+        mat_p = np.insert(deform_points, 3, 1.0, axis=1)
 
         out_x = np.dot(mat_p, weight_x[num_out:])
         out_y = np.dot(mat_p, weight_y[num_out:])
         out_z = np.dot(mat_p, weight_z[num_out:])
 
-        AB = cdist(deform_points, self.__src_points, 'euclidean')
+        AB = cdist(deform_points, self.__src_points, "euclidean")
 
         out_x = np.dot(AB, weight_x[:num_out]) + out_x
         out_y = np.dot(AB, weight_y[:num_out]) + out_y
         out_z = np.dot(AB, weight_z[:num_out]) + out_z
 
-        return [(float(px), float(py), float(pz)) for px, py, pz in zip(out_x, out_y, out_z)]
+        return [(float(px), float(py), float(pz)) for px, py, pz in zip(out_x, out_y, out_z, strict=False)]
 
     def _solve_weight(self, base_matrix: csr_matrix, trg_points: np.ndarray) -> np.ndarray:
         """Solve the system of linear equations for the RBF. Uses a sparse solver and falls back to pinv if necessary.
@@ -112,14 +109,13 @@ class RBFDeform:
         try:
             return spsolve(base_matrix, trg_points)
         except np.linalg.LinAlgError:
-            logger.warning('Singular matrix detected. Using pinv instead.')
+            logger.warning("Singular matrix detected. Using pinv instead.")
             return np.dot(pinv(base_matrix), trg_points)
 
 
 class IndexQueryMethod:
-
     def get_indices(self, mesh_points: list[list[float]], positions: list[list[float]]) -> list[list[int]]:
-        raise NotImplementedError('Method not implemented.')
+        raise NotImplementedError("Method not implemented.")
 
 
 class DistanceIndexQuery(IndexQueryMethod):
@@ -152,7 +148,7 @@ class DistanceIndexQuery(IndexQueryMethod):
         result_indices = []
         for position in positions:
             distances = np.linalg.norm(mesh_points - position, axis=1)
-            closest_indices = np.argsort(distances)[:self.__num_vertices]
+            closest_indices = np.argsort(distances)[: self.__num_vertices]
 
             result_indices.append(closest_indices.tolist())
 

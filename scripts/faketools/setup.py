@@ -11,10 +11,10 @@ def setup_logger() -> None:
     Args:
         debug (bool): Whether to enable debug logging.
     """
-    logger = logging.getLogger('faketools')
+    logger = logging.getLogger("faketools")
 
     if not logger.handlers:
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(funcName)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(funcName)s - %(levelname)s - %(message)s")
 
         stream_handler = logging.StreamHandler()
         stream_handler.setFormatter(formatter)
@@ -24,7 +24,7 @@ def setup_logger() -> None:
 
     logger.propagate = False
 
-    logger.info('Logger initialized')
+    logger.info("Logger initialized")
 
 
 def debug_mode(debug: bool) -> None:
@@ -33,11 +33,11 @@ def debug_mode(debug: bool) -> None:
     Args:
         debug (bool): Whether to enable debug logging.
     """
-    logger = logging.getLogger('faketools')
+    logger = logging.getLogger("faketools")
 
     if debug:
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
 
-    logger.info(f'Debug mode: {debug}')
+    logger.info(f"Debug mode: {debug}")

@@ -10,7 +10,6 @@ logger = getLogger(__name__)
 
 
 class FreezeTransformNode:
-
     def __init__(self, node: str):
         """Initialize the FreezeTransformNode with a target transform node.
 
@@ -21,44 +20,42 @@ class FreezeTransformNode:
             ValueError: If the node does not exist, is not a transform node, or is not a string.
         """
         if not node or not isinstance(node, str):
-            raise ValueError('Node is not specified or not a string.')
+            raise ValueError("Node is not specified or not a string.")
 
         if not cmds.objExists(node):
-            raise ValueError(f'Node does not exist: {node}')
+            raise ValueError(f"Node does not exist: {node}")
 
-        if 'transform' not in cmds.nodeType(node, inherited=True):
-            raise ValueError(f'Node is not a transform: {node}')
+        if "transform" not in cmds.nodeType(node, inherited=True):
+            raise ValueError(f"Node is not a transform: {node}")
 
         self.node = node
 
     def _unlock_and_lock(func):
-        """Decorator to unlock and lock the locked attributes.
-        """
+        """Decorator to unlock and lock the locked attributes."""
 
         def wrapper(self, *args, **kwargs):
-            """
-            """
+            """ """
             # Check isConnected
             connected_state = False
-            for attr in ['tx', 'ty', 'tz', 'rx', 'ry', 'rz', 'sx', 'sy', 'sz']:
-                if cmds.connectionInfo(f'{self.node}.{attr}', isDestination=True):
-                    logger.debug(f'Connected attribute: {self.node}.{attr}')
+            for attr in ["tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz"]:
+                if cmds.connectionInfo(f"{self.node}.{attr}", isDestination=True):
+                    logger.debug(f"Connected attribute: {self.node}.{attr}")
                     connected_state = True
                     return
 
             if connected_state:
-                cmds.error(f'Failed to freeze transform because connections exist: {self.node}')
+                cmds.error(f"Failed to freeze transform because connections exist: {self.node}")
 
             # Check locked attributes
             locked_attrs = cmds.listAttr(self.node, locked=True) or []
 
             for attr in locked_attrs:
-                cmds.setAttr(f'{self.node}.{attr}', lock=False)
+                cmds.setAttr(f"{self.node}.{attr}", lock=False)
             try:
                 func(self, *args, **kwargs)
             finally:
                 for attr in locked_attrs:
-                    cmds.setAttr(f'{self.node}.{attr}', lock=True)
+                    cmds.setAttr(f"{self.node}.{attr}", lock=True)
 
         return wrapper
 
@@ -69,58 +66,56 @@ class FreezeTransformNode:
         Notes:
             - Even if the transform attributes of the children are locked, they will be forcibly unlocked and processed.
         """
-        nodes = cmds.listRelatives(self.node, ad=True, path=True, type='transform') or []
+        nodes = cmds.listRelatives(self.node, ad=True, path=True, type="transform") or []
         nodes.append(self.node)
 
         # Unlock the locked attributes
         locked_data = {}
         for node in nodes:
-            attrs = ['tx', 'ty', 'tz', 'rx', 'ry', 'rz', 'sx', 'sy', 'sz', 'jox', 'joy', 'joz']
+            attrs = ["tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz", "jox", "joy", "joz"]
             locked_attrs = []
             for attr in attrs:
-                if cmds.nodeType(node) == 'joint':
-                    if cmds.getAttr(f'{node}.{attr}', lock=True):
+                if cmds.nodeType(node) == "joint":
+                    if cmds.getAttr(f"{node}.{attr}", lock=True):
                         locked_attrs.append(attr)
-                        cmds.setAttr(f'{node}.{attr}', lock=False)
+                        cmds.setAttr(f"{node}.{attr}", lock=False)
                 else:
-                    if attr in ['jox', 'joy', 'joz']:
+                    if attr in ["jox", "joy", "joz"]:
                         continue
-                    if cmds.getAttr(f'{node}.{attr}', lock=True):
+                    if cmds.getAttr(f"{node}.{attr}", lock=True):
                         locked_attrs.append(attr)
-                        cmds.setAttr(f'{node}.{attr}', lock=False)
+                        cmds.setAttr(f"{node}.{attr}", lock=False)
 
             if locked_attrs:
                 locked_data[node] = locked_attrs
-                logger.debug(f'Unlocked attributes: {node} -> {locked_attrs}')
+                logger.debug(f"Unlocked attributes: {node} -> {locked_attrs}")
 
         # Freeze the transform
         cmds.makeIdentity(self.node, apply=True, t=True, r=True, s=True, n=0, pn=True)
-        logger.debug(f'Freeze transform: {self.node}')
+        logger.debug(f"Freeze transform: {self.node}")
 
         # Lock the locked attributes
         for node, attrs in locked_data.items():
             for attr in attrs:
-                cmds.setAttr(f'{node}.{attr}', lock=True)
+                cmds.setAttr(f"{node}.{attr}", lock=True)
 
     @_unlock_and_lock
     def freeze_pivot(self) -> None:
-        """Freeze the pivot of the node.
-        """
+        """Freeze the pivot of the node."""
         cmds.makeIdentity(self.node, apply=False, t=True, r=True, s=True, n=0, pn=True)
-        logger.debug(f'Freeze pivot: {self.node}')
+        logger.debug(f"Freeze pivot: {self.node}")
 
     def freeze_vertex(self) -> None:
-        """Freeze the vertex of the node.
-        """
-        shape = cmds.listRelatives(self.node, ad=True, path=True, type='mesh')
+        """Freeze the vertex of the node."""
+        shape = cmds.listRelatives(self.node, ad=True, path=True, type="mesh")
         if not shape:
-            logger.warning(f'No mesh node found: {self.node}')
+            logger.warning(f"No mesh node found: {self.node}")
             return
 
         cmds.cluster(self.node)
         cmds.delete(self.node, ch=True)
 
-        logger.debug(f'Freeze vertex: {self.node}')
+        logger.debug(f"Freeze vertex: {self.node}")
 
     def freeze(self, freeze_transform: bool = True, freeze_pivot: bool = True, freeze_vertex: bool = True) -> None:
         """Freeze the node with specified options.
@@ -155,12 +150,11 @@ class TransformHierarchy:
     """
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         self._hierarchy = {}
 
     @classmethod
-    def set_hierarchy_data(cls, data: dict) -> 'TransformHierarchy':
+    def set_hierarchy_data(cls, data: dict) -> "TransformHierarchy":
         """Set the hierarchy data.
 
         Args:
@@ -170,30 +164,30 @@ class TransformHierarchy:
             HierarchyHandler: The hierarchy handler instance.
         """
         if not data:
-            raise ValueError('Hierarchy data is not specified.')
+            raise ValueError("Hierarchy data is not specified.")
 
         if not isinstance(data, dict):
-            raise ValueError('Hierarchy data is not a dictionary.')
+            raise ValueError("Hierarchy data is not a dictionary.")
 
         # Validate the data
         for node, node_data in data.items():
             if not isinstance(node_data, dict):
-                raise ValueError(f'Invalid node data: {node_data}')
+                raise ValueError(f"Invalid node data: {node_data}")
 
-            if 'parent' not in node_data:
-                raise ValueError(f'Parent is not specified: {node_data}')
+            if "parent" not in node_data:
+                raise ValueError(f"Parent is not specified: {node_data}")
 
-            if 'children' not in node_data:
-                raise ValueError(f'Children is not specified: {node_data}')
+            if "children" not in node_data:
+                raise ValueError(f"Children is not specified: {node_data}")
 
-            if 'depth' not in node_data:
-                raise ValueError(f'Depth is not specified: {node_data}')
+            if "depth" not in node_data:
+                raise ValueError(f"Depth is not specified: {node_data}")
 
-            if 'register_parent' not in node_data:
-                raise ValueError(f'Register parent is not specified: {node_data}')
+            if "register_parent" not in node_data:
+                raise ValueError(f"Register parent is not specified: {node_data}")
 
-            if 'register_children' not in node_data:
-                raise ValueError(f'Register children is not specified: {node_data}')
+            if "register_children" not in node_data:
+                raise ValueError(f"Register children is not specified: {node_data}")
 
         instance = cls()
         instance._hierarchy = data
@@ -215,34 +209,34 @@ class TransformHierarchy:
             node (str): The target node.
         """
         if not node:
-            raise ValueError('Node is not specified.')
+            raise ValueError("Node is not specified.")
 
         if not cmds.objExists(node):
-            raise ValueError(f'Node does not exist: {node}')
+            raise ValueError(f"Node does not exist: {node}")
 
-        if 'transform' not in cmds.nodeType(node, inherited=True):
-            raise ValueError(f'Node is not a transform: {node}')
+        if "transform" not in cmds.nodeType(node, inherited=True):
+            raise ValueError(f"Node is not a transform: {node}")
 
         if node in self._hierarchy:
-            cmds.warning(f'Node is already registered. Overwrite: {node}')
+            cmds.warning(f"Node is already registered. Overwrite: {node}")
 
         parent_node = cmds.listRelatives(node, parent=True, path=True)
         child_nodes = cmds.listRelatives(node, children=True, path=True) or []
 
         full_path = cmds.ls(node, long=True)[0]
-        depth = len(full_path.split('|')) - 1
+        depth = len(full_path.split("|")) - 1
 
         self._hierarchy[node] = {
-            'parent': parent_node and parent_node[0] or None,
-            'children': child_nodes,
-            'register_parent': None,
-            'register_children': [],
-            'depth': depth
+            "parent": parent_node and parent_node[0] or None,
+            "children": child_nodes,
+            "register_parent": None,
+            "register_children": [],
+            "depth": depth,
         }
 
         self.__update_register_hierarchy()
 
-        logger.debug(f'Registered node: {node}')
+        logger.debug(f"Registered node: {node}")
 
     def __update_register_hierarchy(self) -> None:
         """Update the registered hierarchy in the data.
@@ -252,24 +246,24 @@ class TransformHierarchy:
         """
         # Clear the registered hierarchy
         for node in self._hierarchy:
-            self._hierarchy[node]['register_parent'] = None
-            self._hierarchy[node]['register_children'] = []
+            self._hierarchy[node]["register_parent"] = None
+            self._hierarchy[node]["register_children"] = []
 
         # Update the registered hierarchy
         for node in self._hierarchy:
-            parent = self._hierarchy[node]['parent']
+            parent = self._hierarchy[node]["parent"]
             if not parent:
                 continue
 
             full_path = cmds.ls(node, long=True)[0]
-            parent_nodes = full_path.split('|')[1:-1]
+            parent_nodes = full_path.split("|")[1:-1]
 
             for parent_node in reversed(parent_nodes):
                 if parent_node in self._hierarchy:
-                    self._hierarchy[node]['register_parent'] = parent_node
-                    self._hierarchy[parent_node]['register_children'].append(node)
+                    self._hierarchy[node]["register_parent"] = parent_node
+                    self._hierarchy[parent_node]["register_children"].append(node)
 
-                    logger.debug(f'Updated register hierarchy: {node} -> Parent: {parent_node}, Children: {node}')
+                    logger.debug(f"Updated register hierarchy: {node} -> Parent: {parent_node}, Children: {node}")
                     break
 
     def get_parent(self, node: str) -> str:
@@ -282,12 +276,12 @@ class TransformHierarchy:
             str: The parent node.
         """
         if not node:
-            raise ValueError('Node is not specified.')
+            raise ValueError("Node is not specified.")
 
         if node not in self._hierarchy:
-            raise ValueError(f'Node is not registered: {node}')
+            raise ValueError(f"Node is not registered: {node}")
 
-        return self._hierarchy[node]['parent']
+        return self._hierarchy[node]["parent"]
 
     def get_children(self, node: str) -> list:
         """Get the children nodes of the node.
@@ -299,12 +293,12 @@ class TransformHierarchy:
             list: The children nodes.
         """
         if not node:
-            raise ValueError('Node is not specified.')
+            raise ValueError("Node is not specified.")
 
         if node not in self._hierarchy:
-            raise ValueError(f'Node is not registered: {node}')
+            raise ValueError(f"Node is not registered: {node}")
 
-        return self._hierarchy[node]['children']
+        return self._hierarchy[node]["children"]
 
     def get_registered_parent(self, node: str) -> str:
         """Get the registered parent node of the node.
@@ -316,12 +310,12 @@ class TransformHierarchy:
             str: The registered parent node.
         """
         if not node:
-            raise ValueError('Node is not specified.')
+            raise ValueError("Node is not specified.")
 
         if node not in self._hierarchy:
-            raise ValueError(f'Node is not registered: {node}')
+            raise ValueError(f"Node is not registered: {node}")
 
-        return self._hierarchy[node]['register_parent']
+        return self._hierarchy[node]["register_parent"]
 
     def get_registered_children(self, node: str) -> list:
         """Get the registered children nodes of the node.
@@ -333,22 +327,20 @@ class TransformHierarchy:
             list: The registered children nodes.
         """
         if not node:
-            raise ValueError('Node is not specified.')
+            raise ValueError("Node is not specified.")
 
         if node not in self._hierarchy:
-            raise ValueError(f'Node is not registered: {node}')
+            raise ValueError(f"Node is not registered: {node}")
 
-        return self._hierarchy[node]['register_children']
+        return self._hierarchy[node]["register_children"]
 
     def __repr__(self):
-        """Return the string representation of the hierarchy.
-        """
-        return f'{self.__class__.__name__}({self._hierarchy})'
+        """Return the string representation of the hierarchy."""
+        return f"{self.__class__.__name__}({self._hierarchy})"
 
     def __str__(self):
-        """Return the string representation of the hierarchy.
-        """
-        return f'{self._hierarchy}'
+        """Return the string representation of the hierarchy."""
+        return f"{self._hierarchy}"
 
 
 def reorder_transform_nodes(nodes: list[str]) -> list:
@@ -361,15 +353,15 @@ def reorder_transform_nodes(nodes: list[str]) -> list:
         list: Reordered list of transform nodes.
     """
     if not nodes:
-        raise ValueError('Nodes are not specified.')
+        raise ValueError("Nodes are not specified.")
 
-    not_transform_nodes = [node for node in nodes if 'transform' not in cmds.nodeType(node, inherited=True)]
+    not_transform_nodes = [node for node in nodes if "transform" not in cmds.nodeType(node, inherited=True)]
     if not_transform_nodes:
-        raise ValueError(f'Nodes are not transform nodes: {not_transform_nodes}')
+        raise ValueError(f"Nodes are not transform nodes: {not_transform_nodes}")
 
     depth_dict = {}
     for node in nodes:
-        depth = len(cmds.ls(node, long=True)[0].split('|')) - 1
+        depth = len(cmds.ls(node, long=True)[0].split("|")) - 1
         depth_dict[node] = depth
 
     sorted_nodes = sorted(nodes, key=lambda x: depth_dict[x])
@@ -387,10 +379,10 @@ def is_unique_node(node: str) -> bool:
         bool: Whether the node is unique.
     """
     if not node:
-        raise ValueError('Node is not specified.')
+        raise ValueError("Node is not specified.")
 
     node = cmds.ls(node)
-    if '|' in node:
+    if "|" in node:
         return False
 
     return True

@@ -1,5 +1,4 @@
-"""Single command functions.
-"""
+"""Single command functions."""
 
 from abc import ABC, abstractmethod
 
@@ -7,7 +6,6 @@ import maya.cmds as cmds
 
 
 class BaseCommand(ABC):
-
     def validate_nodes(self, nodes: list[str]):
         """Validate the command.
 
@@ -15,37 +13,32 @@ class BaseCommand(ABC):
             nodes (list[str]): List of nodes to process.
         """
         if not nodes:
-            raise ValueError('No nodes provided')
+            raise ValueError("No nodes provided")
 
         not_exists_nodes = [node for node in nodes if not cmds.objExists(node)]
         if not_exists_nodes:
-            raise ValueError(f'Node does not exist: {not_exists_nodes}')
+            raise ValueError(f"Node does not exist: {not_exists_nodes}")
 
-    @ abstractmethod
+    @abstractmethod
     def execute(self, *args, **kwargs):
-        """Execute the command.
-        """
+        """Execute the command."""
         pass
 
 
 class SceneCommand(BaseCommand):
-    """Command to process the scene.
-    """
+    """Command to process the scene."""
 
     def __init__(self):
-        """Initialize the command.
-        """
+        """Initialize the command."""
         self.execute()
 
     def execute(self):
-        """Execute the command.
-        """
+        """Execute the command."""
         pass
 
 
 class AllCommand(BaseCommand):
-    """Command to process all nodes.
-    """
+    """Command to process all nodes."""
 
     def __init__(self, nodes: list[str]):
         """Initialize the command.
@@ -66,8 +59,7 @@ class AllCommand(BaseCommand):
 
 
 class PairCommand(BaseCommand):
-    """Command to process a pair of nodes.
-    """
+    """Command to process a pair of nodes."""
 
     def __init__(self, source_nodes: list[str], target_nodes: list[str]):
         """Initialize the command.
@@ -81,10 +73,10 @@ class PairCommand(BaseCommand):
             target_nodes (list[str]): List of target nodes to process.
         """
         if not source_nodes:
-            raise ValueError('No source nodes provided')
+            raise ValueError("No source nodes provided")
 
         if not target_nodes:
-            raise ValueError('No target nodes provided')
+            raise ValueError("No target nodes provided")
 
         nodes = source_nodes + target_nodes
         self.validate_nodes(nodes)
@@ -93,9 +85,9 @@ class PairCommand(BaseCommand):
             source_nodes = source_nodes * len(target_nodes)
 
         if len(source_nodes) != len(target_nodes):
-            raise ValueError('Source and target nodes must be the same length')
+            raise ValueError("Source and target nodes must be the same length")
 
-        for source_node, target_node in zip(source_nodes, target_nodes):
+        for source_node, target_node in zip(source_nodes, target_nodes, strict=False):
             self.execute(source_node, target_node)
 
     def execute(self, source_node: str, target_node: str):

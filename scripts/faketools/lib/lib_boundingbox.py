@@ -4,7 +4,6 @@ Bounding Box functions.
 
 from abc import ABC, abstractmethod
 from logging import getLogger
-from typing import Union
 
 import maya.api.OpenMaya as om
 import numpy as np
@@ -14,21 +13,20 @@ logger = getLogger(__name__)
 
 
 class BoundingBox(ABC):
-
-    def __init__(self, points: Union[list[list[float]], np.ndarray]):
+    def __init__(self, points: list[list[float]] | np.ndarray):
         """Initialize the BoundingBox with a list of points.
 
         Args:
             points (Union[list[list[float]], np.ndarray]): The list of points. Each point must be a 3-element list or numpy array.
         """
         if not isinstance(points, (list, np.ndarray)):
-            raise ValueError('Points must be a list or numpy array.')
+            raise ValueError("Points must be a list or numpy array.")
 
         if isinstance(points, list):
             points = np.array(points)
 
         if not all(isinstance(pt, (list, np.ndarray)) and len(pt) == 3 for pt in points):
-            raise ValueError('Points must be a list of 3-element lists or numpy arrays.')
+            raise ValueError("Points must be a list of 3-element lists or numpy arrays.")
 
         self._points = points
 
@@ -57,9 +55,9 @@ class BoundingBox(ABC):
     def rotation(self) -> np.ndarray:
         """Get the rotation of the bounding box.
 
-            Returns:
-                np.ndarray: The rotation of the bounding box.
-            """
+        Returns:
+            np.ndarray: The rotation of the bounding box.
+        """
         pass
 
     @property
@@ -67,9 +65,9 @@ class BoundingBox(ABC):
     def volume(self) -> float:
         """Get the volume of the bounding box.
 
-            Returns:
-                float: The volume of the bounding box.
-            """
+        Returns:
+            float: The volume of the bounding box.
+        """
         pass
 
     @property
@@ -91,10 +89,26 @@ class BoundingBox(ABC):
         Returns:
             np.ndarray: The Euler angles.
         """
-        transform_matrix = om.MMatrix([R[0, 0], R[0, 1], R[0, 2], 0,
-                                       R[1, 0], R[1, 1], R[1, 2], 0,
-                                       R[2, 0], R[2, 1], R[2, 2], 0,
-                                       0.0, 0.0, 0.0, 1.0])
+        transform_matrix = om.MMatrix(
+            [
+                R[0, 0],
+                R[0, 1],
+                R[0, 2],
+                0,
+                R[1, 0],
+                R[1, 1],
+                R[1, 2],
+                0,
+                R[2, 0],
+                R[2, 1],
+                R[2, 2],
+                0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+            ]
+        )
         transform_matrix = om.MTransformationMatrix(transform_matrix)
         euler_rotation = transform_matrix.rotation()
 
@@ -102,8 +116,7 @@ class BoundingBox(ABC):
 
 
 class WorldBoundingBox(BoundingBox):
-    """Class representing a bounding box in world coordinates.
-    """
+    """Class representing a bounding box in world coordinates."""
 
     @property
     def center(self) -> np.ndarray:
@@ -154,10 +167,9 @@ class WorldBoundingBox(BoundingBox):
 
 
 class MinimumBoundingBox(BoundingBox):
-    """Class representing the bounding box with the minimum volume.
-    """
+    """Class representing the bounding box with the minimum volume."""
 
-    def __init__(self, points: Union[list[list[float]], np.ndarray]):
+    def __init__(self, points: list[list[float]] | np.ndarray):
         """Initialize the MinimumBoundingBox with a list of points.
 
         Args:
@@ -260,14 +272,15 @@ class MinimumBoundingBox(BoundingBox):
 
 
 class AxisAlignedBoundingBox(BoundingBox):
-    """Class representing a bounding box with the minimum volume around an arbitrary axis.
-    """
+    """Class representing a bounding box with the minimum volume around an arbitrary axis."""
 
-    def __init__(self,
-                 points: Union[list[list[float]], np.ndarray],
-                 axis_direction: Union[list[float], np.ndarray] = (0, 1, 0),
-                 axis: str = 'y',
-                 theta_samples: int = 360):
+    def __init__(
+        self,
+        points: list[list[float]] | np.ndarray,
+        axis_direction: list[float] | np.ndarray = (0, 1, 0),
+        axis: str = "y",
+        theta_samples: int = 360,
+    ):
         """Initialize the AxisAlignedBoundingBox with a list of points.
 
         Args:
@@ -286,10 +299,15 @@ class AxisAlignedBoundingBox(BoundingBox):
             raise ValueError("axis must be one of 'x', 'y', or 'z'")
         self._theta_samples = theta_samples
 
-        (self._volume, self._R,
-         self._min_pt, self._max_pt,
-         self._translation, self._center_local,
-         self._fixed_index) = self._compute_minimum_bounding_box_on_axis()
+        (
+            self._volume,
+            self._R,
+            self._min_pt,
+            self._max_pt,
+            self._translation,
+            self._center_local,
+            self._fixed_index,
+        ) = self._compute_minimum_bounding_box_on_axis()
 
     def _compute_minimum_bounding_box_on_axis(self):
         """Compute the minimum bounding box with the specified fixed axis (self._axis_direction)
@@ -354,7 +372,15 @@ class AxisAlignedBoundingBox(BoundingBox):
                 best_translation = T_candidate
                 best_center_local = center_local
 
-        return best_volume, best_R, best_min, best_max, best_translation, best_center_local, fixed_index
+        return (
+            best_volume,
+            best_R,
+            best_min,
+            best_max,
+            best_translation,
+            best_center_local,
+            fixed_index,
+        )
 
     @property
     def center(self) -> np.ndarray:

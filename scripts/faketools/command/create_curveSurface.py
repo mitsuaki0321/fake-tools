@@ -20,9 +20,16 @@ from . import convert_weight
 logger = getLogger(__name__)
 
 
-def main(select_type: str = 'selected', object_type: str = 'nurbsCurve', is_bind: bool = False,
-         to_skin_cage: bool = False, skin_cage_division_levels: int = 1,
-         select_options: dict = {}, create_options: dict = {}, bind_options: dict = {}) -> list[str]:
+def main(
+    select_type: str = "selected",
+    object_type: str = "nurbsCurve",
+    is_bind: bool = False,
+    to_skin_cage: bool = False,
+    skin_cage_division_levels: int = 1,
+    select_options: dict = {},
+    create_options: dict = {},
+    bind_options: dict = {},
+) -> list[str]:
     """Create and bind curve surface.
 
     Args:
@@ -49,12 +56,12 @@ def main(select_type: str = 'selected', object_type: str = 'nurbsCurve', is_bind
             result_objs.append(obj)
             continue
 
-        if object_type == 'nurbsCurve':
+        if object_type == "nurbsCurve":
             _bind_curve_surface(nodes, obj)
             CurveWeightSetting(obj).execute(**bind_options)
             result_objs.append(obj)
         else:
-            bind_curve = create_curve_surface.execute(object_type='nurbsCurve', **create_options)
+            bind_curve = create_curve_surface.execute(object_type="nurbsCurve", **create_options)
             _bind_curve_surface(nodes, bind_curve)
             CurveWeightSetting(bind_curve).execute(**bind_options)
 
@@ -62,7 +69,7 @@ def main(select_type: str = 'selected', object_type: str = 'nurbsCurve', is_bind
             _transfer_curve_weights(bind_curve, obj)
             cmds.delete(bind_curve)
 
-            if object_type == 'nurbsSurface' and to_skin_cage:
+            if object_type == "nurbsSurface" and to_skin_cage:
                 skin_cage = _to_skin_cage_from_length(obj, skin_cage_division_levels)
                 cmds.delete(obj)
 
@@ -84,14 +91,14 @@ def _get_selected_nodes(select_type: str, skip: int = 0, reverse: bool = False) 
     Returns:
         list[list[str]]: Selected nodes.
     """
-    sel_nodes = cmds.ls(sl=True, type='transform', l=True)
+    sel_nodes = cmds.ls(sl=True, type="transform", l=True)
     if not sel_nodes:
-        cmds.error('Select transform nodes.')
+        cmds.error("Select transform nodes.")
 
     node_list = []
-    if select_type == 'selected':
+    if select_type == "selected":
         node_list = [sel_nodes]
-    elif select_type == 'hierarchy':
+    elif select_type == "hierarchy":
         same_hierarchy = []
         for i in range(len(sel_nodes)):
             for j in range(len(sel_nodes)):
@@ -104,7 +111,7 @@ def _get_selected_nodes(select_type: str, skip: int = 0, reverse: bool = False) 
 
         if same_hierarchy:
             same_hierarchy = cmds.ls(same_hierarchy)
-            cmds.error(f'Invalid hierarchy. Hierarchies are overlapping: {same_hierarchy}')
+            cmds.error(f"Invalid hierarchy. Hierarchies are overlapping: {same_hierarchy}")
 
         for node in sel_nodes:
             node_list.append(lib_selection.DagHierarchy([node]).get_hierarchy(include_shape=False))
@@ -122,9 +129,9 @@ def _get_selected_nodes(select_type: str, skip: int = 0, reverse: bool = False) 
 
                 node_list[i] = skip_nodes
         else:
-            cmds.error('Invalid skip value.')
+            cmds.error("Invalid skip value.")
 
-    logger.debug(f'Selected nodes: {node_list}')
+    logger.debug(f"Selected nodes: {node_list}")
 
     return node_list
 
@@ -140,23 +147,23 @@ def _bind_curve_surface(infs: list[str], obj: str) -> str:
         str: SkinCluster node name.
     """
     if not infs:
-        cmds.error('No influences specified.')
+        cmds.error("No influences specified.")
 
     if not obj:
-        cmds.error('No geometry specified.')
+        cmds.error("No geometry specified.")
 
     not_exist_infs = [inf for inf in infs if not cmds.objExists(inf)]
     if not_exist_infs:
-        cmds.error(f'Influences not found: {not_exist_infs}')
+        cmds.error(f"Influences not found: {not_exist_infs}")
 
-    not_joint_infs = [inf for inf in infs if cmds.nodeType(inf) != 'joint']
+    not_joint_infs = [inf for inf in infs if cmds.nodeType(inf) != "joint"]
     if not_joint_infs:
-        cmds.error(f'Invalid influence type: {not_joint_infs}')
+        cmds.error(f"Invalid influence type: {not_joint_infs}")
 
-    shape = __validate_geometry(obj, ['nurbsCurve', 'mesh', 'nurbsSurface'])
+    shape = __validate_geometry(obj, ["nurbsCurve", "mesh", "nurbsSurface"])
     skinCluster = cmds.skinCluster(infs, shape, tsb=True)[0]
 
-    logger.debug(f'Created skinCluster: {infs} -> {obj}')
+    logger.debug(f"Created skinCluster: {infs} -> {obj}")
 
     return skinCluster
 
@@ -169,36 +176,36 @@ def _transfer_curve_weights(curve: str, surface: str) -> None:
         surface (str): Target surface name.
     """
     if not curve:
-        cmds.error('No curve specified.')
+        cmds.error("No curve specified.")
 
     if not surface:
-        cmds.error('No target surface specified.')
+        cmds.error("No target surface specified.")
 
-    curve_shape = __validate_geometry(curve, 'nurbsCurve')
+    curve_shape = __validate_geometry(curve, "nurbsCurve")
 
     curve_skinCluster = lib_skinCluster.get_skinCluster(curve_shape)
     if not curve_skinCluster:
-        cmds.error(f'No skinCluster found: {curve}')
+        cmds.error(f"No skinCluster found: {curve}")
 
-    surface_shape = __validate_geometry(surface, ['nurbsSurface', 'mesh'])
+    surface_shape = __validate_geometry(surface, ["nurbsSurface", "mesh"])
 
     surface_skinCluster = lib_skinCluster.get_skinCluster(surface_shape)
     if not surface_skinCluster:
-        cmds.error(f'No skinCluster found: {surface}')
+        cmds.error(f"No skinCluster found: {surface}")
 
     surface_type = cmds.nodeType(surface_shape)
     weights = lib_skinCluster.get_skin_weights(curve_skinCluster, all_components=True)
     infs = cmds.skinCluster(curve_skinCluster, q=True, inf=True)
     num_cvs = len(weights)
     for i, weight in enumerate(weights):
-        if surface_type == 'nurbsSurface':
-            cmds.skinPercent(surface_skinCluster, f'{surface}.cv[0][{i}]', transformValue=zip(infs, weight))
-            cmds.skinPercent(surface_skinCluster, f'{surface}.cv[1][{i}]', transformValue=zip(infs, weight))
-        elif surface_type == 'mesh':
-            cmds.skinPercent(surface_skinCluster, f'{surface}.vtx[{i}]', transformValue=zip(infs, weight))
-            cmds.skinPercent(surface_skinCluster, f'{surface}.vtx[{num_cvs + i}]', transformValue=zip(infs, weight))
+        if surface_type == "nurbsSurface":
+            cmds.skinPercent(surface_skinCluster, f"{surface}.cv[0][{i}]", transformValue=zip(infs, weight, strict=False))
+            cmds.skinPercent(surface_skinCluster, f"{surface}.cv[1][{i}]", transformValue=zip(infs, weight, strict=False))
+        elif surface_type == "mesh":
+            cmds.skinPercent(surface_skinCluster, f"{surface}.vtx[{i}]", transformValue=zip(infs, weight, strict=False))
+            cmds.skinPercent(surface_skinCluster, f"{surface}.vtx[{num_cvs + i}]", transformValue=zip(infs, weight, strict=False))
 
-    logger.debug(f'Transfer weights: {curve} -> {surface}')
+    logger.debug(f"Transfer weights: {curve} -> {surface}")
 
 
 def _to_skin_cage_from_length(surface: str, division_levels: int = 1) -> str:
@@ -212,24 +219,24 @@ def _to_skin_cage_from_length(surface: str, division_levels: int = 1) -> str:
         str: Skin cage name.
     """
     if not surface:
-        cmds.error('No surface specified.')
+        cmds.error("No surface specified.")
 
     if division_levels < 1:
-        cmds.error('Invalid division levels.')
+        cmds.error("Invalid division levels.")
 
-    surface_shape = __validate_geometry(surface, 'nurbsSurface')
+    surface_shape = __validate_geometry(surface, "nurbsSurface")
 
     skinCluster = lib_skinCluster.get_skinCluster(surface_shape)
     if not skinCluster:
-        cmds.error(f'No skinCluster found: {surface_shape}')
+        cmds.error(f"No skinCluster found: {surface_shape}")
 
     u_range, v_range = lib_nurbsSurface.NurbsSurface(surface_shape).get_uv_range()
     u_span, v_span = lib_nurbsSurface.NurbsSurface(surface_shape).get_uv_spans()
     u_value = (u_range[1] - u_range[0]) / 2.0
     v_value = (v_range[1] - v_range[0]) / 2.0
 
-    u_curve = lib_nurbsSurface.create_curve_on_surface(f'{surface}.v[{v_value}]')
-    v_curve = lib_nurbsSurface.create_curve_on_surface(f'{surface}.u[{u_value}]')
+    u_curve = lib_nurbsSurface.create_curve_on_surface(f"{surface}.v[{v_value}]")
+    v_curve = lib_nurbsSurface.create_curve_on_surface(f"{surface}.u[{u_value}]")
 
     u_curve_shape = cmds.listRelatives(u_curve, s=True, f=True, ni=True)[0]
     u_curve_length = lib_nurbsCurve.NurbsCurve(u_curve_shape).get_length()
@@ -240,13 +247,11 @@ def _to_skin_cage_from_length(surface: str, division_levels: int = 1) -> str:
     u_divisions = int(lib_math.round_up(u_curve_length) / ((2 + u_span) / 4)) * division_levels
     v_divisions = int(lib_math.round_up(v_curve_length) / ((2 + v_span) / 4)) * division_levels
 
-    skin_cage = convert_weight.SkinClusterToMesh(skinCluster,
-                                                 u_divisions=u_divisions,
-                                                 v_divisions=v_divisions).convert()
+    skin_cage = convert_weight.SkinClusterToMesh(skinCluster, u_divisions=u_divisions, v_divisions=v_divisions).convert()
 
     cmds.delete(u_curve, v_curve)
 
-    logger.debug(f'Created skin cage: {skin_cage}')
+    logger.debug(f"Created skin cage: {skin_cage}")
 
     return skin_cage
 
@@ -264,27 +269,29 @@ class CreateCurveSurface:
             nodes (list[str]): Target nodes.
         """
         if not nodes:
-            raise ValueError('No nodes specified.')
+            raise ValueError("No nodes specified.")
 
         not_exist_nodes = [node for node in nodes if not cmds.objExists(node)]
         if not_exist_nodes:
-            raise ValueError(f'Nodes not found: {not_exist_nodes}')
+            raise ValueError(f"Nodes not found: {not_exist_nodes}")
 
-        not_transform_nodes = [node for node in nodes if 'transform' not in cmds.nodeType(node, inherited=True)]
+        not_transform_nodes = [node for node in nodes if "transform" not in cmds.nodeType(node, inherited=True)]
         if not_transform_nodes:
-            raise ValueError(f'Invalid node type: {not_transform_nodes}')
+            raise ValueError(f"Invalid node type: {not_transform_nodes}")
 
         self.nodes = nodes
 
-    def execute(self,
-                object_type: str = 'nurbsCurve',
-                degree: int = 3,
-                center: bool = False,
-                close: bool = False,
-                divisions: int = 0,
-                surface_width: float = 1.0,
-                surface_width_center: float = 0.5,
-                surface_axis: str = 'x') -> str:
+    def execute(
+        self,
+        object_type: str = "nurbsCurve",
+        degree: int = 3,
+        center: bool = False,
+        close: bool = False,
+        divisions: int = 0,
+        surface_width: float = 1.0,
+        surface_width_center: float = 0.5,
+        surface_axis: str = "x",
+    ) -> str:
         """Create curve surface.
 
         Args:
@@ -301,29 +308,29 @@ class CreateCurveSurface:
         Returns:
             str: Created curve surface.
         """
-        if object_type not in ['nurbsCurve', 'mesh', 'nurbsSurface']:
-            raise ValueError('Invalid object type.')
+        if object_type not in ["nurbsCurve", "mesh", "nurbsSurface"]:
+            raise ValueError("Invalid object type.")
 
         if degree not in [1, 3]:
-            raise ValueError('Invalid degree.')
+            raise ValueError("Invalid degree.")
 
-        if object_type == 'nurbsCurve':
+        if object_type == "nurbsCurve":
             positions = [cmds.xform(node, q=True, ws=True, t=True) for node in self.nodes]
             return self._create_curve(positions, degree=degree, center=center, close=close, divisions=divisions)
 
         if surface_width < 0:
-            raise ValueError('Invalid surface width.')
+            raise ValueError("Invalid surface width.")
 
         if surface_width_center < 0 or surface_width_center > 1:
-            raise ValueError('Invalid surface width point.')
+            raise ValueError("Invalid surface width point.")
 
-        if surface_axis not in ['x', 'y', 'z', 'normal', 'binormal']:
-            raise ValueError('Invalid surface axis.')
+        if surface_axis not in ["x", "y", "z", "normal", "binormal"]:
+            raise ValueError("Invalid surface axis.")
 
         plus_point = surface_width * surface_width_center
         minus_point = plus_point - surface_width
 
-        if surface_axis in ['normal', 'binormal']:
+        if surface_axis in ["normal", "binormal"]:
             node_positions = [cmds.xform(node, q=True, ws=True, t=True) for node in self.nodes]
             base_curve = self._create_curve(node_positions, degree=3, center=center, close=close, divisions=divisions)
             base_curve_shape = cmds.listRelatives(base_curve, s=True, f=True, ni=True)[0]
@@ -335,21 +342,21 @@ class CreateCurveSurface:
             matrix = om.MMatrix(cmds.xform(node, q=True, ws=True, m=True))
             position = om.MVector(cmds.xform(node, q=True, ws=True, t=True))
 
-            if surface_axis == 'x':
+            if surface_axis == "x":
                 minus_position = position + om.MVector(minus_point, 0, 0) * matrix
                 plus_position = position + om.MVector(plus_point, 0, 0) * matrix
-            elif surface_axis == 'y':
+            elif surface_axis == "y":
                 minus_position = position + om.MVector(0, minus_point, 0) * matrix
                 plus_position = position + om.MVector(0, plus_point, 0) * matrix
-            elif surface_axis == 'z':
+            elif surface_axis == "z":
                 minus_position = position + om.MVector(0, 0, minus_point) * matrix
                 plus_position = position + om.MVector(0, 0, plus_point) * matrix
-            elif surface_axis == 'normal':
+            elif surface_axis == "normal":
                 _, param = base_nurbs_curve.get_closest_position(position)
                 normal = base_nurbs_curve.get_normal(param).normal()
                 minus_position = position + normal * minus_point
                 plus_position = position + normal * plus_point
-            elif surface_axis == 'binormal':
+            elif surface_axis == "binormal":
                 _, param = base_nurbs_curve.get_closest_position(position)
                 normal = base_nurbs_curve.get_normal(param).normal()
                 tangent = base_nurbs_curve.get_tangent(param).normal()
@@ -366,24 +373,19 @@ class CreateCurveSurface:
         surface = cmds.loft([plus_curve, minus_curve], ch=False, u=True, d=True)[0]
         cmds.delete(plus_curve, minus_curve)
 
-        if object_type == 'mesh':
+        if object_type == "mesh":
             poly_surface = cmds.nurbsToPoly(surface, f=3, pt=1, ch=False)[0]
             cmds.delete(surface)
 
-            logger.debug(f'Created mesh: {poly_surface}')
+            logger.debug(f"Created mesh: {poly_surface}")
 
             return poly_surface
 
-        logger.debug(f'Created surface: {surface}')
+        logger.debug(f"Created surface: {surface}")
 
         return surface
 
-    def _create_curve(self,
-                      positions: list[list[float]],
-                      degree: int = 3,
-                      center: bool = False,
-                      close: bool = False,
-                      divisions: int = 0) -> str:
+    def _create_curve(self, positions: list[list[float]], degree: int = 3, center: bool = False, close: bool = False, divisions: int = 0) -> str:
         """Create curve from positions.
 
         Args:
@@ -397,18 +399,18 @@ class CreateCurveSurface:
             str: Created curve transform.
         """
         if degree not in [1, 3]:
-            raise ValueError('Invalid degree.')
+            raise ValueError("Invalid degree.")
 
         num_positions = len(positions)
         if num_positions < 2:
-            raise ValueError('At least two positions are required.')
+            raise ValueError("At least two positions are required.")
 
         if num_positions == 2:
             if close:
-                cmds.error('Cannot close the curve with only two positions.')
+                cmds.error("Cannot close the curve with only two positions.")
 
             if degree == 3:
-                cmds.warning('Degree 3 curve requires at least 3 positions. Creating degree 1 curve instead.')
+                cmds.warning("Degree 3 curve requires at least 3 positions. Creating degree 1 curve instead.")
 
             curve = cmds.curve(d=1, p=positions)
             if divisions:
@@ -437,7 +439,7 @@ class CreateCurveSurface:
             if divisions:
                 convert_nurbsCurve.insert_cvs(divisions)
 
-        logger.debug(f'Created curve: {curve}')
+        logger.debug(f"Created curve: {curve}")
 
         return curve
 
@@ -469,7 +471,7 @@ class CurveWeightSetting:
         if not curve_shape:
             raise ValueError(f"No shape found: {curve}")
 
-        if cmds.nodeType(curve_shape[0]) != 'nurbsCurve':
+        if cmds.nodeType(curve_shape[0]) != "nurbsCurve":
             raise ValueError(f"Invalid curve type: {curve}")
 
         skinCluster = lib_skinCluster.get_skinCluster(curve_shape[0])
@@ -480,12 +482,12 @@ class CurveWeightSetting:
         self.nurbs_curve = lib_nurbsCurve.NurbsCurve(curve_shape[0])
         self.cv_positions = self.nurbs_curve.get_cv_positions()
         self.num_cvs = self.nurbs_curve.num_cvs
-        self.is_closed = self.nurbs_curve.form != 'open'
+        self.is_closed = self.nurbs_curve.form != "open"
         self.total_length = self.nurbs_curve.get_length()
 
         self.skinCluster = skinCluster
 
-    def execute(self, method='linear', smooth_iterations=10) -> None:
+    def execute(self, method="linear", smooth_iterations=10) -> None:
         """Weight interpolation on the curve.
 
         Args:
@@ -501,7 +503,7 @@ class CurveWeightSetting:
         _, inf_params = self.nurbs_curve.get_closest_positions(inf_positions)
         inf_lengths = [self.nurbs_curve.fn.findLengthFromParam(inf_param) for inf_param in inf_params]
 
-        sorted_infs, sorted_lengths = zip(*sorted(zip(infs, inf_lengths), key=lambda x: x[1]))
+        sorted_infs, sorted_lengths = zip(*sorted(zip(infs, inf_lengths, strict=False), key=lambda x: x[1]), strict=False)
 
         cv_weights = self._calculate_weights(cv_lengths, sorted_lengths, method)
 
@@ -510,7 +512,7 @@ class CurveWeightSetting:
 
         cmds.skinCluster(self.skinCluster, e=True, normalizeWeights=0)
         for i in range(len(cv_lengths)):
-            cmds.skinPercent(self.skinCluster, f"{self.curve}.cv[{i}]", transformValue=list(zip(sorted_infs, cv_weights[i])))
+            cmds.skinPercent(self.skinCluster, f"{self.curve}.cv[{i}]", transformValue=list(zip(sorted_infs, cv_weights[i], strict=False)))
         cmds.skinCluster(self.skinCluster, e=True, normalizeWeights=1)
 
     def _calculate_weights(self, cv_lengths, inf_lengths, method) -> list[list[float]]:
@@ -524,7 +526,7 @@ class CurveWeightSetting:
         Returns:
             list[list[float]]: Weights for each CV.
         """
-        if method not in ['linear', 'ease', 'step']:
+        if method not in ["linear", "ease", "step"]:
             raise ValueError(f"Invalid method '{method}'. Valid options are: 'linear', 'ease', 'step'.")
 
         cv_weights = []
@@ -545,13 +547,13 @@ class CurveWeightSetting:
                     break
                 elif inf_lengths[j] < cv_length < inf_lengths[j + 1]:
                     t = (cv_length - inf_lengths[j]) / (inf_lengths[j + 1] - inf_lengths[j])
-                    if method == 'linear':
+                    if method == "linear":
                         weights[j] = 1.0 - t
                         weights[j + 1] = t
-                    elif method == 'ease':
-                        weights[j] = 1.0 - self.__ease_weight(t, ease_type='inout')
-                        weights[j + 1] = self.__ease_weight(t, ease_type='inout')
-                    elif method == 'step':
+                    elif method == "ease":
+                        weights[j] = 1.0 - self.__ease_weight(t, ease_type="inout")
+                        weights[j + 1] = self.__ease_weight(t, ease_type="inout")
+                    elif method == "step":
                         weights[j] = 1.0
 
                     out_of_range = False
@@ -560,16 +562,17 @@ class CurveWeightSetting:
             if out_of_range:
                 if self.is_closed:
                     numerator = cv_length > inf_lengths[-1] and cv_length - inf_lengths[-1] or cv_length + self.total_length - inf_lengths[-1]
-                    denominator = inf_lengths[0] > inf_lengths[-1] and inf_lengths[0] - \
-                        inf_lengths[-1] or inf_lengths[0] + self.total_length - inf_lengths[-1]
+                    denominator = (
+                        inf_lengths[0] > inf_lengths[-1] and inf_lengths[0] - inf_lengths[-1] or inf_lengths[0] + self.total_length - inf_lengths[-1]
+                    )
                     t = numerator / denominator
-                    if method == 'linear':
+                    if method == "linear":
                         weights[-1] = 1.0 - t
                         weights[0] = t
-                    elif method == 'ease':
-                        weights[-1] = 1.0 - self.__ease_weight(t, ease_type='inout')
-                        weights[0] = self.__ease_weight(t, ease_type='inout')
-                    elif method == 'step':
+                    elif method == "ease":
+                        weights[-1] = 1.0 - self.__ease_weight(t, ease_type="inout")
+                        weights[0] = self.__ease_weight(t, ease_type="inout")
+                    elif method == "step":
                         weights[-1] = 1.0
                 else:
                     if cv_length < inf_lengths[0]:
@@ -583,7 +586,7 @@ class CurveWeightSetting:
 
             cv_weights.append(weights)
 
-        logger.debug(f'Calculated weights: {cv_weights}')
+        logger.debug(f"Calculated weights: {cv_weights}")
 
         return cv_weights
 
@@ -640,7 +643,7 @@ class CurveWeightSetting:
                 total_distance = sum(1.0 / d for d in neighbor_distances)
                 weighted_sum = [0.0] * num_infs
 
-                for weight, dist in zip(neighbor_weights, neighbor_distances):
+                for weight, dist in zip(neighbor_weights, neighbor_distances, strict=False):
                     for j in range(len(weight)):
                         weighted_sum[j] += weight[j] * (1.0 / dist)
 
@@ -648,12 +651,12 @@ class CurveWeightSetting:
 
             now_weights = [w[:] for w in smooth_weights]
 
-        logger.debug(f'Smoothed weights: {smooth_weights}')
+        logger.debug(f"Smoothed weights: {smooth_weights}")
 
         return smooth_weights
 
     @staticmethod
-    def __ease_weight(t, ease_type='in') -> float:
+    def __ease_weight(t, ease_type="in") -> float:
         """Ease-In/Ease-Out weight calculation.
 
         Args:
@@ -663,20 +666,20 @@ class CurveWeightSetting:
         Returns:
             float: Calculated ease weight.
         """
-        if ease_type == 'in':
+        if ease_type == "in":
             return t**2
-        elif ease_type == 'out':
-            return 1 - (1 - t)**2
-        elif ease_type == 'inout':
+        elif ease_type == "out":
+            return 1 - (1 - t) ** 2
+        elif ease_type == "inout":
             if t < 0.5:
                 return 2 * (t**2)
             else:
-                return 1 - 2 * ((1 - t)**2)
+                return 1 - 2 * ((1 - t) ** 2)
 
         raise ValueError("Invalid ease_type. Use 'in', 'out', or 'inout'.")
 
 
-def __validate_geometry(geometry: str, node_types: list[str] = ['nurbsCurve']) -> str:
+def __validate_geometry(geometry: str, node_types: list[str] = ["nurbsCurve"]) -> str:
     """Validate the geometry.
 
     Args:
@@ -687,17 +690,17 @@ def __validate_geometry(geometry: str, node_types: list[str] = ['nurbsCurve']) -
         str: Validated geometry name.
     """
     if not geometry:
-        cmds.error('No geometry specified.')
+        cmds.error("No geometry specified.")
 
     if not cmds.objExists(geometry):
-        cmds.error(f'Geometry not exists: {geometry}')
+        cmds.error(f"Geometry not exists: {geometry}")
 
     shape = cmds.listRelatives(geometry, s=True, f=True, ni=True)
     if not shape:
-        cmds.error(f'No shape found: {geometry}')
+        cmds.error(f"No shape found: {geometry}")
 
     if cmds.nodeType(shape[0]) not in node_types:
-        cmds.error(f'Invalid geometry type: {shape[0]}')
+        cmds.error(f"Invalid geometry type: {shape[0]}")
 
     return shape[0]
 
@@ -712,10 +715,10 @@ def create_curve_from_vertices(target_vertices: list[str]) -> str:
         str: Created curve.
     """
     if not target_vertices or not isinstance(target_vertices, list):
-        cmds.error('No vertices specified.')
+        cmds.error("No vertices specified.")
 
     if not cmds.filterExpand(target_vertices, sm=31):
-        cmds.error('No vertices found. Select vertices.')
+        cmds.error("No vertices found. Select vertices.")
 
     mesh = cmds.ls(target_vertices, objectsOnly=True)[0]
     mesh_vertex = lib_mesh.MeshVertex(mesh)
@@ -724,7 +727,7 @@ def create_curve_from_vertices(target_vertices: list[str]) -> str:
 
     target_vertices = cmds.ls(target_vertices, fl=True)
     if len(target_vertices) == num_vertices:
-        cmds.error('All vertices are selected. Please select a subset of vertices.')
+        cmds.error("All vertices are selected. Please select a subset of vertices.")
         return
 
     vertex_indices = mesh_vertex.get_vertex_indices(target_vertices)
@@ -748,9 +751,9 @@ def create_curve_from_vertices(target_vertices: list[str]) -> str:
 
     curve = cmds.curve(d=1, p=result_positions)
     mesh_transform = cmds.listRelatives(mesh, p=True)[0]
-    renamed_curve = cmds.rename(curve, f'{mesh_transform}_centerCurve')
+    renamed_curve = cmds.rename(curve, f"{mesh_transform}_centerCurve")
 
-    logger.debug(f'Created curve: {renamed_curve}')
+    logger.debug(f"Created curve: {renamed_curve}")
 
     return renamed_curve
 
@@ -762,31 +765,31 @@ def move_cv_positions(target_cv: str) -> None:
         target_cv (str): Target CVs.
     """
     if not target_cv:
-        cmds.error('No cv specified.')
+        cmds.error("No cv specified.")
 
     if not cmds.filterExpand(target_cv, sm=28):
-        cmds.error('No CVs found. Select CVs.')
+        cmds.error("No CVs found. Select CVs.")
 
     curve_shape = cmds.ls(target_cv, objectsOnly=True)[0]
     nurbs_curve = lib_nurbsCurve.NurbsCurve(curve_shape)
-    if nurbs_curve.form == 'open':
-        cmds.error('Open curve is not supported.')
+    if nurbs_curve.form == "open":
+        cmds.error("Open curve is not supported.")
 
     cv_positions = nurbs_curve.get_cv_positions(as_float=True)
 
-    cvs = cmds.ls(f'{curve_shape}.cv[*]', fl=True)
+    cvs = cmds.ls(f"{curve_shape}.cv[*]", fl=True)
     target_cv = cmds.ls(target_cv, fl=True)[0]
 
     target_cv_index = cvs.index(target_cv)
     move_positions = cv_positions[target_cv_index:] + cv_positions[:target_cv_index]
 
-    for cv, move_position in zip(cvs, move_positions):
+    for cv, move_position in zip(cvs, move_positions, strict=False):
         cmds.xform(cv, ws=True, t=move_position)
 
-    logger.debug(f'Moved CV positions: {target_cv}')
+    logger.debug(f"Moved CV positions: {target_cv}")
 
 
-def create_curve_on_surface(suf: str, surface_axis: str = 'u') -> str:
+def create_curve_on_surface(suf: str, surface_axis: str = "u") -> str:
     """Create a center curve from the surface.
 
     Args:
@@ -797,24 +800,24 @@ def create_curve_on_surface(suf: str, surface_axis: str = 'u') -> str:
         str: Created curve.
     """
     if not suf:
-        cmds.error('No surface specified.')
+        cmds.error("No surface specified.")
 
     if not cmds.objExists(suf):
-        cmds.error(f'Surface not exists: {suf}')
+        cmds.error(f"Surface not exists: {suf}")
 
-    if cmds.nodeType(suf) != 'nurbsSurface':
-        cmds.error(f'Invalid surface type: {suf}')
+    if cmds.nodeType(suf) != "nurbsSurface":
+        cmds.error(f"Invalid surface type: {suf}")
 
-    if surface_axis not in ['u', 'v']:
-        cmds.error('Invalid surface axis.')
+    if surface_axis not in ["u", "v"]:
+        cmds.error("Invalid surface axis.")
 
     nurbs_surface = lib_nurbsSurface.NurbsSurface(suf)
     u_range, v_range = nurbs_surface.get_uv_range()
-    center_param = (u_range[0] + u_range[1]) / 2.0 if surface_axis == 'u' else (v_range[0] + v_range[1]) / 2.0
+    center_param = (u_range[0] + u_range[1]) / 2.0 if surface_axis == "u" else (v_range[0] + v_range[1]) / 2.0
 
     nodes = cmds.duplicateCurve(f"{suf}.{surface_axis == 'u' and 'v' or 'u'}[{center_param}]", ch=True, rn=False, local=False, n=f"{suf}_centerCurve")
-    cmds.rename(nodes[1], f'{suf}_curveFromSurfaceIso')
+    cmds.rename(nodes[1], f"{suf}_curveFromSurfaceIso")
 
-    logger.debug(f'Created curve: {nodes[0]}')
+    logger.debug(f"Created curve: {nodes[0]}")
 
     return nodes[0]

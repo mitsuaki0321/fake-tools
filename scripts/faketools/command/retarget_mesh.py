@@ -33,7 +33,7 @@ def _get_points_from_soft_selection(src_objs: list[str], trg_mesh: str, radius: 
         cmds.softSelect(e=True, sse=False)
 
     if not sel_components:
-        logger.warning(f'No components selected: {trg_mesh}.')
+        logger.warning(f"No components selected: {trg_mesh}.")
         return []
 
     return list(sel_components.keys())
@@ -54,12 +54,14 @@ def _get_positions(mesh: lib_mesh.MeshVertex) -> np.ndarray:
     return points
 
 
-def _compute_src_indices(kd_tree: KDTree,
-                         trg_indices: list[int],
-                         trg_points: np.ndarray,
-                         trg_mesh_vtx: lib_mesh.MeshVertex,
-                         src_mesh_vtx: lib_mesh.MeshVertex,
-                         radius_multiplier: float) -> list[list[int]]:
+def _compute_src_indices(
+    kd_tree: KDTree,
+    trg_indices: list[int],
+    trg_points: np.ndarray,
+    trg_mesh_vtx: lib_mesh.MeshVertex,
+    src_mesh_vtx: lib_mesh.MeshVertex,
+    radius_multiplier: float,
+) -> list[list[int]]:
     """Compute the source indices.
 
     Args:
@@ -72,14 +74,15 @@ def _compute_src_indices(kd_tree: KDTree,
     """
     distances, _ = kd_tree.query(trg_points)
     point_distance = np.max(distances) * radius_multiplier
-    trg_vertices = trg_mesh_vtx.get_components_from_indices(trg_indices, component_type='vertex')
+    trg_vertices = trg_mesh_vtx.get_components_from_indices(trg_indices, component_type="vertex")
     src_selection_vertices = _get_points_from_soft_selection(trg_vertices, src_mesh_vtx.get_mesh_name(), radius=point_distance)
 
-    return src_mesh_vtx.get_components_indices(src_selection_vertices, component_type='vertex')
+    return src_mesh_vtx.get_components_indices(src_selection_vertices, component_type="vertex")
 
 
-def retarget_mesh(src_mesh: str, dst_meshs: list[str], trg_meshs: list[str],
-                  is_create: bool = True, max_vertices: int = 1000, radius_multiplier: float = 1.0) -> list[str]:
+def retarget_mesh(
+    src_mesh: str, dst_meshs: list[str], trg_meshs: list[str], is_create: bool = True, max_vertices: int = 1000, radius_multiplier: float = 1.0
+) -> list[str]:
     """Retarget the mesh to another mesh.
 
     Notes:
@@ -100,28 +103,28 @@ def retarget_mesh(src_mesh: str, dst_meshs: list[str], trg_meshs: list[str],
         list[str]: The retargeted meshes.
     """
     if not src_mesh or not dst_meshs or not trg_meshs:
-        raise ValueError('Required meshes are not specified.')
+        raise ValueError("Required meshes are not specified.")
 
     if not cmds.objExists(src_mesh):
-        raise ValueError(f'Source mesh does not exist: {src_mesh}.')
+        raise ValueError(f"Source mesh does not exist: {src_mesh}.")
 
     not_exists_dst_meshs = [mesh for mesh in dst_meshs if not cmds.objExists(mesh)]
     if not_exists_dst_meshs:
-        raise ValueError(f'Destination meshes do not exist: {not_exists_dst_meshs}.')
+        raise ValueError(f"Destination meshes do not exist: {not_exists_dst_meshs}.")
 
     not_exists_trg_meshs = [mesh for mesh in trg_meshs if not cmds.objExists(mesh)]
     if not_exists_trg_meshs:
-        raise ValueError(f'Target meshes do not exist: {not_exists_trg_meshs}.')
+        raise ValueError(f"Target meshes do not exist: {not_exists_trg_meshs}.")
 
     if not is_create and len(dst_meshs) > 1:
-        raise ValueError('When not creating, only one destination mesh can be specified.')
+        raise ValueError("When not creating, only one destination mesh can be specified.")
 
     src_mesh_vtx = lib_mesh.MeshVertex(src_mesh)
     src_points = _get_positions(src_mesh_vtx)
     src_kd_tree = KDTree(src_points)
 
     if src_mesh_vtx.num_vertices() < 4:
-        raise ValueError(f'The source mesh must have at least 4 vertices: {src_mesh}.')
+        raise ValueError(f"The source mesh must have at least 4 vertices: {src_mesh}.")
 
     trg_mesh_data = {}
     for trg_mesh in trg_meshs:
@@ -129,22 +132,25 @@ def retarget_mesh(src_mesh: str, dst_meshs: list[str], trg_meshs: list[str],
         trg_points = _get_positions(trg_mesh_vtx)
 
         data = {}
-        data['trg_positions'] = trg_points
+        data["trg_positions"] = trg_points
         if trg_mesh_vtx.num_vertices() > max_vertices:
-            data['target_indices'] = lib_cluster.KMeansClustering(trg_mesh).get_clusters(int(trg_mesh_vtx.num_vertices() / max_vertices))
-            data['src_indices'] = [_compute_src_indices(src_kd_tree, indices, trg_points[indices], trg_mesh_vtx, src_mesh_vtx, radius_multiplier)
-                                   for indices in data['target_indices']]
+            data["target_indices"] = lib_cluster.KMeansClustering(trg_mesh).get_clusters(int(trg_mesh_vtx.num_vertices() / max_vertices))
+            data["src_indices"] = [
+                _compute_src_indices(src_kd_tree, indices, trg_points[indices], trg_mesh_vtx, src_mesh_vtx, radius_multiplier)
+                for indices in data["target_indices"]
+            ]
         else:
-            data['target_indices'] = [range(trg_mesh_vtx.num_vertices())]
-            data['src_indices'] = [_compute_src_indices(src_kd_tree, range(trg_mesh_vtx.num_vertices()),
-                                                        trg_points, trg_mesh_vtx, src_mesh_vtx, radius_multiplier)]
+            data["target_indices"] = [range(trg_mesh_vtx.num_vertices())]
+            data["src_indices"] = [
+                _compute_src_indices(src_kd_tree, range(trg_mesh_vtx.num_vertices()), trg_points, trg_mesh_vtx, src_mesh_vtx, radius_multiplier)
+            ]
 
         trg_mesh_data[trg_mesh] = data
 
     deform_mesh_transforms = []
     for dst_mesh in dst_meshs:
         if not lib_mesh.is_same_topology(src_mesh, dst_mesh):
-            cmds.error(f'The topology of the source and destination meshes must be the same: {src_mesh_vtx} -> {dst_mesh}.')
+            cmds.error(f"The topology of the source and destination meshes must be the same: {src_mesh_vtx} -> {dst_mesh}.")
 
         dst_mesh = lib_mesh.MeshVertex(dst_mesh)
         dst_points = _get_positions(dst_mesh)
@@ -153,9 +159,9 @@ def retarget_mesh(src_mesh: str, dst_meshs: list[str], trg_meshs: list[str],
         dst_position = cmds.xform(dst_transform, q=True, ws=True, t=True)
 
         for trg_mesh in trg_mesh_data:
-            trg_positions = trg_mesh_data[trg_mesh]['trg_positions']
-            trg_index_list = trg_mesh_data[trg_mesh]['target_indices']
-            src_index_list = trg_mesh_data[trg_mesh]['src_indices']
+            trg_positions = trg_mesh_data[trg_mesh]["trg_positions"]
+            trg_index_list = trg_mesh_data[trg_mesh]["target_indices"]
+            src_index_list = trg_mesh_data[trg_mesh]["src_indices"]
 
             if is_create:
                 deform_mesh = cmds.listRelatives(cmds.duplicate(trg_mesh)[0], shapes=True, noIntermediate=True)[0]
@@ -165,19 +171,19 @@ def retarget_mesh(src_mesh: str, dst_meshs: list[str], trg_meshs: list[str],
             deform_transform = cmds.listRelatives(deform_mesh, parent=True)[0]
             cmds.xform(deform_transform, ws=True, t=dst_position)
 
-            for trg_indices, src_indices in zip(trg_index_list, src_index_list):
+            for trg_indices, src_indices in zip(trg_index_list, src_index_list, strict=False):
                 rbf_deform = lib_retarget.RBFDeform(src_points[src_indices])
                 weight_x, weight_y, weight_z = rbf_deform.compute_weights(dst_points[src_indices])
                 computed_points = rbf_deform.compute_points(trg_positions[trg_indices], weight_x, weight_y, weight_z)
 
                 for i, index in enumerate(trg_indices):
-                    cmds.xform(f'{deform_mesh}.vtx[{index}]', t=computed_points[i], ws=True)
+                    cmds.xform(f"{deform_mesh}.vtx[{index}]", t=computed_points[i], ws=True)
 
             cmds.select(deform_mesh, r=True)
             cmds.refresh()
 
             deform_mesh_transforms.append(deform_transform)
 
-            logger.debug(f'Retargeted mesh: {deform_transform}.')
+            logger.debug(f"Retargeted mesh: {deform_transform}.")
 
     return deform_mesh_transforms

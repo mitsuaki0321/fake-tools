@@ -8,13 +8,13 @@ import maya.OpenMayaUI as OpenMayaUI
 import maya.OpenMayaUI as omui
 
 try:
-    import shiboken2 as shiboken
     from PySide2.QtCore import QObject
     from PySide2.QtWidgets import QApplication, QWidget
+    import shiboken2 as shiboken
 except ImportError:
-    import shiboken6 as shiboken
     from PySide6.QtCore import QObject
     from PySide6.QtWidgets import QApplication, QWidget
+    import shiboken6 as shiboken
 
 
 def get_qt_control(name: str, qt_object: QObject = QWidget) -> QWidget:
@@ -43,7 +43,7 @@ def get_maya_control(qt_object: QObject) -> str:
     Returns:
         str: Full name of the ui maya object.
     """
-    return OpenMayaUI.MQtUtil.fullName((int(shiboken.getCppPointer(qt_object)[0])))
+    return OpenMayaUI.MQtUtil.fullName(int(shiboken.getCppPointer(qt_object)[0]))
 
 
 def get_maya_pointer() -> QWidget:

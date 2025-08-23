@@ -26,12 +26,12 @@ def is_modifiable(node: str, attribute: str, **kwargs) -> bool:
         bool: Whether the attribute is modifiable.
     """
     if not cmds.objExists(node):
-        raise ValueError(f'Node does not exist: {node}')
+        raise ValueError(f"Node does not exist: {node}")
 
     if not cmds.attributeQuery(attribute, node=node, exists=True):
-        raise ValueError(f'Attribute does not exist: {node}.{attribute}')
+        raise ValueError(f"Attribute does not exist: {node}.{attribute}")
 
-    children = kwargs.get('children', False)
+    children = kwargs.get("children", False)
 
     sel = om.MSelectionList()
     sel.add(node)
@@ -55,7 +55,7 @@ def get_channelBox_attr(node: str) -> list:
         list: The channelBox attributes.
     """
     if not cmds.objExists(node):
-        raise ValueError(f'Node does not exist: {node}')
+        raise ValueError(f"Node does not exist: {node}")
 
     keyable_attributes = cmds.listAttr(node, keyable=True) or []
     channel_attributes = cmds.listAttr(node, channelBox=True) or []
@@ -64,12 +64,10 @@ def get_channelBox_attr(node: str) -> list:
 
 
 class AttributeLockHandler:
-    """Class to temporarily unlock locked attributes.
-    """
+    """Class to temporarily unlock locked attributes."""
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         self.__lock_attrs = []
 
     def stock_lock_attrs(self, node: str, attributes: list, include_parent: bool = False) -> None:
@@ -81,11 +79,11 @@ class AttributeLockHandler:
             include_parent (bool): Whether to include the parent attribute. Default is False.
         """
         if not cmds.objExists(node):
-            raise ValueError(f'Node does not exist: {node}')
+            raise ValueError(f"Node does not exist: {node}")
 
-        not_exist_attrs = [attr for attr in attributes if not not cmds.attributeQuery(attr, node=node, exists=True)]
+        not_exist_attrs = [attr for attr in attributes if cmds.attributeQuery(attr, node=node, exists=True)]
         if not not_exist_attrs:
-            raise ValueError(f'Attributes do not exist: {not_exist_attrs}')
+            raise ValueError(f"Attributes do not exist: {not_exist_attrs}")
 
         if include_parent:
             target_attributes = set(attributes)
@@ -97,9 +95,9 @@ class AttributeLockHandler:
             attributes = list(target_attributes)
 
         for attr in attributes:
-            if not cmds.getAttr(f'{node}.{attr}', lock=True):
+            if not cmds.getAttr(f"{node}.{attr}", lock=True):
                 continue
-            cmds.setAttr(f'{node}.{attr}', lock=False)
+            cmds.setAttr(f"{node}.{attr}", lock=False)
             self.__lock_attrs.append(attr)
 
     def restore_lock_attrs(self, node: str) -> None:
@@ -112,5 +110,5 @@ class AttributeLockHandler:
             return
 
         for attr in self.__lock_attrs:
-            cmds.setAttr(f'{node}.{attr}', lock=True)
+            cmds.setAttr(f"{node}.{attr}", lock=True)
         self.__lock_attrs.clear()

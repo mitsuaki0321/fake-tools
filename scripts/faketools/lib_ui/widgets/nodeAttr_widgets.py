@@ -1,5 +1,4 @@
-"""Node list widget.
-"""
+"""Node list widget."""
 
 from logging import getLogger
 
@@ -48,13 +47,12 @@ logger = getLogger(__name__)
 
 
 class NodeListView(QListView):
-    """Node list view.
-    """
+    """Node list view."""
+
     node_changed = Signal()
 
     def __init__(self, parent=None):
-        """Initialize the NodeList.
-        """
+        """Initialize the NodeList."""
         super(NodeListView, self).__init__(parent)
         self.setSelectionMode(QListView.ExtendedSelection)
         self.setEditTriggers(QListView.NoEditTriggers)
@@ -66,8 +64,7 @@ class NodeListView(QListView):
         self.setModel(self.node_model)
 
     def eventFilter(self, source, event) -> bool:
-        """Event filter to handle right-click context menu.
-        """
+        """Event filter to handle right-click context menu."""
         if source is self.viewport() and event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.RightButton:
                 position = event.pos()
@@ -100,22 +97,20 @@ class NodeListView(QListView):
 
         menu.exec_(position)
 
-    @maya_ui.undo_chunk('Select Nodes')
+    @maya_ui.undo_chunk("Select Nodes")
     @maya_ui.error_handler
     def _select_scene_nodes(self) -> None:
-        """Select the nodes in Maya scene that are selected in the node list.
-        """
+        """Select the nodes in Maya scene that are selected in the node list."""
         selected_nodes = self.get_selected_nodes()
         if selected_nodes:
             cmds.select(selected_nodes, replace=True)
         else:
             cmds.select(clear=True)
 
-    @maya_ui.undo_chunk('Select All Nodes')
+    @maya_ui.undo_chunk("Select All Nodes")
     @maya_ui.error_handler
     def _select_all_scene_nodes(self) -> None:
-        """Select all nodes in the node list in Maya scene.
-        """
+        """Select all nodes in the node list in Maya scene."""
         all_nodes = self.get_all_nodes()
         if all_nodes:
             cmds.select(all_nodes, replace=True)
@@ -144,8 +139,7 @@ class NodeListView(QListView):
         self.add_nodes(nodes)
 
     def remove_nodes(self) -> None:
-        """Remove the selected nodes from the node list.
-        """
+        """Remove the selected nodes from the node list."""
         selected_indexes = self.selectionModel().selectedIndexes()
         for index in sorted(selected_indexes, key=lambda x: x.row(), reverse=True):
             self.node_model.removeRow(index.row())
@@ -187,8 +181,8 @@ class NodeListView(QListView):
 
 
 class AttributeListView(QListView):
-    """Attribute list view.
-    """
+    """Attribute list view."""
+
     attribute_lock_changed = Signal()
 
     def __init__(self, node_widgets: NodeListView, parent=None):
@@ -213,8 +207,7 @@ class AttributeListView(QListView):
         self.node_widgets = node_widgets
 
     def eventFilter(self, source, event) -> bool:
-        """Event filter to handle right-click context menu.
-        """
+        """Event filter to handle right-click context menu."""
         if source is self.viewport() and event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.RightButton:
                 position = event.pos()
@@ -226,8 +219,7 @@ class AttributeListView(QListView):
         return super(AttributeListView, self).eventFilter(source, event)
 
     def show_context_menu(self, position) -> None:
-        """Show context menu for attribute list.
-        """
+        """Show context menu for attribute list."""
         menu = QMenu()
 
         menu.addAction("Lock", self.__lock_attributes)
@@ -240,11 +232,10 @@ class AttributeListView(QListView):
 
         menu.exec_(position)
 
-    @maya_ui.undo_chunk('Lock Attributes')
+    @maya_ui.undo_chunk("Lock Attributes")
     @maya_ui.error_handler
     def __lock_attributes(self) -> None:
-        """Lock the selected attributes.
-        """
+        """Lock the selected attributes."""
         selected_nodes = self.node_widgets.get_selected_nodes()
         selected_attrs = self.get_selected_attributes()
 
@@ -253,15 +244,14 @@ class AttributeListView(QListView):
 
         for node in selected_nodes:
             for attr in selected_attrs:
-                cmds.setAttr(f'{node}.{attr}', lock=True)
+                cmds.setAttr(f"{node}.{attr}", lock=True)
 
         self.attribute_lock_changed.emit()
 
-    @maya_ui.undo_chunk('Unlock Attributes')
+    @maya_ui.undo_chunk("Unlock Attributes")
     @maya_ui.error_handler
     def __unlock_attributes(self) -> None:
-        """Unlock the selected attributes.
-        """
+        """Unlock the selected attributes."""
         selected_nodes = self.node_widgets.get_selected_nodes()
         selected_attrs = self.get_selected_attributes()
 
@@ -270,15 +260,14 @@ class AttributeListView(QListView):
 
         for node in selected_nodes:
             for attr in selected_attrs:
-                cmds.setAttr(f'{node}.{attr}', lock=False)
+                cmds.setAttr(f"{node}.{attr}", lock=False)
 
         self.attribute_lock_changed.emit()
 
-    @maya_ui.undo_chunk('Keyable Attributes')
+    @maya_ui.undo_chunk("Keyable Attributes")
     @maya_ui.error_handler
     def __keyable_attributes(self) -> None:
-        """Set the selected attributes keyable.
-        """
+        """Set the selected attributes keyable."""
         selected_nodes = self.node_widgets.get_selected_nodes()
         selected_attrs = self.get_selected_attributes()
 
@@ -287,13 +276,12 @@ class AttributeListView(QListView):
 
         for node in selected_nodes:
             for attr in selected_attrs:
-                cmds.setAttr(f'{node}.{attr}', keyable=True)
+                cmds.setAttr(f"{node}.{attr}", keyable=True)
 
-    @maya_ui.undo_chunk('Unkeyable Attributes')
+    @maya_ui.undo_chunk("Unkeyable Attributes")
     @maya_ui.error_handler
     def __unkeyable_attributes(self) -> None:
-        """Set the selected attributes unkeyable.
-        """
+        """Set the selected attributes unkeyable."""
         selected_nodes = self.node_widgets.get_selected_nodes()
         selected_attrs = self.get_selected_attributes()
 
@@ -302,7 +290,7 @@ class AttributeListView(QListView):
 
         for node in selected_nodes:
             for attr in selected_attrs:
-                cmds.setAttr(f'{node}.{attr}', keyable=False)
+                cmds.setAttr(f"{node}.{attr}", keyable=False)
 
     def get_selected_attributes(self) -> list[str]:
         """Get the selected attributes.
@@ -323,12 +311,10 @@ class AttributeListView(QListView):
 
 
 class NodeAttributeWidgets(QWidget):
-    """Node attribute widgets.
-    """
+    """Node attribute widgets."""
 
     def __init__(self, parent=None):
-        """Initialize the NodeListWidget.
-        """
+        """Initialize the NodeListWidget."""
         super(NodeAttributeWidgets, self).__init__(parent)
 
         self.main_layout = QVBoxLayout(self)
@@ -336,7 +322,7 @@ class NodeAttributeWidgets(QWidget):
         spacing = base_window.get_spacing(self)
         self.main_layout.setSpacing(int(spacing * 0.75))
 
-        load_button = QPushButton('Load')
+        load_button = QPushButton("Load")
         self.main_layout.addWidget(load_button)
 
         self.node_list = NodeListView()
@@ -357,11 +343,10 @@ class NodeAttributeWidgets(QWidget):
 
     @maya_ui.error_handler
     def _list_nodes(self) -> None:
-        """Update the node list.
-        """
+        """Update the node list."""
         sel_nodes = cmds.ls(sl=True)
         if not sel_nodes:
-            cmds.error('Please select the nodes to list.')
+            cmds.error("Please select the nodes to list.")
 
         shift_pressed = QApplication.keyboardModifiers() == Qt.ShiftModifier
         if shift_pressed:
@@ -390,8 +375,7 @@ class NodeAttributeWidgets(QWidget):
             selection_model.select(self.node_list.node_model.index(0, 0), QItemSelectionModel.Select)
 
     def _display_attributes(self) -> None:
-        """Display the attributes of the selected nodes.
-        """
+        """Display the attributes of the selected nodes."""
         self.attr_list.model().sourceModel().clear()
         selected_indexes = self.node_list.selectionModel().selectedIndexes()
         if not selected_indexes:
@@ -418,15 +402,14 @@ class NodeAttributeWidgets(QWidget):
         Returns:
             list[str]: The attributes of the node.
         """
-        except_attr_types = kwargs.pop('except_attr_types', ['message', 'TdataCompound'])
+        except_attr_types = kwargs.pop("except_attr_types", ["message", "TdataCompound"])
 
         result_attrs = []
 
-        if 'transform' in cmds.nodeType(node, inherited=True):
-            result_attrs.extend(['translateX', 'translateY', 'translateZ',
-                                 'rotateX', 'rotateY', 'rotateZ',
-                                 'scaleX', 'scaleY', 'scaleZ',
-                                 'visibility'])
+        if "transform" in cmds.nodeType(node, inherited=True):
+            result_attrs.extend(
+                ["translateX", "translateY", "translateZ", "rotateX", "rotateY", "rotateZ", "scaleX", "scaleY", "scaleZ", "visibility"]
+            )
 
         user_attrs = cmds.listAttr(node, userDefined=True)
         if user_attrs:
@@ -439,11 +422,11 @@ class NodeAttributeWidgets(QWidget):
             try:
                 if cmds.attributeQuery(attr, node=node, listChildren=True):
                     continue
-                if cmds.getAttr(f'{node}.{attr}', type=True) in except_attr_types:
+                if cmds.getAttr(f"{node}.{attr}", type=True) in except_attr_types:
                     continue
                 result_attrs.append(attr)
             except RuntimeError:
-                logger.debug(f'Failed to list attribute: {node}.{attr}')
+                logger.debug(f"Failed to list attribute: {node}.{attr}")
 
         return result_attrs
 

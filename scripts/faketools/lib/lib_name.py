@@ -2,8 +2,8 @@
 String manipulation functions.
 """
 
-import re
 from logging import getLogger
+import re
 
 import maya.cmds as cmds
 
@@ -19,7 +19,7 @@ def num_to_alpha(num):
     Returns:
         str: The converted letters.
     """
-    result = ''
+    result = ""
     while num > 0:
         num, remainder = divmod(num - 1, 26)
         result = chr(65 + remainder) + result
@@ -55,10 +55,10 @@ def substitute_names(names: list[str], regex_name: str, replace_name: str) -> li
         list[str]: The substituted names.
     """
     if not names:
-        raise ValueError('Names are not specified.')
+        raise ValueError("Names are not specified.")
 
     if not regex_name:
-        raise ValueError('Regex name is not specified.')
+        raise ValueError("Regex name is not specified.")
 
     p = re.compile(regex_name)
 
@@ -67,7 +67,7 @@ def substitute_names(names: list[str], regex_name: str, replace_name: str) -> li
         result_name = p.sub(replace_name, name)
         result_names.append(result_name)
 
-        logger.debug(f'Substituted: {name} -> {result_name}')
+        logger.debug(f"Substituted: {name} -> {result_name}")
 
     return result_names
 
@@ -87,44 +87,44 @@ def solve_names(names: list[str], regex_name: str, *args, **kwargs) -> list[str]
         list[str]: The solved names.
     """
     if not names:
-        raise ValueError('Names are not specified.')
+        raise ValueError("Names are not specified.")
     if not regex_name:
-        raise ValueError('Regex name is not specified.')
+        raise ValueError("Regex name is not specified.")
 
     # Delete blank
-    regex_name = regex_name.replace(' ', '')
+    regex_name = regex_name.replace(" ", "")
 
     # Check regex name
-    for mark in ['@', '#', '~']:
+    for mark in ["@", "#", "~"]:
         if regex_name.count(mark) > 1:
-            raise ValueError(f'Invalid regex name: {regex_name}')
+            raise ValueError(f"Invalid regex name: {regex_name}")
 
-    for k in ['$', '%', '^', '&', '?', '+', '-', '=', '*']:
+    for k in ["$", "%", "^", "&", "?", "+", "-", "=", "*"]:
         if k in regex_name:
-            raise ValueError(f'Invalid regex name: {regex_name}')
+            raise ValueError(f"Invalid regex name: {regex_name}")
 
-    start_alpha_index = alpha_to_num(kwargs.get('start_alpha', 'A'))
-    start_number_index = kwargs.get('start_number', 0)
+    start_alpha_index = alpha_to_num(kwargs.get("start_alpha", "A"))
+    start_number_index = kwargs.get("start_number", 0)
 
     new_names = []
     for i, name in enumerate(names):
         new_name = regex_name
 
         # Replace the '~' with the name
-        if new_name.count('~'):
-            new_name = new_name.replace('~', name)
+        if new_name.count("~"):
+            new_name = new_name.replace("~", name)
 
         # Replace the '@' with the alphabet
-        if new_name.count('@'):
-            new_name = new_name.replace('@', num_to_alpha(start_alpha_index + i))
+        if new_name.count("@"):
+            new_name = new_name.replace("@", num_to_alpha(start_alpha_index + i))
 
         # Replace the '#' with the number
-        if new_name.count('#'):
-            new_name = new_name.replace('#', str(start_number_index + i))
+        if new_name.count("#"):
+            new_name = new_name.replace("#", str(start_number_index + i))
 
         new_names.append(new_name)
 
-        logger.debug(f'Solved: {name} -> {new_name}')
+        logger.debug(f"Solved: {name} -> {new_name}")
 
     return new_names
 
@@ -139,10 +139,10 @@ def get_local_name(name: str) -> str:
         str: The local name.
     """
     if not name:
-        raise ValueError('Name is not specified.')
+        raise ValueError("Name is not specified.")
 
-    if '|' in name:
-        return name.split('|')[-1]
+    if "|" in name:
+        return name.split("|")[-1]
 
     return name
 
@@ -161,37 +161,37 @@ def replace_namespaces(names: list[str], namespace: str) -> list[str]:
         list[str]: The replaced names.
     """
     if not names:
-        raise ValueError('Names are not specified.')
+        raise ValueError("Names are not specified.")
 
     if not isinstance(names, list):
-        raise ValueError('Names must be a list.')
+        raise ValueError("Names must be a list.")
 
     if namespace is None:
-        raise ValueError('Namespace is not specified.')
+        raise ValueError("Namespace is not specified.")
 
     result_names = []
     for name in names:
         # Corresponds to full path
-        if '|' in name:
-            full_names = name.split('|')
+        if "|" in name:
+            full_names = name.split("|")
         else:
             full_names = [name]
 
         # Replace the namespace
         result_full_names = []
         for full_name in full_names:
-            if ':' in full_name:
+            if ":" in full_name:
                 full_name_without_ns = get_without_namespace(full_name)
                 if namespace:
-                    result_full_names.append(f'{namespace}:{full_name_without_ns}')
+                    result_full_names.append(f"{namespace}:{full_name_without_ns}")
                 else:
                     result_full_names.append(full_name_without_ns)
             else:
-                result_full_names.append(f'{namespace}:{full_name}')
+                result_full_names.append(f"{namespace}:{full_name}")
 
-        result_names.append('|'.join(result_full_names))
+        result_names.append("|".join(result_full_names))
 
-        logger.debug(f'Replaced: {name} -> {result_names[-1]}')
+        logger.debug(f"Replaced: {name} -> {result_names[-1]}")
 
     return result_names
 
@@ -206,10 +206,10 @@ def get_namespace(name: str) -> str:
         str: The namespace.
     """
     if not name:
-        raise ValueError('Name is not specified.')
+        raise ValueError("Name is not specified.")
 
-    if ':' not in name:
-        return ''
+    if ":" not in name:
+        return ""
 
     return name.rsplit(":", 1)[0]
 
@@ -224,9 +224,9 @@ def get_without_namespace(name: str) -> str:
         str: The name without namespace.
     """
     if not name:
-        raise ValueError('Name is not specified.')
+        raise ValueError("Name is not specified.")
 
-    if ':' not in name:
+    if ":" not in name:
         return name
 
     return name.rsplit(":", 1)[1]
@@ -241,8 +241,7 @@ def list_all_namespace() -> list[str]:
     result_namespaces = []
 
     def __list_namespace(namespace):
-        """List the namespace.
-        """
+        """List the namespace."""
         result_namespaces.append(namespace)
 
         sub_namespaces = cmds.namespaceInfo(namespace, listOnlyNamespaces=True)
@@ -250,7 +249,7 @@ def list_all_namespace() -> list[str]:
             for sub_ns in sub_namespaces:
                 __list_namespace(sub_ns)
 
-    root_namespaces = [ns for ns in cmds.namespaceInfo(listOnlyNamespaces=True) if ns not in ['UI', 'shared']]
+    root_namespaces = [ns for ns in cmds.namespaceInfo(listOnlyNamespaces=True) if ns not in ["UI", "shared"]]
     if not root_namespaces:
         return result_namespaces
 

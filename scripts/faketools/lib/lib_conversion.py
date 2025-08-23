@@ -1,6 +1,4 @@
-"""Data types conversion functions
-"""
-
+"""Data types conversion functions"""
 
 from logging import getLogger
 

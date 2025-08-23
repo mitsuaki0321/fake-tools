@@ -13,8 +13,7 @@ logger = getLogger(__name__)
 
 
 class NurbsCurve:
-    """NurbsCurve class.
-    """
+    """NurbsCurve class."""
 
     def __init__(self, curve: str):
         """Initialize the NurbsCurve class.
@@ -23,10 +22,10 @@ class NurbsCurve:
             curve (str): The curve name.
         """
         if not cmds.objExists(curve):
-            raise ValueError(f'Node does not exist: {curve}')
+            raise ValueError(f"Node does not exist: {curve}")
 
-        if cmds.nodeType(curve) != 'nurbsCurve':
-            raise ValueError(f'Invalid type: {curve}')
+        if cmds.nodeType(curve) != "nurbsCurve":
+            raise ValueError(f"Invalid type: {curve}")
 
         selection_list = om.MSelectionList()
         selection_list.add(curve)
@@ -64,9 +63,9 @@ class NurbsCurve:
             str: The form. ('open', 'closed', 'periodic')
         """
         form_map = {
-            om.MFnNurbsCurve.kOpen: 'open',
-            om.MFnNurbsCurve.kClosed: 'closed',
-            om.MFnNurbsCurve.kPeriodic: 'periodic',
+            om.MFnNurbsCurve.kOpen: "open",
+            om.MFnNurbsCurve.kClosed: "closed",
+            om.MFnNurbsCurve.kPeriodic: "periodic",
         }
 
         return form_map[self.fn.form]
@@ -88,7 +87,7 @@ class NurbsCurve:
         """
         return self.fn.length()
 
-    def get_cv_position(self, cv_ids: list[int], as_float: bool = False) -> Union[list[om.MPoint], list[list[float]]]:
+    def get_cv_position(self, cv_ids: list[int], as_float: bool = False) -> list[om.MPoint] | list[list[float]]:
         """Get the CV positions.
 
         Args:
@@ -104,7 +103,7 @@ class NurbsCurve:
 
         return positions
 
-    def get_cv_positions(self, as_float: bool = False) -> Union[list[om.MPoint], list[list[float]]]:
+    def get_cv_positions(self, as_float: bool = False) -> list[om.MPoint] | list[list[float]]:
         """Get the CV positions.
 
         Args:
@@ -117,15 +116,15 @@ class NurbsCurve:
         # Keeping the reference to the MPointArray pointer can cause errors in subsequent processing.
         cv_positions = [om.MPoint([pos.x, pos.y, pos.z]) for pos in cv_positions]
 
-        if self.form == 'periodic':
-            return cv_positions[:-self.fn.degree]
+        if self.form == "periodic":
+            return cv_positions[: -self.fn.degree]
 
         if as_float:
             return [[pos.x, pos.y, pos.z] for pos in cv_positions]
 
         return cv_positions
 
-    def get_edit_position(self, edit_ids: list[int], as_float: bool = False) -> tuple[Union[list[om.MPoint], list[list[float]]], list[float]]:
+    def get_edit_position(self, edit_ids: list[int], as_float: bool = False) -> tuple[list[om.MPoint] | list[list[float]], list[float]]:
         """Get the edit points.
 
         Args:
@@ -142,7 +141,7 @@ class NurbsCurve:
         params = []
         for edit_id in edit_ids:
             if edit_id < 0 or edit_id > self.fn.numSpans:
-                raise ValueError('Edit ID is out of valid range.')
+                raise ValueError("Edit ID is out of valid range.")
 
             param = min_param + edit_id * param_range / self.fn.numSpans
             position = self.fn.getPointAtParam(param, space=om.MSpace.kWorld)
@@ -155,7 +154,7 @@ class NurbsCurve:
 
         return positions, params
 
-    def get_edit_positions(self, as_float: bool = False) -> tuple[Union[list[om.MPoint], list[list[float]]], list[float]]:
+    def get_edit_positions(self, as_float: bool = False) -> tuple[list[om.MPoint] | list[list[float]], list[float]]:
         """Get the edit points.
 
         Args:
@@ -181,7 +180,7 @@ class NurbsCurve:
 
         return positions, params
 
-    def get_closest_position(self, reference_position: list[float], as_float: bool = False) -> tuple[Union[om.MPoint, list[float]], float]:
+    def get_closest_position(self, reference_position: list[float], as_float: bool = False) -> tuple[om.MPoint | list[float], float]:
         """Get the closest CV position.
 
         Args:
@@ -198,7 +197,9 @@ class NurbsCurve:
 
         return closest_position, param
 
-    def get_closest_positions(self, reference_positions: list[list[float]], as_float: bool = False) -> tuple[Union[om.MPoint, list[float]], list[float]]:  # noqa
+    def get_closest_positions(
+        self, reference_positions: list[list[float]], as_float: bool = False
+    ) -> tuple[Union[om.MPoint, list[float]], list[float]]:  # noqa
         """Get the closest CV positions.
 
         Args:
@@ -278,13 +279,13 @@ class NurbsCurve:
         Returns:
             float: The parameter value corresponding to the target chord length.
         """
-        max_iterations = kwargs.get('max_iterations', 100)
-        tolerance = kwargs.get('tolerance', 1e-5)
+        max_iterations = kwargs.get("max_iterations", 100)
+        tolerance = kwargs.get("tolerance", 1e-5)
 
         min_param, max_param = self.fn.knotDomain
 
         if not min_param <= start_param < max_param:
-            raise ValueError('start_param is out of valid range.')
+            raise ValueError("start_param is out of valid range.")
 
         start_point = self.fn.getPointAtParam(start_param, space=om.MSpace.kWorld)
 
@@ -299,12 +300,11 @@ class NurbsCurve:
             return end_param
         except ValueError as e:
             print(e)
-            raise ValueError('Parameter corresponding to the target chord length not found.')
+            raise ValueError("Parameter corresponding to the target chord length not found.")
 
 
 class NurbsCurvePositions:
-    """NurbsCurvePositions class.
-    """
+    """NurbsCurvePositions class."""
 
     def __init__(self, curve: NurbsCurve):
         """Initialize the NurbsCurvePositions class.
@@ -327,7 +327,7 @@ class NurbsCurvePositions:
         length = self.curve.fn.length()
 
         num_points = num_divisions
-        if self.curve.form == 'open':
+        if self.curve.form == "open":
             num_points += 1
 
         positions = []
@@ -356,7 +356,7 @@ class NurbsCurvePositions:
         param_range = max_param - min_param
 
         num_points = num_divisions
-        if self.curve.form == 'open':
+        if self.curve.form == "open":
             num_points += 1
 
         positions = []
@@ -383,12 +383,12 @@ class NurbsCurvePositions:
         Returns:
             tuple[list[om.MPoint], list[float]]: The positions and parameters.
         """
-        if self.curve.form != 'open':
-            raise ValueError('Unsupported operation. The curve must be open.')
+        if self.curve.form != "open":
+            raise ValueError("Unsupported operation. The curve must be open.")
 
-        max_iterations = kwargs.get('max_iterations', 500)
-        tolerance = kwargs.get('tolerance', 1e-5)
-        step_size = kwargs.get('add_length', 0.1)
+        max_iterations = kwargs.get("max_iterations", 500)
+        tolerance = kwargs.get("tolerance", 1e-5)
+        step_size = kwargs.get("add_length", 0.1)
 
         min_param, max_param = self.curve.fn.knotDomain
 
@@ -408,7 +408,7 @@ class NurbsCurvePositions:
                 try:
                     param = self.curve.find_cloud_length_from_param(tmp_param, length, local=om.MSpace.kWorld)
                 except ValueError:
-                    raise ValueError('Parameter corresponding to the target chord length not found.')
+                    raise ValueError("Parameter corresponding to the target chord length not found.")
                 if param is not None:
                     params.append(param)
                     tmp_param = param
@@ -433,10 +433,10 @@ class NurbsCurvePositions:
 
             count += 1
 
-        logger.debug(f'Loop count: {count} of {max_iterations}')
+        logger.debug(f"Loop count: {count} of {max_iterations}")
 
         if count == max_iterations:
-            cmds.warning('Max iterations reached.')
+            cmds.warning("Max iterations reached.")
 
         params.insert(0, min_param)
         params.append(max_param)
@@ -447,7 +447,6 @@ class NurbsCurvePositions:
 
 
 class ConvertNurbsCurve:
-
     def __init__(self, curve: str):
         """Initialize the ModifyNurbsCurve class.
 
@@ -458,8 +457,7 @@ class ConvertNurbsCurve:
         self.nurbs_curve = NurbsCurve(curve)
 
     def close_curve(self):
-        """Close the curve.
-        """
+        """Close the curve."""
         cmds.closeCurve(self.curve, ch=False, ps=0, rpo=True)
 
     def insert_cvs(self, divisions: int = 1):
@@ -469,11 +467,11 @@ class ConvertNurbsCurve:
             divisions (int): The number of divisions. Default is 1.
         """
         if divisions < 1:
-            raise ValueError('Divisions must be 1 or more.')
+            raise ValueError("Divisions must be 1 or more.")
 
         positions = self.nurbs_curve.get_cv_positions()
         degree = self.nurbs_curve.degree
-        form_open = self.nurbs_curve.form == 'open'
+        form_open = self.nurbs_curve.form == "open"
         num_cvs = self.nurbs_curve.num_cvs
 
         new_positions = []
@@ -484,12 +482,10 @@ class ConvertNurbsCurve:
                 new_positions.append(positions[0] + (positions[1] - positions[0]) * (j + 1) / (divisions + 1))
             new_positions.append(positions[1])
 
-        def __calculate_new_positions(nurbs_curve: NurbsCurve,
-                                      target_positions: list[om.MPoint],
-                                      target_lengths: list[float],
-                                      open_form: bool = False) -> list[om.MPoint]:
-            """Calculate new positions.
-            """
+        def __calculate_new_positions(
+            nurbs_curve: NurbsCurve, target_positions: list[om.MPoint], target_lengths: list[float], open_form: bool = False
+        ) -> list[om.MPoint]:
+            """Calculate new positions."""
             total_length = nurbs_curve.get_length()
 
             result_positions = []
@@ -535,7 +531,7 @@ class ConvertNurbsCurve:
 
             new_positions = __calculate_new_positions(self.nurbs_curve, closest_positions, lengths, form_open)
         else:
-            cmds.error('Degree is not 1 or 3. Unsupported operation.')
+            cmds.error("Degree is not 1 or 3. Unsupported operation.")
 
         new_positions = [[position.x, position.y, position.z] for position in new_positions]
         inserted_curve = cmds.listRelatives(cmds.curve(d=degree, p=new_positions), s=True)[0]
@@ -555,7 +551,7 @@ class ConvertNurbsCurve:
             iterations (int): Number of iterations. Default is 100.
         """
         if self.nurbs_curve.degree != 3:
-            logger.debug('Degree is not 3. Cannot center the curve.')
+            logger.debug("Degree is not 3. Cannot center the curve.")
             return
 
         cv_indices = range(self.nurbs_curve.num_cvs)
@@ -563,16 +559,16 @@ class ConvertNurbsCurve:
 
         source_positions = source_positions[:]
 
-        if self.nurbs_curve.form == 'open':
+        if self.nurbs_curve.form == "open":
             source_positions = source_positions[1:-1]
             cv_indices = cv_indices[1:-1]
 
         count = 0
         while count < iterations:
-            for cv_index, source_position in zip(cv_indices, source_positions):
+            for cv_index, source_position in zip(cv_indices, source_positions, strict=False):
                 closest_position, _ = self.nurbs_curve.get_closest_position(source_position)
                 goal_position = source_position - closest_position
-                cmds.xform(f'{self.curve}.cv[{cv_index}]', t=goal_position, ws=True, r=True)
+                cmds.xform(f"{self.curve}.cv[{cv_index}]", t=goal_position, ws=True, r=True)
 
             if all([self.nurbs_curve.fn.isPointOnCurve(source_position, space=om.MSpace.kWorld) for source_position in source_positions]):
                 break
@@ -580,13 +576,12 @@ class ConvertNurbsCurve:
             count += 1
 
         if count == iterations:
-            cmds.warning('Failed to center the curve.')
+            cmds.warning("Failed to center the curve.")
 
-        logger.debug(f'Loop count: {count} of {iterations}')
+        logger.debug(f"Loop count: {count} of {iterations}")
 
     def to_fit_BSpline(self):
-        """Convert to BSpline.
-        """
+        """Convert to BSpline."""
         fit_curve = cmds.fitBspline(self.curve, ch=0, tol=0.01)[0]
         fit_curve_shp = cmds.listRelatives(fit_curve, s=True)[0]
 
@@ -599,25 +594,26 @@ class ConvertNurbsCurve:
             degree (int): The degree.
         """
         if degree not in (1, 3):
-            raise ValueError('Degree must be 1 or 3.')
+            raise ValueError("Degree must be 1 or 3.")
 
         if degree == self.nurbs_curve.degree:
-            logger.debug(f'Degree is already {degree}.')
+            logger.debug(f"Degree is already {degree}.")
             return
 
         if degree == 3 and self.nurbs_curve.num_cvs < 4:
-            cmds.error('Degree is 3. The number of CVs must be 4 or more.')
+            cmds.error("Degree is 3. The number of CVs must be 4 or more.")
 
-        cmds.rebuildCurve(self.curve,
-                          constructionHistory=False,
-                          replaceOriginal=True,
-                          end=1,
-                          keepRange=0,
-                          keepControlPoints=True,
-                          keepEndPoints=False,
-                          keepTangents=False,
-                          degree=1,
-                          )
+        cmds.rebuildCurve(
+            self.curve,
+            constructionHistory=False,
+            replaceOriginal=True,
+            end=1,
+            keepRange=0,
+            keepControlPoints=True,
+            keepEndPoints=False,
+            keepTangents=False,
+            degree=1,
+        )
 
     def __transfer_shape(self, source_curve: str):
         """Transfer the shape, after delete the source curve.
@@ -625,8 +621,8 @@ class ConvertNurbsCurve:
         Args:
             source_curve (str): The source curve shape.
         """
-        if cmds.nodeType(source_curve) != 'nurbsCurve':
-            raise ValueError('Invalid type.')
+        if cmds.nodeType(source_curve) != "nurbsCurve":
+            raise ValueError("Invalid type.")
 
         source_nurbs_curve = NurbsCurve(source_curve)
         source_positions = source_nurbs_curve.get_cv_positions()
@@ -638,14 +634,14 @@ class ConvertNurbsCurve:
             source_curve_transform = cmds.listRelatives(source_curve, p=True)[0]
             cmds.xform(source_curve_transform, ws=True, m=curve_matrix)
             for i, position in enumerate(source_positions):
-                cmds.xform(f'{source_curve}.cv[{i}]', t=[position.x, position.y, position.z], ws=True)
+                cmds.xform(f"{source_curve}.cv[{i}]", t=[position.x, position.y, position.z], ws=True)
 
-        input_curve_plug = f'{self.curve}.create'
-        original_curve = cmds.geometryAttrInfo(f'{self.curve}.create', originalGeometry=True)
+        input_curve_plug = f"{self.curve}.create"
+        original_curve = cmds.geometryAttrInfo(f"{self.curve}.create", originalGeometry=True)
         if original_curve:
-            input_curve_plug = original_curve[0].split('.')[0] + '.create'
+            input_curve_plug = original_curve[0].split(".")[0] + ".create"
 
-        cmds.connectAttr(f'{source_curve}.local', input_curve_plug, f=True)
+        cmds.connectAttr(f"{source_curve}.local", input_curve_plug, f=True)
         cmds.refresh()
         source_curve_transform = cmds.listRelatives(source_curve, p=True)[0]
         cmds.delete(source_curve_transform)

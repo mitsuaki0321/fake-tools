@@ -20,27 +20,23 @@ import maya.mel as mel
 
 
 class OptimizeBase:
-
-    _category = 'base'
-    _label = 'Base'
-    _description = 'Base optimization.'
+    _category = "base"
+    _label = "Base"
+    _description = "Base optimization."
 
     @property
     def category(self) -> str:
-        """str: The optimization category.
-        """
+        """str: The optimization category."""
         return self._category
 
     @property
     def label(self) -> str:
-        """str: The optimization label.
-        """
+        """str: The optimization label."""
         return self._label
 
     @property
     def description(self) -> str:
-        """str: The optimization description.
-        """
+        """str: The optimization description."""
         return self._description
 
     def optimize(self, echo: bool = False) -> None:
@@ -58,25 +54,24 @@ class OptimizeBase:
             echo (bool): Whether to echo the optimization. Default is False.
         """
         if echo:
-            print('#' * len(self.description))
+            print("#" * len(self.description))
             print(self.description)
-            print('#' * len(self.description))
-            print('')
+            print("#" * len(self.description))
+            print("")
 
         self.optimize(echo=echo)
 
         if echo:
-            print('')
+            print("")
 
 
 # Base Optimizers
 
 
 class OptimizeDataStructure(OptimizeBase):
-
-    _category = 'base'
-    _label = 'DataStructure'
-    _description = 'Delete all dataStructure.'
+    _category = "base"
+    _label = "DataStructure"
+    _description = "Delete all dataStructure."
 
     def optimize(self, echo: bool = False) -> None:
         """Optimizes the scene dataStructure.
@@ -87,17 +82,16 @@ class OptimizeDataStructure(OptimizeBase):
         nodes = cmds.dataStructure(removeAll=True)
         if echo:
             if not nodes:
-                print('No dataStructure found.')
+                print("No dataStructure found.")
             else:
                 for node in nodes:
                     print(node)
 
 
 class OptimizeUnknownNodes(OptimizeBase):
-
-    _category = 'base'
-    _label = 'UnknownNodes'
-    _description = 'Delete unknown nodes.'
+    _category = "base"
+    _label = "UnknownNodes"
+    _description = "Delete unknown nodes."
 
     def optimize(self, echo: bool = False) -> None:
         """Optimizes the scene unknown nodes.
@@ -105,23 +99,22 @@ class OptimizeUnknownNodes(OptimizeBase):
         Args:
             echo (bool): Whether to echo the optimization. Default is False.
         """
-        nodes = cmds.ls(type='unknown')
+        nodes = cmds.ls(type="unknown")
         if nodes:
             cmds.delete(nodes)
 
         if echo:
             if not nodes:
-                print('No unknown nodes found.')
+                print("No unknown nodes found.")
             else:
                 for node in nodes:
                     print(node)
 
 
 class OptimizeUnusedNodes(OptimizeBase):
-
-    _category = 'base'
-    _label = 'UnusedNodes'
-    _description = 'Delete unused nodes.Called by maya MLdeleteUnused'
+    _category = "base"
+    _label = "UnusedNodes"
+    _description = "Delete unused nodes.Called by maya MLdeleteUnused"
 
     def optimize(self, echo: bool = False) -> None:
         """Optimizes the scene unused nodes.
@@ -132,16 +125,15 @@ class OptimizeUnusedNodes(OptimizeBase):
         Args:
             echo (bool): Whether to echo the optimization. Default is False.
         """
-        node_count = mel.eval('MLdeleteUnused')
+        node_count = mel.eval("MLdeleteUnused")
         if not node_count:
-            print('No unused nodes found.')
+            print("No unused nodes found.")
 
 
 class OptimizeUnknownPlugins(OptimizeBase):
-
-    _category = 'base'
-    _label = 'UnknownPlugins'
-    _description = 'Remove unknown plugins.'
+    _category = "base"
+    _label = "UnknownPlugins"
+    _description = "Remove unknown plugins."
 
     def optimize(self, echo: bool = False) -> None:
         """Optimizes the scene unknown plugins.
@@ -152,7 +144,7 @@ class OptimizeUnknownPlugins(OptimizeBase):
         plugins = cmds.unknownPlugin(query=True, list=True)
 
         if not plugins and echo:
-            print('No unknown plugins found.')
+            print("No unknown plugins found.")
             return
 
         if not plugins:
@@ -163,7 +155,7 @@ class OptimizeUnknownPlugins(OptimizeBase):
                 cmds.unknownPlugin(plugin, remove=True)
             except RuntimeError:
                 if echo:
-                    print(f'Failed to remove unknown plugin: {plugin}')
+                    print(f"Failed to remove unknown plugin: {plugin}")
                 continue
 
             if echo:
@@ -174,10 +166,9 @@ class OptimizeUnknownPlugins(OptimizeBase):
 
 
 class OptimizeScriptNodes(OptimizeBase):
-
-    _category = 'modeling'
-    _label = 'ScriptNodes'
-    _description = 'Delete unused scriptNodes.'
+    _category = "modeling"
+    _label = "ScriptNodes"
+    _description = "Delete unused scriptNodes."
 
     def optimize(self, echo: bool = False) -> None:
         """Optimizes the scene unused script nodes.
@@ -185,15 +176,15 @@ class OptimizeScriptNodes(OptimizeBase):
         Args:
             echo (bool): Whether to echo the optimization. Default is False.
         """
-        nodes = cmds.ls(type='script')
+        nodes = cmds.ls(type="script")
         if not nodes:
             if echo:
-                print('No scriptNodes found.')
+                print("No scriptNodes found.")
             return
 
         status = False
         for node in nodes:
-            if node in ['sceneConfigurationScriptNode', 'uiConfigurationScriptNode']:
+            if node in ["sceneConfigurationScriptNode", "uiConfigurationScriptNode"]:
                 continue
 
             cmds.delete(node)
@@ -203,14 +194,13 @@ class OptimizeScriptNodes(OptimizeBase):
                 print(node)
 
         if not status and echo:
-            print('No unused scriptNodes found.')
+            print("No unused scriptNodes found.")
 
 
 class OptimizeColorSets(OptimizeBase):
-
-    _category = 'modeling'
-    _label = 'ColorSets'
-    _description = 'Delete color sets.'
+    _category = "modeling"
+    _label = "ColorSets"
+    _description = "Delete color sets."
 
     def optimize(self, echo: bool = False) -> None:
         """Optimizes the scene unused color sets.
@@ -218,10 +208,10 @@ class OptimizeColorSets(OptimizeBase):
         Args:
             echo (bool): Whether to echo the optimization. Default is False.
         """
-        nodes = cmds.ls(type='mesh')
+        nodes = cmds.ls(type="mesh")
         if not nodes:
             if echo:
-                print('No mesh color sets found.')
+                print("No mesh color sets found.")
             return
 
         status = False
@@ -235,17 +225,16 @@ class OptimizeColorSets(OptimizeBase):
                 status = True
 
                 if echo:
-                    print(f'{color_set} from {node}')
+                    print(f"{color_set} from {node}")
 
         if not status and echo:
-            print('No unused color sets found.')
+            print("No unused color sets found.")
 
 
 class OptimizeNameSpaces(OptimizeBase):
-
-    _category = 'modeling'
-    _label = 'Namespace'
-    _description = 'Delete unused namespaces.'
+    _category = "modeling"
+    _label = "Namespace"
+    _description = "Delete unused namespaces."
 
     def optimize(self, echo: bool = False) -> None:
         """Optimizes the scene unused namespaces.
@@ -256,29 +245,28 @@ class OptimizeNameSpaces(OptimizeBase):
         namespaces = cmds.namespaceInfo(listOnlyNamespaces=True)
         if not namespaces:
             if echo:
-                print('No namespaces found.')
+                print("No namespaces found.")
             return
 
         status = False
         for namespace in namespaces:
-            if namespace in ['UI', 'shared']:
+            if namespace in ["UI", "shared"]:
                 continue
 
-            cmds.namespace(mv=(namespace, ':'), f=True)
+            cmds.namespace(mv=(namespace, ":"), f=True)
             cmds.namespace(rm=namespace)
 
             if echo:
                 print(namespace)
 
         if not status and echo:
-            print('No unused namespaces found.')
+            print("No unused namespaces found.")
 
 
 class OptimizeDisplayLayers(OptimizeBase):
-
-    _category = 'modeling'
-    _label = 'DisplayLayers'
-    _description = 'Delete display layers.'
+    _category = "modeling"
+    _label = "DisplayLayers"
+    _description = "Delete display layers."
 
     def optimize(self, echo: bool = False) -> None:
         """Optimizes the scene unused display layers.
@@ -286,15 +274,15 @@ class OptimizeDisplayLayers(OptimizeBase):
         Args:
             echo (bool): Whether to echo the optimization. Default is False.
         """
-        layers = cmds.ls(type='displayLayer')
+        layers = cmds.ls(type="displayLayer")
         if not layers:
             if echo:
-                print('No display layers found.')
+                print("No display layers found.")
             return
 
         status = False
         for layer in layers:
-            if layer in ['defaultLayer']:
+            if layer in ["defaultLayer"]:
                 continue
 
             cmds.delete(layer)
@@ -304,14 +292,13 @@ class OptimizeDisplayLayers(OptimizeBase):
                 print(layer)
 
         if not status and echo:
-            print('No unused display layers found.')
+            print("No unused display layers found.")
 
 
 class OptimizeAnimCurves(OptimizeBase):
-
-    _category = 'modeling'
-    _label = 'TimeAnimCurves'
-    _description = 'Delete animCurves from time.'
+    _category = "modeling"
+    _label = "TimeAnimCurves"
+    _description = "Delete animCurves from time."
 
     def optimize(self, echo: bool = False) -> None:
         """Optimizes the scene anim curves.
@@ -319,25 +306,25 @@ class OptimizeAnimCurves(OptimizeBase):
         Args:
             echo (bool): Whether to echo the optimization. Default is False.
         """
-        nodes = cmds.ls(type=['animCurveTA', 'animCurveTL', 'animCurveTT', 'animCurveTU'])
+        nodes = cmds.ls(type=["animCurveTA", "animCurveTL", "animCurveTT", "animCurveTU"])
         if nodes:
             cmds.delete(nodes)
 
         if echo:
             if not nodes:
-                print('No anim curves found.')
+                print("No anim curves found.")
             else:
                 for node in nodes:
                     print(node)
+
 
 # Rigging Optimizers
 
 
 class OptimizeUnusedInfluences(OptimizeBase):
-
-    _category = 'rigging'
-    _label = 'UnusedInfluences'
-    _description = 'Optimize unused influences from skinCluster.'
+    _category = "rigging"
+    _label = "UnusedInfluences"
+    _description = "Optimize unused influences from skinCluster."
 
     def optimize(self, echo: bool = False) -> None:
         """Optimizes the scene unused influences from skinCluster.
@@ -345,10 +332,10 @@ class OptimizeUnusedInfluences(OptimizeBase):
         Args:
             echo (bool): Whether to echo the optimization. Default is False.
         """
-        nodes = cmds.ls(type='skinCluster')
+        nodes = cmds.ls(type="skinCluster")
         if not nodes:
             if echo:
-                print('No skinCluster nodes found.')
+                print("No skinCluster nodes found.")
             return
 
         status = False
@@ -364,17 +351,16 @@ class OptimizeUnusedInfluences(OptimizeBase):
                 status = True
 
                 if echo:
-                    print(f'{inf} from {node}')
+                    print(f"{inf} from {node}")
 
         if not status and echo:
-            print('No unused influences found.')
+            print("No unused influences found.")
 
 
 class OptimizeDeleteDagPose(OptimizeBase):
-
-    _category = 'rigging'
-    _label = 'DeleteDagPose'
-    _description = 'Delete dagPose nodes.'
+    _category = "rigging"
+    _label = "DeleteDagPose"
+    _description = "Delete dagPose nodes."
 
     def optimize(self, echo: bool = False) -> None:
         """Optimizes the scene dagPose nodes.
@@ -382,10 +368,10 @@ class OptimizeDeleteDagPose(OptimizeBase):
         Args:
             echo (bool): Whether to echo the optimization. Default is False.
         """
-        nodes = cmds.ls(type='dagPose')
+        nodes = cmds.ls(type="dagPose")
         if not nodes:
             if echo:
-                print('No dagPose nodes found.')
+                print("No dagPose nodes found.")
             return
 
         for node in nodes:

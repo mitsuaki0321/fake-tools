@@ -3,9 +3,9 @@ Transfer the skin weights.
 """
 
 import json
+from logging import getLogger
 import os
 import pickle
-from logging import getLogger
 from typing import Optional
 
 import maya.cmds as cmds
@@ -16,21 +16,24 @@ logger = getLogger(__name__)
 
 
 class SkinWeightsCopyPaste:
-
-    def __init__(self, method: str = 'oneToAll', blend_weights: float = 1.0, ):
+    def __init__(
+        self,
+        method: str = "oneToAll",
+        blend_weights: float = 1.0,
+    ):
         """Initialize the skin weights copy and paste.
 
         Args:
             method (str, optional): The method. Defaults to 'oneToAll'. 'oneToAll' or 'oneToOne'.
             blend_weights (float, optional): The blend weights. Defaults to 1.0.
         """
-        if method not in ['oneToAll', 'oneToOne']:
-            raise ValueError(f'Invalid method: {method}')
+        if method not in ["oneToAll", "oneToOne"]:
+            raise ValueError(f"Invalid method: {method}")
 
         self.__method = method
 
         if not 0.0 <= blend_weights <= 1.0:
-            raise ValueError(f'Invalid blend weights: {blend_weights}')
+            raise ValueError(f"Invalid blend weights: {blend_weights}")
 
         self.__blend_weights = blend_weights
 
@@ -58,17 +61,17 @@ class SkinWeightsCopyPaste:
             method (str): The method.
         """
         if self.get_num_dst_components() != 0:
-            raise ValueError('Cannot change the method after setting the destination components.')
+            raise ValueError("Cannot change the method after setting the destination components.")
 
         if not isinstance(method, str):
-            raise ValueError(f'Invalid method: {method}')
+            raise ValueError(f"Invalid method: {method}")
 
-        if method not in ['oneToAll', 'oneToOne']:
-            raise ValueError(f'Invalid method: {method}')
+        if method not in ["oneToAll", "oneToOne"]:
+            raise ValueError(f"Invalid method: {method}")
 
         self.__method = method
 
-        logger.debug(f'Set method: {method}')
+        logger.debug(f"Set method: {method}")
 
     @property
     def blend_weights(self) -> float:
@@ -86,14 +89,14 @@ class SkinWeightsCopyPaste:
             blend_weights (float): The blend weights.
         """
         if not isinstance(blend_weights, float):
-            raise ValueError(f'Invalid blend weights: {blend_weights}')
+            raise ValueError(f"Invalid blend weights: {blend_weights}")
 
         if not 0.0 <= blend_weights <= 1.0:
-            raise ValueError(f'Invalid blend weights: {blend_weights}')
+            raise ValueError(f"Invalid blend weights: {blend_weights}")
 
         self.__blend_weights = blend_weights
 
-        logger.debug(f'Set blend weights: {blend_weights}')
+        logger.debug(f"Set blend weights: {blend_weights}")
 
     def set_src_components(self, components: list[str]) -> None:
         """Set the source components.
@@ -102,20 +105,20 @@ class SkinWeightsCopyPaste:
             components (list[str]): The source components.
         """
         if not components:
-            raise ValueError('No components specified.')
+            raise ValueError("No components specified.")
 
         components = cmds.ls(components, flatten=True)
         filter_components = cmds.filterExpand(components, sm=[28, 31, 46], ex=True)
         if len(filter_components) != len(components):
-            cmds.error('Invalid components or objects selected.')
+            cmds.error("Invalid components or objects selected.")
 
         shapes = list(set(cmds.ls(components, objectsOnly=True)))
         if len(shapes) > 1:
-            cmds.error('Multiple shapes selected.')
+            cmds.error("Multiple shapes selected.")
 
         skinCluster = lib_skinCluster.get_skinCluster(shapes[0])
         if not skinCluster:
-            cmds.error('No skinCluster found.')
+            cmds.error("No skinCluster found.")
 
         self._src_components = components
         self._src_skinCluster = skinCluster
@@ -125,7 +128,7 @@ class SkinWeightsCopyPaste:
         self._dst_weights = []
         self._dst_skinCluster = None
 
-        logger.debug(f'Set source components: {self._src_components}')
+        logger.debug(f"Set source components: {self._src_components}")
 
     def get_src_components(self) -> list[str]:
         """Get the source components.
@@ -136,14 +139,13 @@ class SkinWeightsCopyPaste:
         return self._src_components
 
     def clear_src_components(self) -> None:
-        """Clear the source components.
-        """
+        """Clear the source components."""
         self._src_components = []
         self._src_skinCluster = None
 
         self.clear_dst_components()
 
-        logger.debug('Clear source components')
+        logger.debug("Clear source components")
 
     def get_num_src_components(self) -> int:
         """Get the number of source components.
@@ -160,27 +162,27 @@ class SkinWeightsCopyPaste:
             components (list[str]): The destination components.
         """
         if not components:
-            raise ValueError('No components specified.')
+            raise ValueError("No components specified.")
 
         if not self._src_components:
-            cmds.error('No source components')
+            cmds.error("No source components")
 
         components = cmds.ls(components, flatten=True)
         filter_components = cmds.filterExpand(components, sm=[28, 31, 46])
         if len(filter_components) != len(components):
-            cmds.error('Invalid components or objects selected.')
+            cmds.error("Invalid components or objects selected.")
 
         shapes = list(set(cmds.ls(components, objectsOnly=True)))
         if len(shapes) > 1:
-            cmds.error('Multiple shapes selected.')
+            cmds.error("Multiple shapes selected.")
 
-        if self.__method == 'oneToOne':
+        if self.__method == "oneToOne":
             if len(self._src_components) != len(components):
-                cmds.error(f'The source and destination components do not match: {self._src_components} != {components}')
+                cmds.error(f"The source and destination components do not match: {self._src_components} != {components}")
 
         skinCluster = lib_skinCluster.get_skinCluster(shapes[0])
         if not skinCluster:
-            cmds.error('No skinCluster found.')
+            cmds.error("No skinCluster found.")
 
         self._dst_skinCluster = skinCluster
         self._dst_components = components
@@ -201,10 +203,10 @@ class SkinWeightsCopyPaste:
 
             self._src_weights.append(order_weight)
 
-        if self.__method == 'oneToAll':
+        if self.__method == "oneToAll":
             self._src_weights = [self._src_weights[0]] * len(self._dst_components)
 
-        logger.debug(f'Set destination components: {self._dst_components}')
+        logger.debug(f"Set destination components: {self._dst_components}")
 
     def get_dst_components(self) -> list[str]:
         """Get the destination components.
@@ -215,15 +217,14 @@ class SkinWeightsCopyPaste:
         return self._dst_components
 
     def clear_dst_components(self) -> None:
-        """Clear the destination components.
-        """
+        """Clear the destination components."""
         self._src_weights = []
 
         self._dst_components = []
         self._dst_weights = []
         self._dst_skinCluster = None
 
-        logger.debug('Clear destination components')
+        logger.debug("Clear destination components")
 
     def get_num_dst_components(self) -> int:
         """Get the number of destination components.
@@ -240,36 +241,35 @@ class SkinWeightsCopyPaste:
             bool: True if the paste is ready.
         """
         if not self._src_components:
-            logger.debug('No source components')
+            logger.debug("No source components")
             return False
 
         if not self._dst_components:
-            logger.debug('No destination components')
+            logger.debug("No destination components")
             return False
 
         if not self._src_weights:
-            logger.debug('No source weights')
+            logger.debug("No source weights")
             return False
 
         if not self._dst_weights:
-            logger.debug('No destination weights')
+            logger.debug("No destination weights")
             return False
 
         if not self._src_skinCluster:
-            logger.debug('No source skinCluster')
+            logger.debug("No source skinCluster")
             return False
 
         if not self._dst_skinCluster:
-            logger.debug('No destination skinCluster')
+            logger.debug("No destination skinCluster")
             return False
 
         return True
 
     def paste_skinWeights(self) -> None:
-        """Paste the skin weights.
-        """
+        """Paste the skin weights."""
         if not self.is_pastable():
-            cmds.error('Copy and paste is not ready.')
+            cmds.error("Copy and paste is not ready.")
 
         new_weights = []
         for src_weight, dst_weight in zip(self._src_weights, self._dst_weights):
@@ -281,14 +281,13 @@ class SkinWeightsCopyPaste:
 
         lib_skinCluster.set_skin_weights(self._dst_skinCluster, new_weights, self._dst_components)
 
-        logger.debug(f'Copy and paste skin weights: {self._src_skinCluster} -> {self._dst_skinCluster}')
+        logger.debug(f"Copy and paste skin weights: {self._src_skinCluster} -> {self._dst_skinCluster}")
 
 
 class SkinWeightsImportExport:
-    """SkinCluster weights export and import class.
-    """
+    """SkinCluster weights export and import class."""
 
-    def export_weights(self, skinCluster: str, path: str, format: str = 'json'):
+    def export_weights(self, skinCluster: str, path: str, format: str = "json"):
         """Export the skin weights.
 
         Args:
@@ -296,11 +295,11 @@ class SkinWeightsImportExport:
             format (str, optional): The file format. Defaults to 'json'. 'json' or 'pickle'.
         """
         # Validate
-        if format not in ['json', 'pickle']:
-            raise ValueError(f'Invalid format: {format}')
+        if format not in ["json", "pickle"]:
+            raise ValueError(f"Invalid format: {format}")
 
         if not os.path.exists(path):
-            raise FileNotFoundError(f'Path does not exist: {path}')
+            raise FileNotFoundError(f"Path does not exist: {path}")
 
         # Get data
         influence = self._get_influences(skinCluster)
@@ -310,26 +309,28 @@ class SkinWeightsImportExport:
         num_components = self._get_num_components(geometry)
         weights = lib_skinCluster.get_skin_weights_custom(skinCluster, all_components=True)
 
-        data = {'influence': influence,
-                'geometry': geometry,
-                'geometryType': geometry_type,
-                'components': components,
-                'numComponents': num_components,
-                'weights': weights}
+        data = {
+            "influence": influence,
+            "geometry": geometry,
+            "geometryType": geometry_type,
+            "components": components,
+            "numComponents": num_components,
+            "weights": weights,
+        }
 
         # Write data
-        if format == 'json':
-            output_path = os.path.join(path, f'{self._skinCluster}.json')
-            with open(output_path, 'w') as f:
+        if format == "json":
+            output_path = os.path.join(path, f"{self._skinCluster}.json")
+            with open(output_path, "w") as f:
                 json.dump(data, f, indent=4)
 
-            logger.debug(f'Export skin weights: {output_path}')
+            logger.debug(f"Export skin weights: {output_path}")
         else:
-            output_path = os.path.join(path, f'{self._skinCluster}.pkl')
-            with open(output_path, 'wb') as f:
+            output_path = os.path.join(path, f"{self._skinCluster}.pkl")
+            with open(output_path, "wb") as f:
                 pickle.dump(data, f)
 
-            logger.debug(f'Export skin weights: {output_path}')
+            logger.debug(f"Export skin weights: {output_path}")
 
     def import_weights(self, file_path: str, target_geometry: Optional[str] = None):
         """Import the skin weights.
@@ -340,56 +341,56 @@ class SkinWeightsImportExport:
         """
         # Read data
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f'File does not exist: {file_path}')
+            raise FileNotFoundError(f"File does not exist: {file_path}")
 
-        if not file_path.endswith('.json') and not file_path.endswith('.pkl'):
-            raise ValueError(f'Invalid file format: {file_path}')
+        if not file_path.endswith(".json") and not file_path.endswith(".pkl"):
+            raise ValueError(f"Invalid file format: {file_path}")
 
-        if file_path.endswith('.json'):
-            with open(file_path, 'r') as f:
+        if file_path.endswith(".json"):
+            with open(file_path, "r") as f:
                 data = json.load(f)
         else:
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 data = pickle.load(f)
 
         if not data:
-            raise ValueError(f'Invalid data: {file_path}')
+            raise ValueError(f"Invalid data: {file_path}")
 
         # Validate data
-        if not all([key in data for key in ['influence', 'geometry', 'geometryType', 'components', 'numComponents', 'weights']]):
-            raise ValueError(f'Invalid data: {file_path}')
+        if not all([key in data for key in ["influence", "geometry", "geometryType", "components", "numComponents", "weights"]]):
+            raise ValueError(f"Invalid data: {file_path}")
 
         if not target_geometry:
-            target_geometry = data['geometry']
+            target_geometry = data["geometry"]
 
         if not cmds.objExists(target_geometry):
-            cmds.error(f'Node does not exist: {target_geometry}')
+            cmds.error(f"Node does not exist: {target_geometry}")
 
-        if not cmds.nodeType(target_geometry) == data['geometryType']:
-            cmds.error(f'Invalid geometry type: {target_geometry}')
+        if not cmds.nodeType(target_geometry) == data["geometryType"]:
+            cmds.error(f"Invalid geometry type: {target_geometry}")
 
-        if self._get_num_components(target_geometry) != data['numComponents']:
-            cmds.error(f'Invalid number of components: {target_geometry}')
+        if self._get_num_components(target_geometry) != data["numComponents"]:
+            cmds.error(f"Invalid number of components: {target_geometry}")
 
         skinCluster = lib_skinCluster.get_skinCluster(target_geometry)
-        infs = data['influence']
+        infs = data["influence"]
         if not skinCluster:
             error_infs = [inf for inf in infs if not cmds.objExists(inf)]
             if error_infs:
-                cmds.error(f'Influence does not exist: {error_infs}')
+                cmds.error(f"Influence does not exist: {error_infs}")
 
-            target_skinCluster = cmds.skinCluster(data['influence'], target_geometry, tsb=True)[0]
+            target_skinCluster = cmds.skinCluster(data["influence"], target_geometry, tsb=True)[0]
 
-            logger.debug(f'Create skinCluster: {target_geometry}')
+            logger.debug(f"Create skinCluster: {target_geometry}")
         else:
             current_infs = cmds.skinCluster(target_skinCluster, q=True, inf=True)
             if current_infs != infs:
-                cmds.error(f'Influence does not match: {skinCluster}')
+                cmds.error(f"Influence does not match: {skinCluster}")
 
         # Import weights
-        lib_skinCluster.set_skin_weights_custom(target_skinCluster, data['weights'], data['components'])
+        lib_skinCluster.set_skin_weights_custom(target_skinCluster, data["weights"], data["components"])
 
-        logger.debug(f'Import skin weights: {file_path}')
+        logger.debug(f"Import skin weights: {file_path}")
 
     @staticmethod
     def _is_skinCluster(node: str) -> bool:
@@ -404,7 +405,7 @@ class SkinWeightsImportExport:
         if not cmds.objExists(node):
             return False
 
-        if not cmds.nodeType(node) == 'skinCluster':
+        if not cmds.nodeType(node) == "skinCluster":
             return False
 
         return True
@@ -419,7 +420,7 @@ class SkinWeightsImportExport:
             list[str]: The influences.
         """
         if not self._is_skinCluster(skinCluster):
-            raise ValueError(f'Node is not a skinCluster: {skinCluster}')
+            raise ValueError(f"Node is not a skinCluster: {skinCluster}")
 
         return cmds.skinCluster(skinCluster, q=True, inf=True)
 
@@ -433,7 +434,7 @@ class SkinWeightsImportExport:
             str: The geometry.
         """
         if not self._is_skinCluster(skinCluster):
-            raise ValueError(f'Node is not a skinCluster: {self._skinCluster}')
+            raise ValueError(f"Node is not a skinCluster: {self._skinCluster}")
 
         return cmds.skinCluster(skinCluster, q=True, g=True)[0]
 
@@ -447,7 +448,7 @@ class SkinWeightsImportExport:
             list[str]: The components.
         """
         if self._is_skinCluster(skinCluster):
-            raise ValueError(f'Node is not a skinCluster: {self._skinCluster}')
+            raise ValueError(f"Node is not a skinCluster: {self._skinCluster}")
 
         return cmds.skinCluster(skinCluster, q=True, components=True)
 
@@ -461,6 +462,6 @@ class SkinWeightsImportExport:
             int: The number of components.
         """
         if not cmds.objExists(geometry):
-            raise ValueError(f'Node does not exist: {geometry}')
+            raise ValueError(f"Node does not exist: {geometry}")
 
-        return len(cmds.ls(f'{geometry}.cp[*]', flatten=True))
+        return len(cmds.ls(f"{geometry}.cp[*]", flatten=True))

@@ -2,9 +2,8 @@
 NurbsCurve and NurbsSurface functions.
 """
 
-import re
 from logging import getLogger
-from typing import Union
+import re
 
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
@@ -13,13 +12,12 @@ logger = getLogger(__name__)
 
 
 class NurbsSurface:
-
     def __init__(self, surface: str):
         if not cmds.objExists(surface):
-            raise ValueError(f'Node does not exist: {surface}')
+            raise ValueError(f"Node does not exist: {surface}")
 
-        if cmds.nodeType(surface) != 'nurbsSurface':
-            raise ValueError(f'Invalid type: {surface}')
+        if cmds.nodeType(surface) != "nurbsSurface":
+            raise ValueError(f"Invalid type: {surface}")
 
         selection_list = om.MSelectionList()
         selection_list.add(surface)
@@ -44,7 +42,7 @@ class NurbsSurface:
         """
         return self.fn.knotDomainInU, self.fn.knotDomainInV
 
-    def get_cv_position(self, uv_indices: list[list[int]], as_float: bool = False) -> Union[om.MPoint, list[float]]:
+    def get_cv_position(self, uv_indices: list[list[int]], as_float: bool = False) -> om.MPoint | list[float]:
         """Get the CV positions.
 
         Args:
@@ -60,7 +58,7 @@ class NurbsSurface:
 
         return positions
 
-    def get_cv_positions(self, as_float: bool = False) -> Union[list[om.MPoint], list[list[float]]]:
+    def get_cv_positions(self, as_float: bool = False) -> list[om.MPoint] | list[list[float]]:
         """Get the CV positions.
 
         Args:
@@ -75,7 +73,9 @@ class NurbsSurface:
 
         return positions
 
-    def get_closest_positions(self, reference_positions: list[list[float]], as_float: bool = False) -> tuple[Union[list[om.MPoint], list[list[float]]], list[list[float]]]:  # noqa: E501
+    def get_closest_positions(
+        self, reference_positions: list[list[float]], as_float: bool = False
+    ) -> tuple[list[om.MPoint] | list[list[float]], list[list[float]]]:  # noqa: E501
         """Get the closest CV positions.
 
         Args:
@@ -109,7 +109,7 @@ class NurbsSurface:
         """
         return self.fn.normal(uv_param[0], uv_param[1], om.MSpace.kWorld)
 
-    def get_tangent(self, uv_param: list[int], direction: str = 'u') -> om.MVector:
+    def get_tangent(self, uv_param: list[int], direction: str = "u") -> om.MVector:
         """Get the tangent.
 
         Args:
@@ -119,12 +119,12 @@ class NurbsSurface:
         Returns:
             om.MVector: The tangent.
         """
-        if direction not in ['u', 'v']:
-            raise ValueError(f'Invalid direction: {direction}')
+        if direction not in ["u", "v"]:
+            raise ValueError(f"Invalid direction: {direction}")
 
-        return self.fn.tangents(uv_param[0], uv_param[1], om.MSpace.kWorld)[direction == 'u' and 0 or 1]
+        return self.fn.tangents(uv_param[0], uv_param[1], om.MSpace.kWorld)[direction == "u" and 0 or 1]
 
-    def get_normal_and_tangents(self, uv_params: list[list[int]], direction: str = 'u') -> tuple[list[om.MVector], list[om.MVector]]:
+    def get_normal_and_tangents(self, uv_params: list[list[int]], direction: str = "u") -> tuple[list[om.MVector], list[om.MVector]]:
         """Get the normal and tangent.
 
         Args:
@@ -134,10 +134,10 @@ class NurbsSurface:
         Returns:
             tuple[list[om.MVector], list[om.MVector]]: The normals and tangents.
         """
-        if direction not in ['u', 'v']:
-            raise ValueError(f'Invalid direction: {direction}')
+        if direction not in ["u", "v"]:
+            raise ValueError(f"Invalid direction: {direction}")
 
-        direction_index = direction == 'u' and 0 or 1
+        direction_index = direction == "u" and 0 or 1
 
         normals = []
         tangents = []
@@ -161,41 +161,41 @@ def create_curve_on_surface(iso_param: str) -> str:
         str: The created curve shape.
     """
     if not iso_param:
-        raise ValueError('No isoparm parameters provided.')
+        raise ValueError("No isoparm parameters provided.")
 
     if not cmds.objExists(iso_param):
-        raise ValueError(f'Node does not exist: {iso_param}')
+        raise ValueError(f"Node does not exist: {iso_param}")
 
     if not cmds.filterExpand(iso_param, sm=45):
-        raise ValueError(f'Invalid isoparm parameter: {iso_param}')
+        raise ValueError(f"Invalid isoparm parameter: {iso_param}")
 
-    match = re.search(r'\.(u|v)\[(\d+\.?\d*)\]', iso_param)
+    match = re.search(r"\.(u|v)\[(\d+\.?\d*)\]", iso_param)
     if not match:
-        raise ValueError(f'Invalid isoparm parameter: {iso_param}')
+        raise ValueError(f"Invalid isoparm parameter: {iso_param}")
 
     direction = match.group(1)
     value = float(match.group(2))
     surface_shape = cmds.ls(iso_param, objectsOnly=True)[0]
 
-    curve_iso = cmds.createNode('curveFromSurfaceIso', n='curveFromSurfaceIso#', ss=True)
-    curve_shape = cmds.createNode('nurbsCurve', n='curveShape#', ss=True)
+    curve_iso = cmds.createNode("curveFromSurfaceIso", n="curveFromSurfaceIso#", ss=True)
+    curve_shape = cmds.createNode("nurbsCurve", n="curveShape#", ss=True)
 
-    reverse_direction = direction == 'u' and 'v' or 'u'
-    min_range, max_range = cmds.getAttr(f'{surface_shape}.minMaxRange{reverse_direction.capitalize()}')[0]
+    reverse_direction = direction == "u" and "v" or "u"
+    min_range, max_range = cmds.getAttr(f"{surface_shape}.minMaxRange{reverse_direction.capitalize()}")[0]
 
-    cmds.setAttr(f'{curve_iso}.minValue', min_range)
-    cmds.setAttr(f'{curve_iso}.maxValue', max_range)
-    cmds.setAttr(f'{curve_iso}.isoparmDirection', direction == 'u' and 1 or 0)
-    cmds.setAttr(f'{curve_iso}.isoparmValue', value)
+    cmds.setAttr(f"{curve_iso}.minValue", min_range)
+    cmds.setAttr(f"{curve_iso}.maxValue", max_range)
+    cmds.setAttr(f"{curve_iso}.isoparmDirection", direction == "u" and 1 or 0)
+    cmds.setAttr(f"{curve_iso}.isoparmValue", value)
 
-    cmds.connectAttr(f'{surface_shape}.worldSpace[0]', f'{curve_iso}.inputSurface')
-    cmds.connectAttr(f'{curve_iso}.outputCurve', f'{curve_shape}.create')
+    cmds.connectAttr(f"{surface_shape}.worldSpace[0]", f"{curve_iso}.inputSurface")
+    cmds.connectAttr(f"{curve_iso}.outputCurve", f"{curve_shape}.create")
 
     cmds.refresh()
     cmds.delete(curve_iso)
 
     curve = cmds.listRelatives(curve_shape, parent=True)[0]
 
-    logger.debug(f'Create curve on surface: {curve}')
+    logger.debug(f"Create curve on surface: {curve}")
 
     return curve

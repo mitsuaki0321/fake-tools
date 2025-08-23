@@ -27,8 +27,7 @@ from ..tool_icons import get_icon_path
 
 
 class HorizontalSeparator(QFrame):
-    """Separator widget.
-    """
+    """Separator widget."""
 
     def __init__(self, parent=None, height_ratio: float = 2.0):
         """Constructor.
@@ -45,8 +44,7 @@ class HorizontalSeparator(QFrame):
 
 
 class VerticalSeparator(QFrame):
-    """Separator widget.
-    """
+    """Separator widget."""
 
     def __init__(self, parent=None, width_ratio: float = 2.0):
         """Constructor.
@@ -64,8 +62,7 @@ class VerticalSeparator(QFrame):
 
 
 class ToolIconButton(QPushButton):
-    """Tool icon button widget.
-    """
+    """Tool icon button widget."""
 
     def __init__(self, icon_name, parent=None):
         super().__init__(parent=parent)
@@ -78,25 +75,25 @@ class ToolIconButton(QPushButton):
         palette = self.palette()
         background_color = palette.color(self.backgroundRole())
         style = QApplication.style()
-        pm_button_margin = style.PM_ButtonMargin if hasattr(style, 'PM_ButtonMargin') else style.PixelMetric.PM_ButtonMargin
+        pm_button_margin = style.PM_ButtonMargin if hasattr(style, "PM_ButtonMargin") else style.PixelMetric.PM_ButtonMargin
         padding = style.pixelMetric(pm_button_margin)
         hover_color = self._get_lightness_color(background_color, 1.2)
         pressed_color = self._get_lightness_color(background_color, 0.5)
 
-        self.setStyleSheet("""
+        self.setStyleSheet(f"""
             QPushButton {{
                 border: none;
-                background-color: {};
+                background-color: {background_color.name()};
                 border-radius: 1px;
                 text-align: center;
             }}
             QPushButton:hover {{
-                background-color: {};
+                background-color: {hover_color.name()};
             }}
             QPushButton:pressed {{
-                background-color: {};
+                background-color: {pressed_color.name()};
             }}
-        """.format(background_color.name(), hover_color.name(), pressed_color.name()))
+        """)
 
         size = pixmap.width() + padding
         self.setMinimumSize(size, size)
@@ -117,8 +114,7 @@ class ToolIconButton(QPushButton):
 
 
 class CheckBoxButton(QPushButton):
-    """Check box button widget.
-    """
+    """Check box button widget."""
 
     def __init__(self, icon_on, icon_off, parent=None):
         """Constructor.
@@ -139,7 +135,7 @@ class CheckBoxButton(QPushButton):
         self.setIcon(self.icon_off)
         self.setIconSize(self.icon_on.actualSize(self.size()))
 
-        self.setStyleSheet('border: none;')
+        self.setStyleSheet("border: none;")
 
         self.toggled.connect(self.update_icon)
 
@@ -156,8 +152,7 @@ class CheckBoxButton(QPushButton):
 
 
 class TextCheckBoxButton(QPushButton):
-    """Text check box button widget.
-    """
+    """Text check box button widget."""
 
     def __init__(self, text: str, width: int = 32, height: int = 32, font_size: int = 24, parent=None):
         """Constructor.
@@ -172,7 +167,7 @@ class TextCheckBoxButton(QPushButton):
         super().__init__(parent=parent)
 
         self.text = text
-        self.bg_color_on = '#5285a6'
+        self.bg_color_on = "#5285a6"
         self.width = width
         self.height = height
 
@@ -189,7 +184,7 @@ class TextCheckBoxButton(QPushButton):
 
         self.font_size = font_size
 
-        self.setStyleSheet(f'background-color: {self.bg_color_off}; font-size: {self.font_size}px; font-weight: bold; border: none;')
+        self.setStyleSheet(f"background-color: {self.bg_color_off}; font-size: {self.font_size}px; font-weight: bold; border: none;")
 
         self.toggled.connect(self.update_color)
 
@@ -200,18 +195,16 @@ class TextCheckBoxButton(QPushButton):
             checked (bool): The checked state.
         """
         if checked:
-            self.setStyleSheet(f'background-color: {self.bg_color_on}; font-size: {self.font_size}px; font-weight: bold; border: none;')
+            self.setStyleSheet(f"background-color: {self.bg_color_on}; font-size: {self.font_size}px; font-weight: bold; border: none;")
         else:
-            self.setStyleSheet(f'background-color: {self.bg_color_off}; font-size: {self.font_size}px; font-weight: bold; border: none;')
+            self.setStyleSheet(f"background-color: {self.bg_color_off}; font-size: {self.font_size}px; font-weight: bold; border: none;")
 
 
 class ModifierSpinBox(QDoubleSpinBox):
-    """Double spin box widget with modifier keys.
-    """
+    """Double spin box widget with modifier keys."""
 
     def __init__(self, parent=None):
-        """Constructor.
-        """
+        """Constructor."""
         super(ModifierSpinBox, self).__init__(parent=parent)
         self.__shift_multiplier = 10.0
         self.__ctrl_multiplier = 0.1

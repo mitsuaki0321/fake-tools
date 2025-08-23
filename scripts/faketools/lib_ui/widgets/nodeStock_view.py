@@ -1,5 +1,4 @@
-"""Node stock view widget.
-"""
+"""Node stock view widget."""
 
 try:
     from PySide2.QtCore import QObject, QPoint, QRectF, Qt, Signal
@@ -30,8 +29,7 @@ class NodeStockTextItem(QGraphicsTextItem):
 
 
 class NodeStockButton(QGraphicsRectItem, QObject):
-    """Node stock button item.
-    """
+    """Node stock button item."""
 
     left_button_clicked = Signal(object)
     middle_button_clicked = Signal(object)
@@ -52,8 +50,8 @@ class NodeStockButton(QGraphicsRectItem, QObject):
             base_color (str): The base color of the button.
             label (str): The label text.
         """
-        base_color = kwargs.get('base_color', 'gray')
-        label = kwargs.get('label', None)
+        base_color = kwargs.get("base_color", "gray")
+        label = kwargs.get("label")
 
         QObject.__init__(self)
         QGraphicsRectItem.__init__(self, 0, 0, size, size)
@@ -66,13 +64,13 @@ class NodeStockButton(QGraphicsRectItem, QObject):
         self.transparent_brush = QBrush(Qt.transparent)
         self.stoked_color_brush = QBrush(base_color)
 
-        self.default_border_pen = QPen(QColor('lightgray'), 1, Qt.SolidLine)
+        self.default_border_pen = QPen(QColor("lightgray"), 1, Qt.SolidLine)
         self.default_border_pen.setJoinStyle(Qt.MiterJoin)
 
-        self.hover_border_pen = QPen(QColor('white'), 1, Qt.SolidLine)
+        self.hover_border_pen = QPen(QColor("white"), 1, Qt.SolidLine)
         self.hover_border_pen.setJoinStyle(Qt.MiterJoin)
 
-        self.pressed_border_pen = QPen(QColor('darkgray'), 1, Qt.SolidLine)
+        self.pressed_border_pen = QPen(QColor("darkgray"), 1, Qt.SolidLine)
         self.pressed_border_pen.setJoinStyle(Qt.MiterJoin)
 
         self.setBrush(Qt.NoBrush)
@@ -95,12 +93,11 @@ class NodeStockButton(QGraphicsRectItem, QObject):
             self.label.setFont(font)
 
             self.label.setPos(size / 2 - self.label.boundingRect().width() / 2, size / 2 - self.label.boundingRect().height() / 2)
-            self.label.setDefaultTextColor(QColor('lightgray'))
+            self.label.setDefaultTextColor(QColor("lightgray"))
 
     @property
     def key(self):
-        """str: The stock key.
-        """
+        """str: The stock key."""
         return self.__key
 
     def _get_lightness_color(self, color, factor) -> QColor:
@@ -118,31 +115,27 @@ class NodeStockButton(QGraphicsRectItem, QObject):
         return QColor.fromHsv(h, s, v, a)
 
     def hoverEnterEvent(self, event) -> None:
-        """Change color and border when mouse hovers over the button.
-        """
+        """Change color and border when mouse hovers over the button."""
         self.is_hovered = True
         self.update()
         self.hovered.emit(self)
         super().hoverEnterEvent(event)
 
     def hoverLeaveEvent(self, event) -> None:
-        """Reset color and border when mouse leaves the button.
-        """
+        """Reset color and border when mouse leaves the button."""
         self.is_hovered = False
         self.update()
         self.unhovered.emit()
         super().hoverLeaveEvent(event)
 
     def mousePressEvent(self, event) -> None:
-        """Change color when the button is pressed.
-        """
+        """Change color when the button is pressed."""
         self.is_pressed = True
         self.update()
         super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event) -> None:
-        """Emit the clicked signal when the button is released.
-        """
+        """Emit the clicked signal when the button is released."""
         if event.button() == Qt.LeftButton and self.is_pressed:
             self.left_button_clicked.emit(self)
         elif event.button() == Qt.MiddleButton and self.is_pressed:
@@ -154,33 +147,28 @@ class NodeStockButton(QGraphicsRectItem, QObject):
         super().mouseReleaseEvent(event)
 
     def reset_color(self) -> None:
-        """Reset button color to default.
-        """
+        """Reset button color to default."""
         self.is_hovered = False
         self.is_pressed = False
         self.update()
 
     def apply_hover_color(self) -> None:
-        """Apply hover color to the button.
-        """
+        """Apply hover color to the button."""
         self.is_hovered = True
         self.update()
 
     def apply_stoked_color(self) -> None:
-        """Apply stoked color to the button.
-        """
+        """Apply stoked color to the button."""
         self.is_stoked = True
         self.update()
 
     def reset_stoked_color(self) -> None:
-        """Reset stoked color to default.
-        """
+        """Reset stoked color to default."""
         self.is_stoked = False
         self.update()
 
     def paint(self, painter, option, widget=None) -> None:
-        """Custom paint to draw the button with hover and pressed state.
-        """
+        """Custom paint to draw the button with hover and pressed state."""
         rect = self.rect().adjusted(0, 0, -1, -1)
         inner_rect = rect.adjusted(3, 3, -3, -3)
 
@@ -212,7 +200,6 @@ class NodeStockButton(QGraphicsRectItem, QObject):
 
 
 class NodeStockGraphicsScene(QGraphicsScene):
-
     def list_buttons(self) -> list[NodeStockButton]:
         """List NodeStockButton items in the scene.
 
@@ -235,8 +222,7 @@ class NodeStockGraphicsScene(QGraphicsScene):
 
 
 class NodeStockGraphicsView(QGraphicsView):
-    """Customized QGraphicsView.
-    """
+    """Customized QGraphicsView."""
 
     rubber_band_selection = Signal([object])
 
@@ -255,8 +241,7 @@ class NodeStockGraphicsView(QGraphicsView):
         self.hovered_items = []
 
     def mousePressEvent(self, event) -> None:
-        """Handle mouse press to start rubber band selection.
-        """
+        """Handle mouse press to start rubber band selection."""
         if event.button() == Qt.LeftButton:
             self.origin = event.pos()
             self.rubber_band.setGeometry(QRectF(self.origin, self.origin).toRect())
@@ -265,16 +250,14 @@ class NodeStockGraphicsView(QGraphicsView):
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event) -> None:
-        """Handle mouse move to update rubber band selection.
-        """
+        """Handle mouse move to update rubber band selection."""
         if self.is_rubber_band_active:
             self.rubber_band.setGeometry(QRectF(self.origin, event.pos()).normalized().toRect())
             self._update_hovered_items()
         super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event) -> None:
-        """Handle mouse release to finalize selection.
-        """
+        """Handle mouse release to finalize selection."""
         if self.is_rubber_band_active:
             self._select_items_in_rubber_band()
             self.rubber_band.hide()
@@ -284,8 +267,7 @@ class NodeStockGraphicsView(QGraphicsView):
         super().mouseReleaseEvent(event)
 
     def _update_hovered_items(self) -> None:
-        """Update items currently hovered by the rubber band.
-        """
+        """Update items currently hovered by the rubber band."""
         rect = self.rubber_band.geometry()
         mapped_rect = self.mapToScene(rect).boundingRect()
 
@@ -300,16 +282,14 @@ class NodeStockGraphicsView(QGraphicsView):
                 self.hovered_items.append(item)
 
     def _reset_hovered_items(self) -> None:
-        """Reset colors for all items hovered by the rubber band.
-        """
+        """Reset colors for all items hovered by the rubber band."""
         for item in self.hovered_items:
             if isinstance(item, NodeStockButton):
                 item.reset_color()
         self.hovered_items = []
 
     def _select_items_in_rubber_band(self) -> None:
-        """Select items within the rubber band area.
-        """
+        """Select items within the rubber band area."""
         rect = self.rubber_band.geometry()
         mapped_rect = self.mapToScene(rect).boundingRect()
         items = []
@@ -323,7 +303,6 @@ class NodeStockGraphicsView(QGraphicsView):
         self.rubber_band_selection.emit(items)
 
     def resizeEvent(self, event) -> None:
-        """Handle resize event to adjust the scene rectangle.
-        """
+        """Handle resize event to adjust the scene rectangle."""
         super().resizeEvent(event)
         self.fitInView(self.sceneRect(), Qt.KeepAspectRatio)

@@ -3,14 +3,13 @@ Maya-specific functions for optionVar management.
 """
 
 import json
-from typing import Any, Optional
+from typing import Any
 
 import maya.cmds as cmds
 
 
 class ToolOptionSettings:
-    """A class to save and read tool settings in optionVar.
-    """
+    """A class to save and read tool settings in optionVar."""
 
     def __init__(self, tool_name: str):
         """Initializes the ToolOptionSettings instance.
@@ -31,7 +30,7 @@ class ToolOptionSettings:
         """
         return f"{self.tool_name}.{key}"
 
-    def read(self, key: str, default: Optional[Any] = None) -> Any:
+    def read(self, key: str, default: Any | None = None) -> Any:
         """Reads the specified key from the optionVar.
 
         Args:

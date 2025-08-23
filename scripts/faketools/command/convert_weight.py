@@ -3,9 +3,8 @@ Convert weight commands.
 """
 
 import itertools
-import re
 from logging import getLogger
-from typing import Optional
+import re
 
 import maya.cmds as cmds
 
@@ -24,7 +23,7 @@ def get_influences_from_objects(objs: list[str]) -> list[str]:
         list[str]: The influences.
     """
     if not objs:
-        raise ValueError('No objects specified')
+        raise ValueError("No objects specified")
 
     object_data = {}
     for obj in objs:
@@ -33,9 +32,9 @@ def get_influences_from_objects(objs: list[str]) -> list[str]:
             shp = cmds.ls(components[0], objectsOnly=True)[0]
             object_data.setdefault(shp, []).extend(components)
         else:
-            shp = cmds.listRelatives(obj, shapes=True, type='deformableShape')
+            shp = cmds.listRelatives(obj, shapes=True, type="deformableShape")
             if not shp:
-                cmds.warning(f'No shape found: {obj}')
+                cmds.warning(f"No shape found: {obj}")
                 continue
 
             if shp[0] not in object_data:
@@ -45,7 +44,7 @@ def get_influences_from_objects(objs: list[str]) -> list[str]:
     for shp, components in object_data.items():
         skinCluster = lib_skinCluster.get_skinCluster(shp)
         if not skinCluster:
-            cmds.warning(f'Object is not bound to a skinCluster: {shp}')
+            cmds.warning(f"Object is not bound to a skinCluster: {shp}")
             continue
 
         infs = cmds.skinCluster(skinCluster, q=True, inf=True)
@@ -54,12 +53,12 @@ def get_influences_from_objects(objs: list[str]) -> list[str]:
         else:
             # Get only influences with weights greater than 0
             weights = lib_skinCluster.get_skin_weights(skinCluster, components)
-            weights = [sum(w) for w in zip(*weights)]
+            weights = [sum(w) for w in zip(*weights, strict=False)]
             result_infs.extend([infs[i] for i, w in enumerate(weights) if w > 0.0])
 
     result_infs = list(dict.fromkeys(result_infs))
 
-    logger.debug(f'Get influences from objects: {objs} -> {result_infs}')
+    logger.debug(f"Get influences from objects: {objs} -> {result_infs}")
 
     return result_infs
 
@@ -75,24 +74,24 @@ def average_skin_weights(components: list[str]) -> None:
 
     objs = list(set(cmds.ls(components, objectsOnly=True)))
     if len(objs) > 1:
-        cmds.error('Components must belong to the same object')
+        cmds.error("Components must belong to the same object")
     else:
         obj = objs[0]
 
     skinCluster = lib_skinCluster.get_skinCluster(obj)
     if not skinCluster:
-        cmds.error(f'Object is not bound to a skinCluster: {obj}')
+        cmds.error(f"Object is not bound to a skinCluster: {obj}")
 
     components = cmds.ls(components, flatten=True)
     weights = lib_skinCluster.get_skin_weights(skinCluster, components)
     num_components = len(components)
 
-    average_weights = [sum(ws) / num_components for ws in list(zip(*weights))]
+    average_weights = [sum(ws) / num_components for ws in list(zip(*weights, strict=False))]
     average_weights = [average_weights for _ in range(num_components)]
 
     lib_skinCluster.set_skin_weights(skinCluster, average_weights, components)
 
-    logger.debug(f'Averaged skin weights: {components}')
+    logger.debug(f"Averaged skin weights: {components}")
 
 
 def average_skin_weights_shell(mesh: str) -> None:
@@ -102,32 +101,32 @@ def average_skin_weights_shell(mesh: str) -> None:
         mesh (str): The mesh node.
     """
     if not mesh:
-        raise ValueError('No mesh node specified')
+        raise ValueError("No mesh node specified")
 
     if not cmds.objExists(mesh):
-        cmds.error(f'Node does not exist: {mesh}')
+        cmds.error(f"Node does not exist: {mesh}")
 
-    if cmds.nodeType(mesh) != 'mesh':
-        cmds.error(f'Node is not a mesh: {mesh}')
+    if cmds.nodeType(mesh) != "mesh":
+        cmds.error(f"Node is not a mesh: {mesh}")
 
     vertex_shells = lib_mesh.MeshVertex(mesh).get_vertex_shells()
     if len(vertex_shells) < 2:
-        cmds.warning(f'Mesh has no shells: {mesh}')
+        cmds.warning(f"Mesh has no shells: {mesh}")
 
     skinCluster = lib_skinCluster.get_skinCluster(mesh)
     if not skinCluster:
-        cmds.error(f'Object is not bound to a skinCluster: {mesh}')
+        cmds.error(f"Object is not bound to a skinCluster: {mesh}")
 
-    vertex_components = cmds.ls('{}.vtx[*]'.format(mesh), flatten=True)
+    vertex_components = cmds.ls(f"{mesh}.vtx[*]", flatten=True)
 
     for vertex_shell in vertex_shells:
         components = [vertex_components[i] for i in vertex_shell]
         average_skin_weights(components)
 
-    logger.debug(f'Averaged skin weights shell: {mesh}')
+    logger.debug(f"Averaged skin weights shell: {mesh}")
 
 
-def combine_pair_skin_weights(components: list[str], method: str = 'auto', static_inf: Optional[str] = None, **kwargs) -> None:
+def combine_pair_skin_weights(components: list[str], method: str = "auto", static_inf: str | None = None, **kwargs) -> None:
     """Combine the pair influences weights of the components.
 
     Args:
@@ -141,36 +140,36 @@ def combine_pair_skin_weights(components: list[str], method: str = 'auto', stati
         pair_infs (list[list[str, str]]): The pair influences. In case of 'manual' method.
     """
     if not components:
-        raise ValueError('No components specified')
+        raise ValueError("No components specified")
 
-    if method not in ['auto', 'manual']:
-        raise ValueError('Invalid method')
+    if method not in ["auto", "manual"]:
+        raise ValueError("Invalid method")
 
     # Validate the components
     components = cmds.filterExpand(components, sm=[28, 31, 46], ex=True)
     if not components:
-        cmds.error('No components specified or unsupported component type')
+        cmds.error("No components specified or unsupported component type")
 
     objs = list(set(cmds.ls(components, objectsOnly=True)))
     if len(objs) > 1:
-        cmds.error('Components must belong to the same object')
+        cmds.error("Components must belong to the same object")
     else:
         obj = objs[0]
 
     skinCluster = lib_skinCluster.get_skinCluster(obj)
     if not skinCluster:
-        cmds.error(f'Object is not bound to a skinCluster: {obj}')
+        cmds.error(f"Object is not bound to a skinCluster: {obj}")
 
     infs = cmds.skinCluster(skinCluster, q=True, inf=True)
 
     # Validate the influences
-    if method == 'auto':
-        regex_name = kwargs.get('regex_name', None)
+    if method == "auto":
+        regex_name = kwargs.get("regex_name")
         if not regex_name:
-            raise ValueError('Regex name is not specified.')
-        replace_name = kwargs.get('replace_name', None)
+            raise ValueError("Regex name is not specified.")
+        replace_name = kwargs.get("replace_name")
         if not replace_name:
-            raise ValueError('Replace name is not specified.')
+            raise ValueError("Replace name is not specified.")
 
         p = re.compile(regex_name)
         match_infs = [inf for inf in infs if p.match(inf)]
@@ -180,41 +179,41 @@ def combine_pair_skin_weights(components: list[str], method: str = 'auto', stati
             if target_inf in infs:
                 pair_infs.append([inf, target_inf])
             else:
-                logger.warning(f'No corresponding influence found for: {inf}')
+                logger.warning(f"No corresponding influence found for: {inf}")
 
-        logger.debug(f'Auto pair influences: {pair_infs}')
-    elif method == 'manual':
-        pair_infs = kwargs.get('pair_infs', [])
+        logger.debug(f"Auto pair influences: {pair_infs}")
+    elif method == "manual":
+        pair_infs = kwargs.get("pair_infs", [])
         if not pair_infs:
-            raise ValueError('No pair influences specified')
+            raise ValueError("No pair influences specified")
 
         if not all([len(pair_inf) == 2 for pair_inf in pair_infs]):
-            cmds.error('Influence pairs must be 2 elements')
+            cmds.error("Influence pairs must be 2 elements")
 
         all_infs = list(itertools.chain(*pair_infs))
         if len(all_infs) != len(set(all_infs)):
             dup_infs = [inf for inf in all_infs if all_infs.count(inf) > 1]
-            cmds.error(f'Influence pairs must be unique: {dup_infs}')
+            cmds.error(f"Influence pairs must be unique: {dup_infs}")
 
         not_exists_infs = [inf for inf in all_infs if not cmds.objExists(inf)]
         if not_exists_infs:
-            cmds.error(f'Influences not found: {not_exists_infs}')
+            cmds.error(f"Influences not found: {not_exists_infs}")
 
         not_bound_infs = [inf for inf in all_infs if inf not in infs]
         if not_bound_infs:
-            cmds.error(f'Influences not bound: {not_bound_infs}')
+            cmds.error(f"Influences not bound: {not_bound_infs}")
 
-        logger.debug(f'Manual pair influences: {pair_infs}')
+        logger.debug(f"Manual pair influences: {pair_infs}")
 
     if static_inf:
         if not cmds.objExists(static_inf):
-            cmds.error(f'Static influence not found: {static_inf}')
+            cmds.error(f"Static influence not found: {static_inf}")
 
         if static_inf not in infs:
-            cmds.error(f'Static influence not bound: {static_inf}')
+            cmds.error(f"Static influence not bound: {static_inf}")
 
         if static_inf in all_infs:
-            cmds.error(f'Static influence cannot be in the pair influences: {static_inf}')
+            cmds.error(f"Static influence cannot be in the pair influences: {static_inf}")
 
     weights = lib_skinCluster.get_skin_weights(skinCluster, components)
 
@@ -250,7 +249,7 @@ def combine_pair_skin_weights(components: list[str], method: str = 'auto', stati
 
                 weights[i][infs.index(static_inf)] = 0.0
 
-    logger.debug(f'Combined pair influences weights: {components}')
+    logger.debug(f"Combined pair influences weights: {components}")
 
     lib_skinCluster.set_skin_weights(skinCluster, weights, components)
 
@@ -264,44 +263,44 @@ def combine_skin_weights(src_infs: list[str], target_inf: str, components: list[
         components (list[str]): The components. Only vertex, cv, or lattice points are supported.
     """
     if not src_infs:
-        raise ValueError('No source influences specified')
+        raise ValueError("No source influences specified")
 
     if not target_inf:
-        raise ValueError('No target influence specified')
+        raise ValueError("No target influence specified")
 
     if not components:
-        raise ValueError('No components specified')
+        raise ValueError("No components specified")
 
     # Validate the components
     components = cmds.filterExpand(components, sm=[28, 31, 46], ex=True)
     if not components:
-        cmds.error('No components specified or unsupported component type')
+        cmds.error("No components specified or unsupported component type")
 
     objs = list(set(cmds.ls(components, objectsOnly=True)))
     if len(objs) > 1:
-        cmds.error('Components must belong to the same object')
+        cmds.error("Components must belong to the same object")
     else:
         obj = objs[0]
 
     skinCluster = lib_skinCluster.get_skinCluster(obj)
     if not skinCluster:
-        cmds.error(f'Object is not bound to a skinCluster: {obj}')
+        cmds.error(f"Object is not bound to a skinCluster: {obj}")
 
     infs = cmds.skinCluster(skinCluster, q=True, inf=True)
 
     # Validate the influences
     if not cmds.objExists(target_inf):
-        cmds.error(f'Target influence not found: {target_inf}')
+        cmds.error(f"Target influence not found: {target_inf}")
     if target_inf not in infs:
-        cmds.error(f'Target influence not bound: {target_inf}')
+        cmds.error(f"Target influence not bound: {target_inf}")
 
     not_exists_infs = [inf for inf in src_infs if not cmds.objExists(inf)]
     if not_exists_infs:
-        cmds.error(f'Source influences not found: {not_exists_infs}')
+        cmds.error(f"Source influences not found: {not_exists_infs}")
 
     not_bound_infs = [inf for inf in src_infs if inf not in infs]
     if not_bound_infs:
-        cmds.error(f'Source influences not bound: {not_bound_infs}')
+        cmds.error(f"Source influences not bound: {not_bound_infs}")
 
     weights = lib_skinCluster.get_skin_weights(skinCluster, components)
 
@@ -316,7 +315,7 @@ def combine_skin_weights(src_infs: list[str], target_inf: str, components: list[
 
         weights[i][infs.index(target_inf)] = weights[i][infs.index(target_inf)] + src_total_weights
 
-    logger.debug(f'Combined source influences weights: {components}')
+    logger.debug(f"Combined source influences weights: {components}")
 
     lib_skinCluster.set_skin_weights(skinCluster, weights, components)
 
@@ -332,33 +331,33 @@ def prune_small_weights(shapes: list[str], threshold: float = 0.0001) -> None:
         - Unlike Maya's pruneWeights, which considers skeleton locks, this function ignores them.
     """
     if not shapes:
-        raise ValueError('No shapes specified')
+        raise ValueError("No shapes specified")
 
     not_exist_shapes = [shape for shape in shapes if not cmds.objExists(shape)]
     if not_exist_shapes:
-        raise ValueError(f'Nodes do not exist: {not_exist_shapes}')
+        raise ValueError(f"Nodes do not exist: {not_exist_shapes}")
 
     for shape in shapes:
-        if 'deformableShape' not in cmds.nodeType(shape, inherited=True):
-            cmds.warning(f'Node is not a deformable shape: {shape}')
+        if "deformableShape" not in cmds.nodeType(shape, inherited=True):
+            cmds.warning(f"Node is not a deformable shape: {shape}")
             continue
 
         skinCluster = lib_skinCluster.get_skinCluster(shape)
         if not skinCluster:
-            cmds.warning(f'Object is not bound to a skinCluster: {shape}')
+            cmds.warning(f"Object is not bound to a skinCluster: {shape}")
             continue
 
         infs = cmds.skinCluster(skinCluster, q=True, inf=True)
-        lock_status = [cmds.getAttr(f'{inf}.lockInfluenceWeights') for inf in infs]
+        lock_status = [cmds.getAttr(f"{inf}.lockInfluenceWeights") for inf in infs]
         for inf in infs:
-            cmds.setAttr(f'{inf}.lockInfluenceWeights', False)
+            cmds.setAttr(f"{inf}.lockInfluenceWeights", False)
 
         cmds.skinPercent(skinCluster, shape, pruneWeights=threshold)
 
         for i, inf in enumerate(infs):
-            cmds.setAttr(f'{inf}.lockInfluenceWeights', lock_status[i])
+            cmds.setAttr(f"{inf}.lockInfluenceWeights", lock_status[i])
 
-        logger.debug(f'Pruned small weights: {shape}')
+        logger.debug(f"Pruned small weights: {shape}")
 
 
 def copy_skin_weights_with_bind(src_obj: str, dst_objs: list[str], uv: bool = False, **kwargs) -> None:
@@ -371,28 +370,28 @@ def copy_skin_weights_with_bind(src_obj: str, dst_objs: list[str], uv: bool = Fa
     """
     # Check exist
     if not cmds.objExists(src_obj):
-        raise ValueError(f'Node does not exist: {src_obj}')
+        raise ValueError(f"Node does not exist: {src_obj}")
 
-    if not cmds.nodeType(src_obj) == 'transform':
-        raise ValueError(f'Node is not a transform: {src_obj}')
+    if not cmds.nodeType(src_obj) == "transform":
+        raise ValueError(f"Node is not a transform: {src_obj}")
 
     not_exists_objs = [obj for obj in dst_objs if not cmds.objExists(obj)]
     if not_exists_objs:
-        raise ValueError(f'Node does not exist: {not_exists_objs}')
+        raise ValueError(f"Node does not exist: {not_exists_objs}")
 
     # Get source skinCluster
     src_shp = cmds.listRelatives(src_obj, shapes=True, fullPath=True)
     if not src_shp:
-        raise ValueError(f'No shape found: {src_obj}')
+        raise ValueError(f"No shape found: {src_obj}")
     else:
         src_shp = src_shp[0]
 
-    if cmds.nodeType(src_shp) != 'mesh':
-        raise ValueError(f'Node is not a mesh: {src_shp}')
+    if cmds.nodeType(src_shp) != "mesh":
+        raise ValueError(f"Node is not a mesh: {src_shp}")
 
     src_skinCluster = lib_skinCluster.get_skinCluster(src_shp)
     if not src_skinCluster:
-        raise ValueError(f'No skinCluster found: {src_obj}')
+        raise ValueError(f"No skinCluster found: {src_obj}")
 
     src_infs = cmds.skinCluster(src_skinCluster, q=True, inf=True)
 
@@ -404,9 +403,9 @@ def copy_skin_weights_with_bind(src_obj: str, dst_objs: list[str], uv: bool = Fa
             shp = cmds.ls(components[0], objectsOnly=True)[0]
             dst_data.setdefault(shp, []).extend(components)
         else:
-            shp = cmds.listRelatives(dst_obj, shapes=True, type='deformableShape')
+            shp = cmds.listRelatives(dst_obj, shapes=True, type="deformableShape")
             if not shp:
-                cmds.warning(f'No shape found: {dst_obj}')
+                cmds.warning(f"No shape found: {dst_obj}")
                 continue
 
             if shp[0] not in dst_data:
@@ -421,14 +420,14 @@ def copy_skin_weights_with_bind(src_obj: str, dst_objs: list[str], uv: bool = Fa
         if not dst_skinCluster:
             dst_skinCluster = cmds.skinCluster(src_infs, dst_shp, tsb=True)[0]
 
-            logger.debug(f'Create skinCluster: {dst_shp}')
+            logger.debug(f"Create skinCluster: {dst_shp}")
         else:
             dst_infs = cmds.skinCluster(dst_skinCluster, q=True, inf=True)
             dif_infs = list(set(src_infs) - set(dst_infs))
             if dif_infs:
                 cmds.skinCluster(dst_skinCluster, e=True, lw=True, wt=0.0, ai=dif_infs)
 
-                logger.debug(f'Add influences: {dif_infs}')
+                logger.debug(f"Add influences: {dif_infs}")
 
         node_type = cmds.nodeType(dst_shp)
         cmds.select(src_shp, r=True)
@@ -437,33 +436,32 @@ def copy_skin_weights_with_bind(src_obj: str, dst_objs: list[str], uv: bool = Fa
         else:
             cmds.select(dst_shp, add=True)
 
-        if node_type == 'mesh':
+        if node_type == "mesh":
             # When specifying a skinCluster, weights cannot be applied only to the components when components are selected.
             # This is likely due to a specification change in Maya 2023 or later.
             if uv:
                 dst_uv_set = cmds.polyUVSet(dst_shp, query=True, currentUVSet=True)[0]
-                cmds.copySkinWeights(noMirror=True,
-                                     surfaceAssociation='closestPoint',
-                                     influenceAssociation=['label', 'closestJoint'],
-                                     uvSpace=[src_uv_set, dst_uv_set])
+                cmds.copySkinWeights(
+                    noMirror=True, surfaceAssociation="closestPoint", influenceAssociation=["label", "closestJoint"], uvSpace=[src_uv_set, dst_uv_set]
+                )
 
-                logger.debug(f'Copy UV skin weights: {src_shp} -> {dst_shp}')
+                logger.debug(f"Copy UV skin weights: {src_shp} -> {dst_shp}")
             else:
-                cmds.copySkinWeights(noMirror=True,
-                                     surfaceAssociation='closestPoint',
-                                     influenceAssociation=['label', 'closestJoint'])
+                cmds.copySkinWeights(noMirror=True, surfaceAssociation="closestPoint", influenceAssociation=["label", "closestJoint"])
 
-                logger.debug(f'Copy skin weights: {src_shp} -> {dst_shp}')
+                logger.debug(f"Copy skin weights: {src_shp} -> {dst_shp}")
         else:
             lib_skinCluster.copy_skin_weights_custom(src_skinCluster, dst_skinCluster)
 
-            logger.debug(f'Copy skin weights custom: {src_shp} -> {dst_shp}')
+            logger.debug(f"Copy skin weights custom: {src_shp} -> {dst_shp}")
 
 
-def mirror_skin_weights(obj: str,
-                        left_right_names: list[str, str],
-                        right_left_names: list[str, str],
-                        mirror_inverse: bool = False,) -> None:
+def mirror_skin_weights(
+    obj: str,
+    left_right_names: list[str, str],
+    right_left_names: list[str, str],
+    mirror_inverse: bool = False,
+) -> None:
     """Mirror the skin weights.
 
     Args:
@@ -473,26 +471,26 @@ def mirror_skin_weights(obj: str,
         mirrorInverse (bool, optional): Mirror the inverse weights. Defaults to False.
     """
     if not left_right_names or not right_left_names:
-        raise ValueError('Invalid substitute names.')
+        raise ValueError("Invalid substitute names.")
 
     if not cmds.objExists(obj):
-        cmds.error(f'Node does not exist: {obj}')
+        cmds.error(f"Node does not exist: {obj}")
 
-    if not cmds.nodeType(obj) == 'transform':
-        cmds.error(f'Node is not a transform: {obj}')
+    if not cmds.nodeType(obj) == "transform":
+        cmds.error(f"Node is not a transform: {obj}")
 
     shp = cmds.listRelatives(obj, shapes=True, fullPath=True)
     if not shp:
-        cmds.error(f'No shape found: {obj}')
+        cmds.error(f"No shape found: {obj}")
     else:
         shp = shp[0]
 
-    if 'deformableShape' not in cmds.nodeType(shp, inherited=True):
-        cmds.error(f'Node is not a deformable shape: {shp}')
+    if "deformableShape" not in cmds.nodeType(shp, inherited=True):
+        cmds.error(f"Node is not a deformable shape: {shp}")
 
     skinCluster = lib_skinCluster.get_skinCluster(shp)
     if not skinCluster:
-        cmds.error(f'No skinCluster found: {obj}')
+        cmds.error(f"No skinCluster found: {obj}")
 
     infs = cmds.skinCluster(skinCluster, q=True, inf=True)
 
@@ -511,7 +509,7 @@ def mirror_skin_weights(obj: str,
             continue
 
         if replace_inf == inf:
-            cmds.warning(f'No change in name: {inf}')
+            cmds.warning(f"No change in name: {inf}")
         elif not cmds.objExists(replace_inf):
             not_exists_infs.append([inf, replace_inf])
         else:
@@ -519,29 +517,31 @@ def mirror_skin_weights(obj: str,
 
     if not_exists_infs:
         for inf, replace_inf in not_exists_infs:
-            cmds.warning(f'Node does not exist: {replace_inf} ({inf})')
-        cmds.error('Some nodes do not exist.')
+            cmds.warning(f"Node does not exist: {replace_inf} ({inf})")
+        cmds.error("Some nodes do not exist.")
 
     if replace_infs:
         bind_infs = list(set(replace_infs) - set(infs))
         if bind_infs:
             cmds.skinCluster(skinCluster, e=True, lw=True, wt=0.0, ai=bind_infs)
 
-            logger.debug(f'Add new influences: {replace_infs}')
+            logger.debug(f"Add new influences: {replace_infs}")
 
-    cmds.copySkinWeights(ss=skinCluster, ds=skinCluster,
-                         mirrorInverse=mirror_inverse,
-                         mirrorMode='YZ',
-                         surfaceAssociation='closestPoint',
-                         influenceAssociation=['label', 'closestJoint'])
+    cmds.copySkinWeights(
+        ss=skinCluster,
+        ds=skinCluster,
+        mirrorInverse=mirror_inverse,
+        mirrorMode="YZ",
+        surfaceAssociation="closestPoint",
+        influenceAssociation=["label", "closestJoint"],
+    )
 
-    logger.debug(f'Mirror skin weights: {obj}')
+    logger.debug(f"Mirror skin weights: {obj}")
 
 
-def mirror_skin_weights_with_objects(src_obj: str,
-                                     left_right_names: list[str, str],
-                                     right_left_names: list[str, str],
-                                     mirror_inverse: bool = False) -> None:
+def mirror_skin_weights_with_objects(
+    src_obj: str, left_right_names: list[str, str], right_left_names: list[str, str], mirror_inverse: bool = False
+) -> None:
     """Mirror the skin weights with objects.
 
     Notes:
@@ -556,26 +556,26 @@ def mirror_skin_weights_with_objects(src_obj: str,
         mirrorInverse (bool, optional): Mirror the inverse weights. Defaults to False. If True, mirror the right to left.
     """
     if not left_right_names or not right_left_names:
-        raise ValueError('Invalid substitute names.')
+        raise ValueError("Invalid substitute names.")
 
     if not cmds.objExists(src_obj):
-        cmds.error(f'Node does not exist: {src_obj}')
+        cmds.error(f"Node does not exist: {src_obj}")
 
-    if not cmds.nodeType(src_obj) == 'transform':
-        cmds.error(f'Node is not a transform: {src_obj}')
+    if not cmds.nodeType(src_obj) == "transform":
+        cmds.error(f"Node is not a transform: {src_obj}")
 
     src_shp = cmds.listRelatives(src_obj, shapes=True, fullPath=True)
     if not src_shp:
-        cmds.error(f'No shape found: {src_obj}')
+        cmds.error(f"No shape found: {src_obj}")
     else:
         src_shp = src_shp[0]
 
-    if 'deformableShape' not in cmds.nodeType(src_shp, inherited=True):
-        cmds.error(f'Node is not a deformable shape: {src_shp}')
+    if "deformableShape" not in cmds.nodeType(src_shp, inherited=True):
+        cmds.error(f"Node is not a deformable shape: {src_shp}")
 
     src_skinCluster = lib_skinCluster.get_skinCluster(src_shp)
     if not src_skinCluster:
-        cmds.error(f'No skinCluster found: {src_obj}')
+        cmds.error(f"No skinCluster found: {src_obj}")
 
     if not mirror_inverse:
         dst_obj = re.sub(left_right_names[0], left_right_names[1], src_obj)
@@ -583,7 +583,7 @@ def mirror_skin_weights_with_objects(src_obj: str,
         dst_obj = re.sub(right_left_names[0], right_left_names[1], src_obj)
 
     if not cmds.objExists(dst_obj):
-        cmds.error(f'Replace object does not exist: {dst_obj}')
+        cmds.error(f"Replace object does not exist: {dst_obj}")
 
     infs = cmds.skinCluster(src_skinCluster, q=True, inf=True)
 
@@ -604,7 +604,7 @@ def mirror_skin_weights_with_objects(src_obj: str,
             name_changed = False
 
         if replace_inf == inf and name_changed:
-            cmds.warning(f'No change in name: {inf}')
+            cmds.warning(f"No change in name: {inf}")
             bind_infs.append(inf)
         elif not cmds.objExists(replace_inf):
             not_exists_infs.append([inf, replace_inf])
@@ -613,30 +613,32 @@ def mirror_skin_weights_with_objects(src_obj: str,
 
     if not_exists_infs:
         for inf, replace_inf in not_exists_infs:
-            cmds.warning(f'Node does not exist: {replace_inf} ({inf})')
+            cmds.warning(f"Node does not exist: {replace_inf} ({inf})")
 
-        cmds.error('Some nodes do not exist.')
+        cmds.error("Some nodes do not exist.")
 
     dst_shp = cmds.listRelatives(dst_obj, shapes=True)[0]
     dst_skinCluster = lib_skinCluster.get_skinCluster(dst_shp)
     if not dst_skinCluster:
         dst_skinCluster = cmds.skinCluster(bind_infs, dst_shp, tsb=True)[0]
 
-        logger.debug(f'Create skinCluster: {dst_shp}')
+        logger.debug(f"Create skinCluster: {dst_shp}")
     else:
         dst_infs = cmds.skinCluster(dst_skinCluster, q=True, inf=True)
         dif_infs = list(set(bind_infs) - set(dst_infs))
         if dif_infs:
             cmds.skinCluster(dst_skinCluster, e=True, lw=True, wt=0.0, ai=dif_infs)
 
-            logger.debug(f'Add influences: {dif_infs}')
+            logger.debug(f"Add influences: {dif_infs}")
 
-    cmds.copySkinWeights(ss=src_skinCluster,
-                         ds=dst_skinCluster,
-                         mirrorMode='YZ',
-                         mirrorInverse=mirror_inverse,
-                         surfaceAssociation='closestPoint',
-                         influenceAssociation=['label', 'closestJoint'])
+    cmds.copySkinWeights(
+        ss=src_skinCluster,
+        ds=dst_skinCluster,
+        mirrorMode="YZ",
+        mirrorInverse=mirror_inverse,
+        surfaceAssociation="closestPoint",
+        influenceAssociation=["label", "closestJoint"],
+    )
 
 
 class SkinClusterToMesh:
@@ -654,24 +656,24 @@ class SkinClusterToMesh:
             mesh (str): The mesh node.
         """
         if not skinCluster:
-            raise ValueError('No skinCluster node specified')
+            raise ValueError("No skinCluster node specified")
 
         if not cmds.objExists(skinCluster):
-            cmds.error(f'Node does not exist: {skinCluster}')
+            cmds.error(f"Node does not exist: {skinCluster}")
 
-        if cmds.nodeType(skinCluster) != 'skinCluster':
-            cmds.error(f'Node is not a skinCluster: {skinCluster}')
+        if cmds.nodeType(skinCluster) != "skinCluster":
+            cmds.error(f"Node is not a skinCluster: {skinCluster}")
 
         self.skinCluster = skinCluster
 
         self.geometry = cmds.skinCluster(skinCluster, q=True, geometry=True)[0]
         self.geometry_type = cmds.nodeType(self.geometry)
-        if self.geometry_type not in ['mesh', 'nurbsSurface']:
-            cmds.error(f'Unsupported geometry type: {self.geometry_type}')
+        if self.geometry_type not in ["mesh", "nurbsSurface"]:
+            cmds.error(f"Unsupported geometry type: {self.geometry_type}")
 
-        self.divisions = kwargs.get('divisions', 2)
-        self.u_divisions = kwargs.get('u_divisions', 2)
-        self.v_divisions = kwargs.get('v_divisions', 2)
+        self.divisions = kwargs.get("divisions", 2)
+        self.u_divisions = kwargs.get("u_divisions", 2)
+        self.v_divisions = kwargs.get("v_divisions", 2)
 
     def preview(self) -> tuple[str, str]:
         """Preview the converted mesh.
@@ -679,16 +681,18 @@ class SkinClusterToMesh:
         Returns:
             tuple[str, str]: The preview mesh and the preview node.
         """
-        if self.geometry_type == 'mesh':
+        if self.geometry_type == "mesh":
             preview_geometry = cmds.duplicate(self.geometry)[0]
             geometry_shp = cmds.listRelatives(preview_geometry, shapes=True)[0]
 
-            cmds.connectAttr(f'{self.geometry}.outMesh', f'{geometry_shp}.inMesh', f=True)
-            preview_node = cmds.polySmooth(preview_geometry, method=0, bnr=1, dv=self.divisions,
-                                           c=1.0, kb=False, khe=False, kmb=1, suv=False, ch=True)[0]
+            cmds.connectAttr(f"{self.geometry}.outMesh", f"{geometry_shp}.inMesh", f=True)
+            preview_node = cmds.polySmooth(
+                preview_geometry, method=0, bnr=1, dv=self.divisions, c=1.0, kb=False, khe=False, kmb=1, suv=False, ch=True
+            )[0]
         else:
-            preview_geometry, preview_node = cmds.nurbsToPoly(self.geometry, ch=True, f=2, pt=1,
-                                                              chr=0.9, uType=3, un=self.u_divisions, vType=3, vn=self.v_divisions)
+            preview_geometry, preview_node = cmds.nurbsToPoly(
+                self.geometry, ch=True, f=2, pt=1, chr=0.9, uType=3, un=self.u_divisions, vType=3, vn=self.v_divisions
+            )
 
         return preview_geometry, preview_node
 
@@ -706,7 +710,7 @@ class SkinClusterToMesh:
 
         tmp_infs = []
         for inf in infs:
-            tmp_inf = cmds.createNode('joint', ss=True)
+            tmp_inf = cmds.createNode("joint", ss=True)
             cmds.xform(tmp_inf, ws=True, t=cmds.xform(inf, q=True, ws=True, t=True))
 
             tmp_infs.append(tmp_inf)
@@ -714,34 +718,34 @@ class SkinClusterToMesh:
         lib_skinCluster.exchange_influences(self.skinCluster, infs, tmp_infs)
 
         # Get the skinCluster weights
-        default_positions = cmds.xform('{}.vtx[*]'.format(preview_geometry), q=True, ws=True, t=True)[1::3]
+        default_positions = cmds.xform(f"{preview_geometry}.vtx[*]", q=True, ws=True, t=True)[1::3]
         vtx_num = len(default_positions)
 
         weights = []
         for inf in tmp_infs:
             cmds.move(1.0, inf, r=True, y=True)
-            moved_positions = cmds.xform('{}.vtx[*]'.format(preview_geometry), q=True, ws=True, t=True)[1::3]
+            moved_positions = cmds.xform(f"{preview_geometry}.vtx[*]", q=True, ws=True, t=True)[1::3]
             weights.append([moved_positions[i] - default_positions[i] for i in range(vtx_num)])
             cmds.move(-1.0, inf, r=True, y=True)
 
-        weights = list(itertools.chain(*zip(*weights)))
+        weights = list(itertools.chain(*zip(*weights, strict=False)))
 
         # Create the mesh
-        convert_mesh = cmds.duplicate(preview_geometry, n='{}_converted'.format(self.geometry))[0]
+        convert_mesh = cmds.duplicate(preview_geometry, n=f"{self.geometry}_converted")[0]
         convert_skinCluster = cmds.skinCluster(infs, convert_mesh, tsb=True)[0]
 
         # Set the skinCluster weights
-        cmds.setAttr(f'{convert_skinCluster}.nw', False)
-        lib_skinCluster.set_skin_weights_custom(convert_skinCluster, weights, ['{}.vtx[*]'.format(convert_mesh)])
-        cmds.setAttr(f'{convert_skinCluster}.nw', True)
+        cmds.setAttr(f"{convert_skinCluster}.nw", False)
+        lib_skinCluster.set_skin_weights_custom(convert_skinCluster, weights, [f"{convert_mesh}.vtx[*]"])
+        cmds.setAttr(f"{convert_skinCluster}.nw", True)
 
         # Clean up
         lib_skinCluster.exchange_influences(self.skinCluster, tmp_infs, infs)
         cmds.delete(tmp_infs, preview_geometry)
 
         # Normalize the weights
-        cmds.skinPercent(convert_skinCluster, f'{convert_mesh}.vtx[*]', nrm=True)
+        cmds.skinPercent(convert_skinCluster, f"{convert_mesh}.vtx[*]", nrm=True)
 
-        logger.debug(f'Converted skinCluster to mesh: {convert_mesh}')
+        logger.debug(f"Converted skinCluster to mesh: {convert_mesh}")
 
         return convert_mesh

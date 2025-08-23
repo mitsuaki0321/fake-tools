@@ -4,17 +4,17 @@ Maya-specific functions in UI.
 
 import traceback
 
+from maya.api.OpenMaya import MGlobal
 import maya.cmds as cmds
 import maya.mel as mel
-from maya.api.OpenMaya import MGlobal
 
 
 class Undo:
-    """Context manager for undo chunk.
-    """
+    """Context manager for undo chunk."""
+
     open_chunk = True
 
-    def __init__(self, operation_name='operation'):
+    def __init__(self, operation_name="operation"):
         self.name = operation_name
         self.close_chunk = False
 
@@ -41,6 +41,7 @@ def undo_chunk(chunk_name):
     Returns:
         function: Decorated function.
     """
+
     def deco(func):
         def wrap(*args, **kwargs):
             with Undo(chunk_name):
@@ -60,6 +61,7 @@ def without_undo(func):
     Returns:
         function: Decorated function.
     """
+
     def wrap(*args, **kwargs):
         cmds.undoInfo(stateWithoutFlush=False)
         try:
@@ -79,6 +81,7 @@ def error_handler(func):
     Returns:
         function: Decorated function.
     """
+
     def wrap(*args, **kwargs):
         try:
             return func(*args, **kwargs)
@@ -98,6 +101,7 @@ def selection_handler(func):
     Returns:
         function: Decorated function.
     """
+
     def wrap(*args, **kwargs):
         sel_nodes = cmds.ls(sl=True)
         result_nodes = func(*args, **kwargs)
@@ -105,13 +109,13 @@ def selection_handler(func):
         mod_keys = get_modifiers()
         if not mod_keys:
             cmds.select(result_nodes, r=True)
-        elif ['Shift', 'Ctrl'] == mod_keys:
+        elif mod_keys == ["Shift", "Ctrl"]:
             cmds.select(sel_nodes, r=True)
             cmds.select(result_nodes, add=True)
-        elif 'Shift' in mod_keys:
+        elif "Shift" in mod_keys:
             cmds.select(sel_nodes, r=True)
             cmds.select(result_nodes, tgl=True)
-        elif 'Ctrl' in mod_keys:
+        elif "Ctrl" in mod_keys:
             cmds.select(sel_nodes, r=True)
             cmds.select(result_nodes, d=True)
 
@@ -146,22 +150,21 @@ def get_modifiers() -> list[str]:
     mods = cmds.getModifiers()
     keys = []
     if (mods & 1) > 0:
-        keys.append('Shift')
+        keys.append("Shift")
     if (mods & 4) > 0:
-        keys.append('Ctrl')
+        keys.append("Ctrl")
     if (mods & 8) > 0:
-        keys.append('Alt')
-    if (mods & 16):
-        keys.append('Command/Windows')
+        keys.append("Alt")
+    if mods & 16:
+        keys.append("Command/Windows")
 
     return keys
 
 
-class progress_bar(object):
-
+class progress_bar:
     def __init__(self, maxVal, **kwargs):
-        msg = kwargs.get('message', kwargs.get('msg', 'Calculation ...'))
-        self.pBar = mel.eval('$tmp = $gMainProgressBar')
+        msg = kwargs.get("message", kwargs.get("msg", "Calculation ..."))
+        self.pBar = mel.eval("$tmp = $gMainProgressBar")
         cmds.progressBar(self.pBar, e=True, beginProgress=True, isInterruptable=True, status=msg, maxValue=maxVal)
 
     def breakPoint(self):

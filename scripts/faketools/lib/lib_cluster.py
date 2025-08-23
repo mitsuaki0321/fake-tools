@@ -2,9 +2,9 @@
 Mesh vertex clustering functions.
 """
 
-import random
 from abc import ABC, abstractmethod
 from logging import getLogger
+import random
 
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
@@ -15,8 +15,7 @@ logger = getLogger(__name__)
 
 
 class Clustering(ABC):
-    """Clustering class for mesh vertices.
-    """
+    """Clustering class for mesh vertices."""
 
     def __init__(self, mesh: str):
         """Initialize the Cluster with a target mesh.
@@ -25,16 +24,16 @@ class Clustering(ABC):
           mesh (str): The target mesh.
         """
         if not mesh:
-            raise ValueError('Mesh is not specified.')
+            raise ValueError("Mesh is not specified.")
 
         if not isinstance(mesh, str):
-            raise ValueError('Mesh must be a string.')
+            raise ValueError("Mesh must be a string.")
 
         if not cmds.objExists(mesh):
-            raise ValueError(f'Mesh does not exist: {mesh}')
+            raise ValueError(f"Mesh does not exist: {mesh}")
 
-        if 'mesh' not in cmds.nodeType(mesh, inherited=True):
-            raise ValueError(f'Node is not a mesh: {mesh}')
+        if "mesh" not in cmds.nodeType(mesh, inherited=True):
+            raise ValueError(f"Node is not a mesh: {mesh}")
 
         self.mesh = mesh
 
@@ -53,17 +52,16 @@ class Clustering(ABC):
         pass
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({self.mesh})'
+        return f"{self.__class__.__name__}({self.mesh})"
 
     def __str__(self):
-        return f'{self.__class__.__name__}({self.mesh})'
+        return f"{self.__class__.__name__}({self.mesh})"
 
 
 class SplitAxisClustering(Clustering):
-    """Split axis clustering for mesh vertices.
-    """
+    """Split axis clustering for mesh vertices."""
 
-    def get_clusters(self, split_num: int, axis: str = 'x') -> list[list[int]]:
+    def get_clusters(self, split_num: int, axis: str = "x") -> list[list[int]]:
         """Get the clusters of vertices by splitting the mesh along an axis.
 
         Args:
@@ -73,13 +71,13 @@ class SplitAxisClustering(Clustering):
         Returns:
             list[list[int]]: The list of vertex indices for each cluster.
         """
-        if axis not in ['x', 'y', 'z']:
-            raise ValueError(f'Invalid axis: {axis}')
+        if axis not in ["x", "y", "z"]:
+            raise ValueError(f"Invalid axis: {axis}")
 
-        axis_idx = ['x', 'y', 'z'].index(axis)
+        axis_idx = ["x", "y", "z"].index(axis)
 
         if split_num < 2:
-            raise ValueError(f'Invalid split number: {split_num}')
+            raise ValueError(f"Invalid split number: {split_num}")
 
         points = self.mesh_fn.getPoints(om.MSpace.kWorld)
         points = np.asarray(points).transpose()
@@ -92,8 +90,7 @@ class SplitAxisClustering(Clustering):
 
 
 class KMeansClustering(Clustering):
-    """K-means clustering for mesh vertices.
-    """
+    """K-means clustering for mesh vertices."""
 
     def get_clusters(self, n_clusters: int) -> list[list[str]]:
         """Apply K-means clustering to classify vertices.
@@ -127,8 +124,7 @@ class KMeansClustering(Clustering):
 
 
 class DBSCANClustering(Clustering):
-    """DBSCAN clustering for mesh vertices.
-    """
+    """DBSCAN clustering for mesh vertices."""
 
     def get_clusters(self, eps: float = 0.5, min_samples: int = 5) -> list[list[int]]:
         """Classify vertices using DBSCAN clustering and create a list for each cluster.
@@ -171,12 +167,12 @@ def cluster_vertex_colors(obj: str, cluster_indices: list[list[int]]) -> None:
         cluster_indices (list[list[int]]): The list of vertex indices for each cluster.
     """
     if not cmds.objExists(obj):
-        raise ValueError(f'Object does not exist: {obj}')
+        raise ValueError(f"Object does not exist: {obj}")
 
     for cluster in cluster_indices:
         cluster_color = [random.uniform(0, 1) for _ in range(3)]
 
-        vertices = [f'{obj}.vtx[{i}]' for i in cluster]
+        vertices = [f"{obj}.vtx[{i}]" for i in cluster]
         cmds.polyColorPerVertex(vertices, rgb=cluster_color)
 
-        logger.debug(f'Assigned color to cluster: {vertices}')
+        logger.debug(f"Assigned color to cluster: {vertices}")

@@ -2,9 +2,8 @@
 Create transform nodes at selected object's position.
 """
 
-import math
 from logging import getLogger
-from typing import Optional
+import math
 
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
@@ -23,18 +22,19 @@ logger = getLogger(__name__)
 
 
 class CreateTransforms:
-    """Create transform nodes at positions.
-    """
+    """Create transform nodes at positions."""
 
-    __shape_types = ['locator', 'joint']
+    __shape_types = ["locator", "joint"]
 
-    def __init__(self,
-                 func: callable,
-                 size: float = 1.0,
-                 shape_type: str = 'locator',
-                 chain: bool = False,
-                 reverse: bool = False,
-                 rotation_offset: list[float] = [0.0, 0.0, 0.0]):
+    def __init__(
+        self,
+        func: callable,
+        size: float = 1.0,
+        shape_type: str = "locator",
+        chain: bool = False,
+        reverse: bool = False,
+        rotation_offset: list[float] = [0.0, 0.0, 0.0],
+    ):
         """Constructor.
 
         Args:
@@ -46,7 +46,7 @@ class CreateTransforms:
             rotation_offset (list[float]): The rotation to add to the current rotation. Default is [0.0, 0.0, 0.0].
         """
         if shape_type not in self.__shape_types:
-            raise ValueError('Invalid shape type.')
+            raise ValueError("Invalid shape type.")
 
         self.func = func
 
@@ -57,17 +57,16 @@ class CreateTransforms:
         self.rotation_offset = rotation_offset
 
     def create(self, *args, **kwargs) -> list[str]:
-        """Create the transform nodes.
-        """
+        """Create the transform nodes."""
         position_rotations = self.func(*args, **kwargs)  # [{'position': [], 'rotation': []}, ...]
         if not position_rotations:
-            cmds.error('No valid object selected ( component or transform ).')
+            cmds.error("No valid object selected ( component or transform ).")
             return
 
         result_nodes = []
         for data in position_rotations:
-            positions = data['position']
-            rotations = data['rotation']
+            positions = data["position"]
+            rotations = data["rotation"]
 
             if self.reverse:
                 positions.reverse()
@@ -81,15 +80,15 @@ class CreateTransforms:
             make_nodes = []
             for i in range(len(positions)):
                 # Create a transform node and set the size
-                if self.shape_type == 'locator':
+                if self.shape_type == "locator":
                     shp = cmds.createNode(self.shape_type, ss=True)
                     node = cmds.listRelatives(shp, p=True)[0]
 
-                    cmds.setAttr(f'{shp}.localScale', self.size, self.size, self.size)
+                    cmds.setAttr(f"{shp}.localScale", self.size, self.size, self.size)
 
-                elif self.shape_type == 'joint':
+                elif self.shape_type == "joint":
                     node = cmds.createNode(self.shape_type, ss=True)
-                    cmds.setAttr(f'{node}.radius', self.size)
+                    cmds.setAttr(f"{node}.radius", self.size)
 
                 # Set position and rotation
                 cmds.xform(node, ws=True, t=positions[i])
@@ -105,26 +104,27 @@ class CreateTransforms:
 
             result_nodes.extend(make_nodes)
 
-        logger.debug(f'Transform nodes created: {result_nodes}')
+        logger.debug(f"Transform nodes created: {result_nodes}")
 
         return result_nodes
 
 
 class PreviewLocatorForTransform:
-    """Preview locator for create transform nodes.
-    """
+    """Preview locator for create transform nodes."""
 
-    preview_locator_name = 'createTransformPreview'
-    __shape_types = ['locator', 'joint']
+    preview_locator_name = "createTransformPreview"
+    __shape_types = ["locator", "joint"]
 
-    def __init__(self,
-                 func: callable,
-                 size: float = 1.0,
-                 shape_type: str = 'locator',
-                 chain: bool = False,
-                 reverse: bool = False,
-                 rotation_offset: list[float] = [0.0, 0.0, 0.0],
-                 color: list[float] = [1.0, 1.0, 1.0]):
+    def __init__(
+        self,
+        func: callable,
+        size: float = 1.0,
+        shape_type: str = "locator",
+        chain: bool = False,
+        reverse: bool = False,
+        rotation_offset: list[float] = [0.0, 0.0, 0.0],
+        color: list[float] = [1.0, 1.0, 1.0],
+    ):
         """Constructor.
 
         Args:
@@ -137,7 +137,7 @@ class PreviewLocatorForTransform:
             color (list[float]): The color of the preview locator. Default is [1.0, 1.0, 1.0].
         """
         if shape_type not in self.__shape_types:
-            raise ValueError('Invalid shape type.')
+            raise ValueError("Invalid shape type.")
 
         self.func = func
 
@@ -151,12 +151,11 @@ class PreviewLocatorForTransform:
         self.preview_locator = lib_preview.PreviewLocator.create(name=self.preview_locator_name, recreate=True)
 
     def preview(self, *args, **kwargs):
-        """Preview the transform.
-        """
+        """Preview the transform."""
         position_rotations = self.func(*args, **kwargs)  # [{'position': [], 'rotation': []}, ...]
         if not position_rotations:
             self.preview_locator.clear_shapes()
-            logger.warning('No valid position and rotation data for preview.')
+            logger.warning("No valid position and rotation data for preview.")
             return
 
         self.preview_locator.manipulation_color = True
@@ -164,25 +163,25 @@ class PreviewLocatorForTransform:
         # Set the shape type
         self.preview_locator.shape_type = self.shape_type
 
-        logger.debug(f'Shape type: {self.shape_type}')
+        logger.debug(f"Shape type: {self.shape_type}")
 
         # Set the size
         self.preview_locator.global_size = self.size
 
-        logger.debug(f'Size: {self.size}')
+        logger.debug(f"Size: {self.size}")
 
         # Set the position and rotation
         num_data = len(position_rotations)
 
         for i in range(num_data):
-            positions = position_rotations[i]['position']
-            rotations = position_rotations[i]['rotation']
+            positions = position_rotations[i]["position"]
+            rotations = position_rotations[i]["rotation"]
 
             if positions:
                 if self.reverse:
                     positions.reverse()
 
-                    logger.debug(f'Reverse positions: {self.reverse}')
+                    logger.debug(f"Reverse positions: {self.reverse}")
 
                 self.preview_locator.set_shape_positions(index=i, positions=positions)
 
@@ -190,38 +189,36 @@ class PreviewLocatorForTransform:
                 if self.reverse:
                     rotations.reverse()
 
-                    logger.debug(f'Reverse rotations: {self.reverse}')
+                    logger.debug(f"Reverse rotations: {self.reverse}")
 
                 if self.rotation_offset != [0.0, 0.0, 0.0]:
                     rotations = [lib_math.mult_rotation([self.rotation_offset, rotation]) for rotation in rotations]
 
-                    logger.debug(f'Rotation offset: {self.rotation_offset}')
+                    logger.debug(f"Rotation offset: {self.rotation_offset}")
 
                 self.preview_locator.set_shape_rotations(index=i, rotations=rotations)
 
             if self.chain:
                 self.preview_locator.set_shape_hierarchy(index=i, value=True)
 
-                logger.debug(f'Chain: {self.chain}')
+                logger.debug(f"Chain: {self.chain}")
 
             if self.color != [1.0, 1.0, 1.0]:
                 self.preview_locator.set_shape_color(index=i, color=self.color)
 
-                logger.debug(f'Color: {self.color}')
+                logger.debug(f"Color: {self.color}")
 
-        logger.debug(f'Preview created: {self.preview_locator}')
+        logger.debug(f"Preview created: {self.preview_locator}")
 
     def change_function(self, func: callable):
-        """Change the function of the previewLocator.
-        """
+        """Change the function of the previewLocator."""
         self.func = func
         self.preview_locator.clear_shapes()
 
-        logger.debug(f'Function changed: {func}')
+        logger.debug(f"Function changed: {func}")
 
     def change_size(self, size: float):
-        """Change the size of the previewLocator.
-        """
+        """Change the size of the previewLocator."""
         if not self.preview_locator:
             return
 
@@ -231,16 +228,15 @@ class PreviewLocatorForTransform:
         self.preview_locator.global_size = size
         self.size = size
 
-        logger.debug(f'Size changed: {size}')
+        logger.debug(f"Size changed: {size}")
 
     def change_shape_type(self, shape_type: str):
-        """Change the shape type of the previewLocator.
-        """
+        """Change the shape type of the previewLocator."""
         if not self.preview_locator:
             return
 
-        if shape_type not in ['locator', 'joint']:
-            raise ValueError('Invalid shape type.')
+        if shape_type not in ["locator", "joint"]:
+            raise ValueError("Invalid shape type.")
 
         if self.shape_type == shape_type:
             return
@@ -248,11 +244,10 @@ class PreviewLocatorForTransform:
         self.preview_locator.shape_type = shape_type
         self.shape_type = shape_type
 
-        logger.debug(f'Shape type changed: {shape_type}')
+        logger.debug(f"Shape type changed: {shape_type}")
 
     def change_chain(self, chain: bool):
-        """Change the chain of the previewLocator.
-        """
+        """Change the chain of the previewLocator."""
         if not self.preview_locator:
             return
 
@@ -267,11 +262,10 @@ class PreviewLocatorForTransform:
 
         self.chain = chain
 
-        logger.debug(f'Chain changed: {chain}')
+        logger.debug(f"Chain changed: {chain}")
 
     def change_reverse(self, reverse: bool):
-        """Change the reverse of the previewLocator.
-        """
+        """Change the reverse of the previewLocator."""
         if not self.preview_locator:
             return
 
@@ -294,11 +288,10 @@ class PreviewLocatorForTransform:
 
         self.reverse = reverse
 
-        logger.debug(f'Reverse changed: {reverse}')
+        logger.debug(f"Reverse changed: {reverse}")
 
     def change_rotation_offset(self, rotation_offset: list[float]):
-        """Change the rotation offset of the previewLocator.
-        """
+        """Change the rotation offset of the previewLocator."""
         if not self.preview_locator:
             return
 
@@ -320,11 +313,10 @@ class PreviewLocatorForTransform:
 
         self.rotation_offset = rotation_offset
 
-        logger.debug(f'Rotation offset changed: {rotation_offset}')
+        logger.debug(f"Rotation offset changed: {rotation_offset}")
 
     def change_color(self, color: list[float]):
-        """Change the color of the previewLocator.
-        """
+        """Change the color of the previewLocator."""
         if not self.preview_locator:
             return
 
@@ -339,25 +331,25 @@ class PreviewLocatorForTransform:
 
         self.color = color
 
-        logger.debug(f'Color changed: {color}')
+        logger.debug(f"Color changed: {color}")
 
     def delete(self):
-        """Delete the previewLocator.
-        """
+        """Delete the previewLocator."""
         if not self.preview_locator:
-            logger.debug('No previewLocator to delete.')
+            logger.debug("No previewLocator to delete.")
             return
 
         try:
             transform = self.preview_locator.transform_name
             cmds.delete(transform)
 
-            logger.debug(f'Preview deleted: {transform}')
+            logger.debug(f"Preview deleted: {transform}")
         except Exception as e:
             logger.exception(e)
 
 
 # Create transform nodes at selected object's position.
+
 
 def bounding_box_center(*args, **kwargs) -> list[dict[str, list[float]]]:
     """Get the bounding box center of the selected object.
@@ -367,14 +359,14 @@ def bounding_box_center(*args, **kwargs) -> list[dict[str, list[float]]]:
     """
     positions = __get_selected_positions()
     if not positions:
-        logger.warning('No valid object selected.')
+        logger.warning("No valid object selected.")
         return
 
     center_position = lib_math.get_bounding_box_center(positions[0])
 
-    logger.debug(f'Bounding box center: {center_position}')
+    logger.debug(f"Bounding box center: {center_position}")
 
-    return [{'position': [center_position], 'rotation': []}]
+    return [{"position": [center_position], "rotation": []}]
 
 
 def gravity_center(*args, **kwargs) -> list[dict[str, list[float]]]:
@@ -385,14 +377,14 @@ def gravity_center(*args, **kwargs) -> list[dict[str, list[float]]]:
     """
     positions = __get_selected_positions()
     if not positions:
-        logger.warning('No valid object selected.')
+        logger.warning("No valid object selected.")
         return
 
     gravity_center_position = lib_math.get_centroid(positions[0])
 
-    logger.debug(f'Gravity center: {gravity_center_position}')
+    logger.debug(f"Gravity center: {gravity_center_position}")
 
-    return [{'position': [gravity_center_position], 'rotation': []}]
+    return [{"position": [gravity_center_position], "rotation": []}]
 
 
 def each_positions(*args, **kwargs) -> list[dict[str, list[float]]]:
@@ -404,18 +396,17 @@ def each_positions(*args, **kwargs) -> list[dict[str, list[float]]]:
     Returns:
         list[{position: list[float], rotation: list[float]}]: The position and
     """
-    include_rotation = kwargs.get('include_rotation', False)
-    tangent_from_component = kwargs.get('tangent_from_component', False)
+    include_rotation = kwargs.get("include_rotation", False)
+    tangent_from_component = kwargs.get("tangent_from_component", False)
 
-    positions = __get_selected_positions(include_rotation=include_rotation,
-                                         tangent_from_component=tangent_from_component)
+    positions = __get_selected_positions(include_rotation=include_rotation, tangent_from_component=tangent_from_component)
     if not positions:
-        logger.warning('No valid object selected.')
+        logger.warning("No valid object selected.")
         return
 
-    logger.debug(f'Each positions: {positions}')
+    logger.debug(f"Each positions: {positions}")
 
-    return [{'position': positions[0], 'rotation': positions[1]}]
+    return [{"position": positions[0], "rotation": positions[1]}]
 
 
 def closest_position(*args, **kwargs) -> list[dict[str, list[float]]]:
@@ -427,20 +418,19 @@ def closest_position(*args, **kwargs) -> list[dict[str, list[float]]]:
     Returns:
         list[{position: list[float], rotation: list[float]}]: The position and rotation.
     """
-    include_rotation = kwargs.get('include_rotation', False)
-    tangent_from_component = kwargs.get('tangent_from_component', False)
+    include_rotation = kwargs.get("include_rotation", False)
+    tangent_from_component = kwargs.get("tangent_from_component", False)
 
-    positions = __get_selected_positions(only_component=True,
-                                         include_rotation=include_rotation,
-                                         closest_position=True,
-                                         tangent_from_component=tangent_from_component)
+    positions = __get_selected_positions(
+        only_component=True, include_rotation=include_rotation, closest_position=True, tangent_from_component=tangent_from_component
+    )
     if not positions:
-        logger.warning('No valid object selected.')
+        logger.warning("No valid object selected.")
         return
 
-    logger.debug(f'Closest positions: {positions}')
+    logger.debug(f"Closest positions: {positions}")
 
-    return [{'position': positions[0], 'rotation': positions[1]}]
+    return [{"position": positions[0], "rotation": positions[1]}]
 
 
 def inner_divide(*args, **kwargs) -> list[dict[str, list[float]]]:
@@ -453,22 +443,22 @@ def inner_divide(*args, **kwargs) -> list[dict[str, list[float]]]:
     Returns:
         list[{position: list[float], rotation: list[float]}]: The position and rotation.
     """
-    transforms = cmds.ls(sl=True, type='transform')
+    transforms = cmds.ls(sl=True, type="transform")
     if not transforms:
-        logger.warning('No valid object selected.')
+        logger.warning("No valid object selected.")
         return
 
     if len(transforms) < 2:
-        logger.warning('Select two or more objects.')
+        logger.warning("Select two or more objects.")
         return
 
-    divisions = kwargs.get('divisions', 1)
+    divisions = kwargs.get("divisions", 1)
 
     if divisions < 1:
-        logger.warning('Invalid divisions.')
+        logger.warning("Invalid divisions.")
         return
 
-    include_rotation = kwargs.get('include_rotation', False)
+    include_rotation = kwargs.get("include_rotation", False)
 
     reference_positions = [cmds.xform(transform, q=True, ws=True, t=True) for transform in transforms]
     if include_rotation:
@@ -490,16 +480,18 @@ def inner_divide(*args, **kwargs) -> list[dict[str, list[float]]]:
             else:
                 result_rotations.extend([reference_rotations[i]] * (divisions + 1))
 
-    logger.debug(f'Inner divided points: {result_positions}')
+    logger.debug(f"Inner divided points: {result_positions}")
 
-    return [{'position': result_positions, 'rotation': result_rotations}]
+    return [{"position": result_positions, "rotation": result_rotations}]
 
 
-def __get_selected_positions(only_component: bool = False,
-                             flatten_components: bool = False,
-                             include_rotation: bool = False,
-                             closest_position: bool = False,
-                             tangent_from_component: bool = False) -> Optional[tuple[list[list[float]], list[list[float]]]]:
+def __get_selected_positions(
+    only_component: bool = False,
+    flatten_components: bool = False,
+    include_rotation: bool = False,
+    closest_position: bool = False,
+    tangent_from_component: bool = False,
+) -> tuple[list[list[float]], list[list[float]]] | None:
     """Get the selected object's position and rotation.
 
     Args:
@@ -513,11 +505,11 @@ def __get_selected_positions(only_component: bool = False,
     Returns:
         Optional[tuple[list[list[float]], list[list[float]]]: The position and rotation.
     """
-    sel_transforms = cmds.ls(sl=True, type='transform')
+    sel_transforms = cmds.ls(sl=True, type="transform")
     sel_components = cmds.filterExpand(sm=[28, 30, 31, 32, 34])
 
     if not sel_transforms and not sel_components:
-        logger.warning('No valid object selected.')
+        logger.warning("No valid object selected.")
         return
 
     result_positions = []
@@ -525,7 +517,7 @@ def __get_selected_positions(only_component: bool = False,
 
     # Get the dagNode position and rotation
     if sel_transforms and not only_component:
-        logger.debug(f'Dag nodes: {sel_transforms}')
+        logger.debug(f"Dag nodes: {sel_transforms}")
 
         if include_rotation:
             for transform in sel_transforms:
@@ -534,12 +526,12 @@ def __get_selected_positions(only_component: bool = False,
         else:
             result_positions = [cmds.xform(transform, q=True, ws=True, t=True) for transform in sel_transforms]
 
-        logger.debug(f'Transform positions: {result_positions}')
-        logger.debug(f'Transform rotations: {result_rotations}')
+        logger.debug(f"Transform positions: {result_positions}")
+        logger.debug(f"Transform rotations: {result_rotations}")
 
     # Get the component position and rotation
     if sel_components:
-        logger.debug(f'Component data: {sel_components}')
+        logger.debug(f"Component data: {sel_components}")
 
         component_positions = []
         component_rotations = []
@@ -579,11 +571,15 @@ def __get_selected_positions(only_component: bool = False,
                 tangents = mesh_vertex.get_vertex_tangents(indices)
 
                 if not tangent_from_component:
-                    result_rotations.extend([lib_math.vector_to_rotation(normal, tangent, primary_axis='z', secondary_axis='x')
-                                            for normal, tangent in zip(normals, tangents)])
+                    result_rotations.extend(
+                        [
+                            lib_math.vector_to_rotation(normal, tangent, primary_axis="z", secondary_axis="x")
+                            for normal, tangent in zip(normals, tangents, strict=False)
+                        ]
+                    )
                 else:
                     connected_vertices_list = mesh_vertex.get_connected_vertices(indices)
-                    for position, normal, tangent, connected_vertices in zip(positions, normals, tangents, connected_vertices_list):
+                    for position, normal, tangent, connected_vertices in zip(positions, normals, tangents, connected_vertices_list, strict=False):
                         connected_positions = mesh_vertex.get_vertex_positions(connected_vertices)
 
                         angle = math.pi
@@ -610,7 +606,7 @@ def __get_selected_positions(only_component: bool = False,
                                     angle = vector_angle
                                     result_tangent = vector_tangent
 
-                        result_rotations.append(lib_math.vector_to_rotation(normal, result_tangent, primary_axis='z', secondary_axis='x'))
+                        result_rotations.append(lib_math.vector_to_rotation(normal, result_tangent, primary_axis="z", secondary_axis="x"))
 
         # Edge
         for shape, indices in edge_components.items():
@@ -621,18 +617,22 @@ def __get_selected_positions(only_component: bool = False,
                 tangents = mesh_edge.get_edge_tangent(indices)
 
                 if not tangent_from_component:
-                    result_rotations.extend([lib_math.vector_to_rotation(normal, tangent, primary_axis='z', secondary_axis='x')
-                                            for normal, tangent in zip(normals, tangents)])
+                    result_rotations.extend(
+                        [
+                            lib_math.vector_to_rotation(normal, tangent, primary_axis="z", secondary_axis="x")
+                            for normal, tangent in zip(normals, tangents, strict=False)
+                        ]
+                    )
                 else:
                     # Get the vector of the vertices that make up the edge, which is closest to the current tangent
                     vertex_vectors = mesh_edge.get_edge_vector(indices, normalize=True)
-                    for normal, tangent, vertex_vector in zip(normals, tangents, vertex_vectors):
+                    for normal, tangent, vertex_vector in zip(normals, tangents, vertex_vectors, strict=False):
                         tangent = lib_math.vector_orthogonalize(normal, tangent)
                         binormal = normal ^ tangent
 
                         result_tangent = None
                         angle = math.pi
-                        for axis_vector, axis in zip([tangent, binormal], ['x', 'y']):
+                        for axis_vector, axis in zip([tangent, binormal], ["x", "y"], strict=False):
                             dot_product = axis_vector * vertex_vector
                             candidate_vector = dot_product > 0 and vertex_vector or vertex_vector * -1.0
 
@@ -642,8 +642,7 @@ def __get_selected_positions(only_component: bool = False,
                                 result_tangent = candidate_vector
                                 tangent_axis = axis
 
-                        result_rotations.append(lib_math.vector_to_rotation(normal, result_tangent,
-                                                                            primary_axis='z', secondary_axis=tangent_axis))
+                        result_rotations.append(lib_math.vector_to_rotation(normal, result_tangent, primary_axis="z", secondary_axis=tangent_axis))
 
         # Face
         for shape, indices in face_components.items():
@@ -652,8 +651,12 @@ def __get_selected_positions(only_component: bool = False,
             if include_rotation:
                 normals = mesh_face.get_face_normal(indices)
                 tangents = mesh_face.get_face_tangent(indices)
-                result_rotations.extend([lib_math.vector_to_rotation(normal, tangent, primary_axis='z', secondary_axis='x')
-                                        for normal, tangent in zip(normals, tangents)])
+                result_rotations.extend(
+                    [
+                        lib_math.vector_to_rotation(normal, tangent, primary_axis="z", secondary_axis="x")
+                        for normal, tangent in zip(normals, tangents, strict=False)
+                    ]
+                )
 
         # NurbsCurve
         curve_cv_components = components_filter.get_curve_cv_components()
@@ -674,8 +677,12 @@ def __get_selected_positions(only_component: bool = False,
 
             if include_rotation:
                 normals, tangents = curve.get_normal_and_tangents(params)
-                component_rotations.extend([lib_math.vector_to_rotation(normal, tangent, primary_axis='z', secondary_axis='x')
-                                            for normal, tangent in zip(normals, tangents)])
+                component_rotations.extend(
+                    [
+                        lib_math.vector_to_rotation(normal, tangent, primary_axis="z", secondary_axis="x")
+                        for normal, tangent in zip(normals, tangents, strict=False)
+                    ]
+                )
 
         # EP
         for shape, indices in curve_ep_components.items():
@@ -684,8 +691,12 @@ def __get_selected_positions(only_component: bool = False,
             component_positions.extend(positions)
             if include_rotation:
                 normals, tangents = curve.get_normal_and_tangents(params)
-                component_rotations.extend([lib_math.vector_to_rotation(normal, tangent, primary_axis='z', secondary_axis='x')
-                                            for normal, tangent in zip(normals, tangents)])
+                component_rotations.extend(
+                    [
+                        lib_math.vector_to_rotation(normal, tangent, primary_axis="z", secondary_axis="x")
+                        for normal, tangent in zip(normals, tangents, strict=False)
+                    ]
+                )
 
         # NurbsSurface
         surface_cv_components = components_filter.get_surface_cv_components()
@@ -704,19 +715,23 @@ def __get_selected_positions(only_component: bool = False,
 
             if include_rotation:
                 normals, tangents = surface.get_normal_and_tangents(params)
-                component_rotations.extend([lib_math.vector_to_rotation(normal, tangent, primary_axis='z', secondary_axis='x')
-                                            for normal, tangent in zip(normals, tangents)])
+                component_rotations.extend(
+                    [
+                        lib_math.vector_to_rotation(normal, tangent, primary_axis="z", secondary_axis="x")
+                        for normal, tangent in zip(normals, tangents, strict=False)
+                    ]
+                )
 
         component_positions = lib_conversion.MPoint_to_float(component_positions)
 
         result_positions.extend(component_positions)
         result_rotations.extend(component_rotations)
 
-        logger.debug(f'Bound positions: {result_positions}')
-        logger.debug(f'Bound rotations: {result_rotations}')
+        logger.debug(f"Bound positions: {result_positions}")
+        logger.debug(f"Bound rotations: {result_rotations}")
 
     if not result_positions and not result_rotations:
-        logger.warning('No valid position and rotation data.')
+        logger.warning("No valid position and rotation data.")
         return
 
     return result_positions, result_rotations
@@ -738,10 +753,10 @@ def cv_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     """
     curves = __get_selected_curves()
     if not curves:
-        logger.warning('No valid nurbsCurve selected.')
+        logger.warning("No valid nurbsCurve selected.")
         return
 
-    include_rotation = kwargs.pop('include_rotation', False)
+    include_rotation = kwargs.pop("include_rotation", False)
 
     result_data = []
     for curve in curves:
@@ -752,9 +767,9 @@ def cv_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
             rotations = __get_curve_rotations(curve, positions, **kwargs)
 
         positions = lib_conversion.MPoint_to_float(positions)
-        result_data.append({'position': positions, 'rotation': rotations})
+        result_data.append({"position": positions, "rotation": rotations})
 
-    logger.debug(f'CV positions: {result_data}')
+    logger.debug(f"CV positions: {result_data}")
 
     return result_data
 
@@ -772,10 +787,10 @@ def cv_closest_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     """
     curves = __get_selected_curves()
     if not curves:
-        logger.warning('No valid nurbsCurve selected.')
+        logger.warning("No valid nurbsCurve selected.")
         return
 
-    include_rotation = kwargs.pop('include_rotation', False)
+    include_rotation = kwargs.pop("include_rotation", False)
 
     result_data = []
     for curve in curves:
@@ -787,9 +802,9 @@ def cv_closest_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
             rotations = __get_curve_rotations(curve, closest_positions, **kwargs)
 
         closest_positions = lib_conversion.MPoint_to_float(closest_positions)
-        result_data.append({'position': closest_positions, 'rotation': rotations})
+        result_data.append({"position": closest_positions, "rotation": rotations})
 
-    logger.debug(f'Closest CV positions: {result_data}')
+    logger.debug(f"Closest CV positions: {result_data}")
 
     return result_data
 
@@ -807,10 +822,10 @@ def ep_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     """
     curves = __get_selected_curves()
     if not curves:
-        logger.warning('No valid nurbsCurve selected.')
+        logger.warning("No valid nurbsCurve selected.")
         return
 
-    include_rotation = kwargs.pop('include_rotation', False)
+    include_rotation = kwargs.pop("include_rotation", False)
 
     result_data = []
     for curve in curves:
@@ -821,9 +836,9 @@ def ep_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
             rotations = __get_curve_rotations(curve, positions, **kwargs)
 
         positions = lib_conversion.MPoint_to_float(positions)
-        result_data.append({'position': positions, 'rotation': rotations})
+        result_data.append({"position": positions, "rotation": rotations})
 
-    logger.debug(f'EP positions: {result_data}')
+    logger.debug(f"EP positions: {result_data}")
 
     return result_data
 
@@ -843,11 +858,11 @@ def length_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     """
     curves = __get_selected_curves()
     if not curves:
-        logger.warning('No valid nurbsCurve selected.')
+        logger.warning("No valid nurbsCurve selected.")
         return
 
-    include_rotation = kwargs.pop('include_rotation', False)
-    divisions = kwargs.pop('divisions', 1)
+    include_rotation = kwargs.pop("include_rotation", False)
+    divisions = kwargs.pop("divisions", 1)
 
     result_data = []
     for curve in curves:
@@ -859,9 +874,9 @@ def length_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
             rotations = __get_curve_rotations(curve, positions, **kwargs)
 
         positions = lib_conversion.MPoint_to_float(positions)
-        result_data.append({'position': positions, 'rotation': rotations})
+        result_data.append({"position": positions, "rotation": rotations})
 
-    logger.debug(f'Positions from length: {result_data}')
+    logger.debug(f"Positions from length: {result_data}")
 
     return result_data
 
@@ -880,11 +895,11 @@ def param_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     """
     curves = __get_selected_curves()
     if not curves:
-        logger.warning('No valid nurbsCurve selected.')
+        logger.warning("No valid nurbsCurve selected.")
         return
 
-    include_rotation = kwargs.pop('include_rotation', False)
-    divisions = kwargs.pop('divisions', 1)
+    include_rotation = kwargs.pop("include_rotation", False)
+    divisions = kwargs.pop("divisions", 1)
 
     result_data = []
     for curve in curves:
@@ -896,9 +911,9 @@ def param_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
             rotations = __get_curve_rotations(curve, positions, **kwargs)
 
         positions = lib_conversion.MPoint_to_float(positions)
-        result_data.append({'position': positions, 'rotation': rotations})
+        result_data.append({"position": positions, "rotation": rotations})
 
-    logger.debug(f'Positions from parameter: {result_data}')
+    logger.debug(f"Positions from parameter: {result_data}")
 
     return result_data
 
@@ -917,11 +932,11 @@ def cloud_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     """
     curves = __get_selected_curves()
     if not curves:
-        logger.warning('No valid nurbsCurve selected.')
+        logger.warning("No valid nurbsCurve selected.")
         return
 
-    include_rotation = kwargs.pop('include_rotation', False)
-    divisions = kwargs.pop('divisions', 1)
+    include_rotation = kwargs.pop("include_rotation", False)
+    divisions = kwargs.pop("divisions", 1)
 
     result_data = []
     for curve in curves:
@@ -933,9 +948,9 @@ def cloud_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
             rotations = __get_curve_rotations(curve, positions, **kwargs)
 
         positions = lib_conversion.MPoint_to_float(positions)
-        result_data.append({'position': positions, 'rotation': rotations})
+        result_data.append({"position": positions, "rotation": rotations})
 
-    logger.debug(f'Positions from cloud: {result_data}')
+    logger.debug(f"Positions from cloud: {result_data}")
 
     return result_data
 
@@ -946,7 +961,7 @@ def __get_selected_curves() -> list[str]:
     Returns:
         list[str]: The selected nurbsCurve.
     """
-    return cmds.ls(sl=True, dag=True, type='nurbsCurve', ni=True)
+    return cmds.ls(sl=True, dag=True, type="nurbsCurve", ni=True)
 
 
 def __get_curve_rotations(curve: str, positions: list[om.MPoint], *args, **kwargs) -> list[list[float]]:
@@ -967,32 +982,32 @@ def __get_curve_rotations(curve: str, positions: list[om.MPoint], *args, **kwarg
     Returns:
         list[list[float]]: The curve rotations.
     """
-    aim_vector_method = kwargs.get('aim_vector_method', 'tangent')  # 'tangent', 'next_point', 'previous_point'
-    up_vector_method = kwargs.get('up_vector_method', 'normal')  # 'scene_up', 'normal', 'surface_normal'
+    aim_vector_method = kwargs.get("aim_vector_method", "tangent")  # 'tangent', 'next_point', 'previous_point'
+    up_vector_method = kwargs.get("up_vector_method", "normal")  # 'scene_up', 'normal', 'surface_normal'
 
-    if aim_vector_method not in ['tangent', 'next_point', 'previous_point']:
-        raise ValueError('Invalid aim vector method.')
+    if aim_vector_method not in ["tangent", "next_point", "previous_point"]:
+        raise ValueError("Invalid aim vector method.")
 
-    if up_vector_method not in ['scene_up', 'normal', 'surface_normal']:
-        raise ValueError('Invalid up vector method.')
+    if up_vector_method not in ["scene_up", "normal", "surface_normal"]:
+        raise ValueError("Invalid up vector method.")
 
     curve_obj = lib_nurbsCurve.NurbsCurve(curve)
 
-    if up_vector_method == 'surface_normal':
+    if up_vector_method == "surface_normal":
         surface = None
-        curve_iso = cmds.listConnections(f'{curve}.create', type='curveFromSurfaceIso')
+        curve_iso = cmds.listConnections(f"{curve}.create", type="curveFromSurfaceIso")
         if not curve_iso:
-            logger.warning('No valid curveFromSurfaceIso.')
+            logger.warning("No valid curveFromSurfaceIso.")
         else:
-            surface = cmds.listConnections(f'{curve_iso[0]}.inputSurface', type='nurbsSurface', shapes=True)
+            surface = cmds.listConnections(f"{curve_iso[0]}.inputSurface", type="nurbsSurface", shapes=True)
 
         if not surface:
-            logger.warning('No valid nurbsSurface.')
-            up_vector_method = 'normal'
+            logger.warning("No valid nurbsSurface.")
+            up_vector_method = "normal"
         else:
             surface = lib_nurbsSurface.NurbsSurface(surface[0])
-            iso_param = cmds.getAttr(f'{curve_iso[0]}.isoparmValue')
-            iso_direction = cmds.getAttr(f'{curve_iso[0]}.isoparmDirection')
+            iso_param = cmds.getAttr(f"{curve_iso[0]}.isoparmValue")
+            iso_direction = cmds.getAttr(f"{curve_iso[0]}.isoparmDirection")
 
     num_positions = len(positions)
 
@@ -1001,30 +1016,30 @@ def __get_curve_rotations(curve: str, positions: list[om.MPoint], *args, **kwarg
         _, param = curve_obj.get_closest_position(positions[i])
 
         # Get the aim vector
-        if aim_vector_method == 'tangent':
+        if aim_vector_method == "tangent":
             aim_vector = curve_obj.get_tangent(param)
-        elif aim_vector_method == 'next_point':
+        elif aim_vector_method == "next_point":
             if i == (num_positions - 1):
                 aim_vector = positions[i] - positions[i - 1]
             else:
                 aim_vector = positions[i + 1] - positions[i]
-        elif aim_vector_method == 'previous_point':
+        elif aim_vector_method == "previous_point":
             if i == 0:
                 aim_vector = positions[i + 1] - positions[i]
             else:
                 aim_vector = positions[i] - positions[i - 1]
 
         # Get the up vector
-        if up_vector_method == 'scene_up':
+        if up_vector_method == "scene_up":
             up_vector = [0.0, 1.0, 0.0]
-        elif up_vector_method == 'normal':
+        elif up_vector_method == "normal":
             up_vector = curve_obj.get_normal(param)
-        elif up_vector_method == 'surface_normal':
+        elif up_vector_method == "surface_normal":
             params = iso_direction == 0 and [param, iso_param] or [iso_param, param]
             up_vector = surface.get_normal(params)
 
         # Get the rotation
-        rotation = lib_math.vector_to_rotation(aim_vector, up_vector, primary_axis='z', secondary_axis='x')
+        rotation = lib_math.vector_to_rotation(aim_vector, up_vector, primary_axis="z", secondary_axis="x")
         rotations.append(rotation)
 
     return rotations

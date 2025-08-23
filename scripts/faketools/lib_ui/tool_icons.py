@@ -14,8 +14,8 @@ def get_icon_path(picture_name: str) -> str:
     Returns:
         str: The icon path.
     """
-    icon_path = pathlib.Path(__file__).parent / 'icons' / f'{picture_name}.png'
+    icon_path = pathlib.Path(__file__).parent / "icons" / f"{picture_name}.png"
     if not icon_path.exists():
-        raise FileNotFoundError(f'Icon not found: {icon_path}')
+        raise FileNotFoundError(f"Icon not found: {icon_path}")
 
     return icon_path.as_posix()

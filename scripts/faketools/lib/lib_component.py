@@ -1,8 +1,6 @@
-"""Component filter functions for filtering components by type.
-"""
+"""Component filter functions for filtering components by type."""
 
 from logging import getLogger
-from typing import Optional
 
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
@@ -11,7 +9,6 @@ logger = getLogger(__name__)
 
 
 class ComponentFilter:
-
     def __init__(self, components: list[str]):
         """Initialize the component filter with a list of components.
 
@@ -22,61 +19,51 @@ class ComponentFilter:
         self.add_selection_list(components)
 
     def add_selection_list(self, components: list[str]) -> None:
-        """Add components to the selection list.
-        """
+        """Add components to the selection list."""
         for component in components:
             self.__selection_list.add(component)
 
     def clear_selection_list(self) -> None:
-        """Clear the selection list.
-        """
+        """Clear the selection list."""
         self.__selection_list.clear()
 
     def has_component(self) -> bool:
-        """Check if the selection list has any components.
-        """
+        """Check if the selection list has any components."""
         it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kComponent)
         return not it_selection_list.isDone()
 
     def has_vertex(self) -> bool:
-        """Check if the selection list has vertex components.
-        """
+        """Check if the selection list has vertex components."""
         it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kMeshVertComponent)
         return not it_selection_list.isDone()
 
     def has_edge(self) -> bool:
-        """Check if the selection list has edge components.
-        """
+        """Check if the selection list has edge components."""
         it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kMeshEdgeComponent)
         return not it_selection_list.isDone()
 
     def has_face(self) -> bool:
-        """Check if the selection list has face components.
-        """
+        """Check if the selection list has face components."""
         it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kMeshPolygonComponent)
         return not it_selection_list.isDone()
 
     def has_curve_cv(self) -> bool:
-        """Check if the selection list has curve CV components.
-        """
+        """Check if the selection list has curve CV components."""
         it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kCurveCVComponent)
         return not it_selection_list.isDone()
 
     def has_curve_ep(self) -> bool:
-        """Check if the selection list has curve EP components.
-        """
+        """Check if the selection list has curve EP components."""
         it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kCurveEPComponent)
         return not it_selection_list.isDone()
 
     def has_surface_cv(self) -> bool:
-        """Check if the selection list has surface CV components.
-        """
+        """Check if the selection list has surface CV components."""
         it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kSurfaceCVComponent)
         return not it_selection_list.isDone()
 
     def has_lattice_point(self) -> bool:
-        """Check if the selection list has lattice point components.
-        """
+        """Check if the selection list has lattice point components."""
         it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kLatticeComponent)
         return not it_selection_list.isDone()
 
@@ -93,7 +80,7 @@ class ComponentFilter:
         if as_component_name and component_data:
             for shape, indices in component_data.items():
                 geometry = cmds.listRelatives(shape, parent=True, path=True)[0]
-                component_data[shape] = [f'{geometry}.vtx[{i}]' for i in indices]
+                component_data[shape] = [f"{geometry}.vtx[{i}]" for i in indices]
 
         return component_data
 
@@ -110,7 +97,7 @@ class ComponentFilter:
         if as_component_name and component_data:
             for shape, indices in component_data.items():
                 geometry = cmds.listRelatives(shape, parent=True, path=True)[0]
-                component_data[shape] = [f'{geometry}.e[{i}]' for i in indices]
+                component_data[shape] = [f"{geometry}.e[{i}]" for i in indices]
 
         return component_data
 
@@ -127,7 +114,7 @@ class ComponentFilter:
         if as_component_name and component_data:
             for shape, indices in component_data.items():
                 geometry = cmds.listRelatives(shape, parent=True, path=True)[0]
-                component_data[shape] = [f'{geometry}.f[{i}]' for i in indices]
+                component_data[shape] = [f"{geometry}.f[{i}]" for i in indices]
 
         return component_data
 
@@ -143,7 +130,7 @@ class ComponentFilter:
         component_data = self.__get_single_components(om.MFn.kCurveCVComponent)
         if as_component_name and component_data:
             for shape, indices in component_data.items():
-                component_data[shape] = [f'{shape}.cv[{i}]' for i in indices]
+                component_data[shape] = [f"{shape}.cv[{i}]" for i in indices]
 
         return component_data
 
@@ -159,7 +146,7 @@ class ComponentFilter:
         component_data = self.__get_single_components(om.MFn.kCurveEPComponent)
         if as_component_name and component_data:
             for shape, indices in component_data.items():
-                component_data[shape] = [f'{shape}.ep[{i}]' for i in indices]
+                component_data[shape] = [f"{shape}.ep[{i}]" for i in indices]
 
         return component_data
 
@@ -183,12 +170,12 @@ class ComponentFilter:
             result_components[node.partialPathName()] = double_index_component.getElements()
             it_selection_list.next()
 
-        logger.debug(f'Found components: {result_components}')
+        logger.debug(f"Found components: {result_components}")
 
         if as_component_name and result_components:
             for shape, indices in result_components.items():
                 geometry = cmds.listRelatives(shape, parent=True, path=True)[0]
-                result_components[shape] = [f'{geometry}.cv[{i[0]}][{i[1]}]' for i in indices]
+                result_components[shape] = [f"{geometry}.cv[{i[0]}][{i[1]}]" for i in indices]
 
         return result_components
 
@@ -212,12 +199,12 @@ class ComponentFilter:
             result_components[node.partialPathName()] = triple_index_component.getElements()
             it_selection_list.next()
 
-        logger.debug(f'Found components: {result_components}')
+        logger.debug(f"Found components: {result_components}")
 
         if as_component_name and result_components:
             for shape, indices in result_components.items():
                 geometry = cmds.listRelatives(shape, parent=True, path=True)[0]
-                result_components[shape] = [f'{geometry}.pt[{i[0]}][{i[1]}][{i[2]}]' for i in indices]
+                result_components[shape] = [f"{geometry}.pt[{i[0]}][{i[1]}][{i[2]}]" for i in indices]
 
         return result_components
 
@@ -232,22 +219,22 @@ class ComponentFilter:
         """
         component_data = {}
         for component in component_type:
-            if component == 'vertex':
+            if component == "vertex":
                 component_data.update(self.get_vertex_components(as_component_name=True))
-            elif component == 'edge':
+            elif component == "edge":
                 component_data.update(self.get_edge_components(as_component_name=True))
-            elif component == 'face':
+            elif component == "face":
                 component_data.update(self.get_face_components(as_component_name=True))
-            elif component == 'curve_cv':
+            elif component == "curve_cv":
                 component_data.update(self.get_curve_cv_components(as_component_name=True))
-            elif component == 'curve_ep':
+            elif component == "curve_ep":
                 component_data.update(self.get_curve_ep_components(as_component_name=True))
-            elif component == 'surface_cv':
+            elif component == "surface_cv":
                 component_data.update(self.get_surface_cv_components(as_component_name=True))
-            elif component == 'lattice_point':
+            elif component == "lattice_point":
                 component_data.update(self.get_lattice_point_components(as_component_name=True))
             else:
-                logger.warning(f'Unknown component type: {component}')
+                logger.warning(f"Unknown component type: {component}")
 
         return component_data
 
@@ -271,13 +258,12 @@ class ComponentFilter:
             result_components[node.partialPathName()] = list(single_index_component.getElements())
             it_selection_list.next()
 
-        logger.debug(f'Found components: {result_components}')
+        logger.debug(f"Found components: {result_components}")
 
         return result_components
 
 
 class ComponentSelection:
-
     def __init__(self, components: list[str]):
         """Initialize the component selection with a list of components.
 
@@ -288,11 +274,11 @@ class ComponentSelection:
             components (list[str]): List of component names
         """
         if not components:
-            raise ValueError('Components are not specified.')
+            raise ValueError("Components are not specified.")
 
         components = cmds.filterExpand(components, sm=[28, 31, 32, 34, 46], ex=True)
         if not components:
-            raise ValueError('Components are not supported. Only mesh, nurbsCurve, nurbsSurface, and lattice components are supported.')
+            raise ValueError("Components are not supported. Only mesh, nurbsCurve, nurbsSurface, and lattice components are supported.")
 
         self.__components = components
 
@@ -303,7 +289,7 @@ class ComponentSelection:
             list[float]: The component positions.
         """
         positions = cmds.xform(self.__components, q=True, ws=True, t=True)
-        return list(zip(positions[::3], positions[1::3], positions[2::3]))
+        return list(zip(positions[::3], positions[1::3], positions[2::3], strict=False))
 
     def reverse_selection(self) -> list[str]:
         """Reverse selection of components.
@@ -330,7 +316,7 @@ class ComponentSelection:
         cmds.select(self.__components, r=True)
         return list(get_unique_selections().keys())
 
-    def x_area_selection(self, area: str = 'center') -> list[str]:
+    def x_area_selection(self, area: str = "center") -> list[str]:
         """X area selection of components.
 
         Args:
@@ -339,22 +325,22 @@ class ComponentSelection:
         Returns:
             list[str]: The area selected components.
         """
-        if area not in ['center', 'left', 'right']:
-            raise ValueError(f'Invalid area: {area}')
+        if area not in ["center", "left", "right"]:
+            raise ValueError(f"Invalid area: {area}")
 
         positions = self.__get_positions()
 
-        if area == 'center':
-            result_components = [component for component, position in zip(self.__components, positions) if 0.001 > position[0] > -0.001]
-            logger.debug(f'Center area components: {result_components}')
-        elif area == 'left':
-            result_components = [component for component, position in zip(self.__components, positions) if position[0] > 0.001]
-            logger.debug(f'Left area components: {result_components}')
-        elif area == 'right':
-            result_components = [component for component, position in zip(self.__components, positions) if position[0] < -0.001]
-            logger.debug(f'Right area components: {result_components}')
+        if area == "center":
+            result_components = [component for component, position in zip(self.__components, positions, strict=False) if 0.001 > position[0] > -0.001]
+            logger.debug(f"Center area components: {result_components}")
+        elif area == "left":
+            result_components = [component for component, position in zip(self.__components, positions, strict=False) if position[0] > 0.001]
+            logger.debug(f"Left area components: {result_components}")
+        elif area == "right":
+            result_components = [component for component, position in zip(self.__components, positions, strict=False) if position[0] < -0.001]
+            logger.debug(f"Right area components: {result_components}")
 
-        logger.debug(f'X area components: {result_components}')
+        logger.debug(f"X area components: {result_components}")
 
         return result_components
 
@@ -370,16 +356,16 @@ class ComponentSelection:
         Returns:
             list[str]: The same position selected components.
         """
-        max_distance = kwargs.get('max_distance', 0.001)
+        max_distance = kwargs.get("max_distance", 0.001)
 
         if not driver_mesh:
-            raise ValueError('Driver mesh is not specified.')
+            raise ValueError("Driver mesh is not specified.")
 
         if not cmds.objExists(driver_mesh):
-            raise ValueError(f'Driver mesh does not exist: {driver_mesh}')
+            raise ValueError(f"Driver mesh does not exist: {driver_mesh}")
 
-        if cmds.nodeType(driver_mesh) != 'mesh':
-            raise ValueError(f'Driver mesh is not a mesh: {driver_mesh}')
+        if cmds.nodeType(driver_mesh) != "mesh":
+            raise ValueError(f"Driver mesh is not a mesh: {driver_mesh}")
 
         selection_list = om.MSelectionList()
         selection_list.add(driver_mesh)
@@ -391,7 +377,7 @@ class ComponentSelection:
         component_positions = self.__get_positions()
 
         result_components = []
-        for component, position in zip(self.__components, component_positions):
+        for component, position in zip(self.__components, component_positions, strict=False):
             component_point = om.MPoint(position)
             point_on_mesh = mesh_intersector.getClosestPoint(component_point, max_distance)
 
@@ -400,7 +386,7 @@ class ComponentSelection:
 
             result_components.append(component)
 
-        logger.debug(f'Same position components: {result_components}')
+        logger.debug(f"Same position components: {result_components}")
 
         return result_components
 
@@ -413,21 +399,21 @@ class ComponentSelection:
         Returns:
             list[str]: The parameter selected components.
         """
-        uv = kwargs.get('uv', 'u')
-        area = kwargs.get('area', [0.0, 1.0])  # min, max
+        uv = kwargs.get("uv", "u")
+        area = kwargs.get("area", [0.0, 1.0])  # min, max
 
         components = cmds.filterExpand(self.__components, sm=28, ex=True)
         if not components:
-            raise ValueError('Components are not supported. Only nurbsCurve and nurbsSurface components are supported.')
+            raise ValueError("Components are not supported. Only nurbsCurve and nurbsSurface components are supported.")
 
-        if uv not in ['u', 'v']:
-            raise ValueError(f'Invalid parameter. u or v: {uv}')
+        if uv not in ["u", "v"]:
+            raise ValueError(f"Invalid parameter. u or v: {uv}")
 
         if len(area) != 2:
-            raise ValueError('Invalid parameter area. Must be a list of two values.')
+            raise ValueError("Invalid parameter area. Must be a list of two values.")
 
         if area[0] > area[1]:
-            raise ValueError('Invalid parameter area. Minimum value is greater than maximum value.')
+            raise ValueError("Invalid parameter area. Minimum value is greater than maximum value.")
 
         result_components = []
 
@@ -438,26 +424,26 @@ class ComponentSelection:
                 shape_transform = cmds.listRelatives(shape, parent=True, path=True)[0]
                 for index in indices:
                     if area[0] <= index <= area[1]:
-                        result_components.append(f'{shape_transform}.cv[{index}]')
+                        result_components.append(f"{shape_transform}.cv[{index}]")
 
         if filter_components.has_surface_cv():
             component_data = filter_components.get_surface_cv_components()
             for shape, indices in component_data.items():
                 shape_transform = cmds.listRelatives(shape, parent=True, path=True)[0]
                 for index in indices:
-                    if uv == 'u':
+                    if uv == "u":
                         if area[0] <= index[0] <= area[1]:
-                            result_components.append(f'{shape_transform}.cv[{index[0]}][{index[1]}]')
-                    elif uv == 'v':
+                            result_components.append(f"{shape_transform}.cv[{index[0]}][{index[1]}]")
+                    elif uv == "v":
                         if area[0] <= index[1] <= area[1]:
-                            result_components.append(f'{shape_transform}.cv[{index[0]}][{index[1]}]')
+                            result_components.append(f"{shape_transform}.cv[{index[0]}][{index[1]}]")
 
-        logger.debug(f'Parameter components: {result_components}')
+        logger.debug(f"Parameter components: {result_components}")
 
         return result_components
 
 
-def get_unique_selections(filter_geometries: Optional[list[str]] = None) -> dict[str, float]:
+def get_unique_selections(filter_geometries: list[str] | None = None) -> dict[str, float]:
     """Get the unique components.
 
     Args:
@@ -472,10 +458,10 @@ def get_unique_selections(filter_geometries: Optional[list[str]] = None) -> dict
         filter_geometries_path = []
         for geometry in filter_geometries:
             if not cmds.objExists(geometry):
-                raise ValueError(f'Geometry does not exist: {geometry}')
+                raise ValueError(f"Geometry does not exist: {geometry}")
 
-            if cmds.nodeType(geometry) != 'mesh':
-                raise ValueError(f'Geometry is not a mesh: {geometry}')
+            if cmds.nodeType(geometry) != "mesh":
+                raise ValueError(f"Geometry is not a mesh: {geometry}")
 
             selection_list = om.MSelectionList()
             selection_list.add(geometry)
@@ -487,7 +473,7 @@ def get_unique_selections(filter_geometries: Optional[list[str]] = None) -> dict
     selection = rich_selection.getSelection()
     sym_selection = rich_selection.getSymmetry()
     if selection.isEmpty():
-        logger.debug('No selection found.')
+        logger.debug("No selection found.")
         return {}
 
     if not sym_selection.isEmpty():
@@ -496,7 +482,7 @@ def get_unique_selections(filter_geometries: Optional[list[str]] = None) -> dict
     elements = {}
 
     def __process_single_indexed(selection_list, attr_list):
-        for component_type, attr in zip(selection_list, attr_list):
+        for component_type, attr in zip(selection_list, attr_list, strict=False):
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
                 dag_path, component = iterator.getComponent()
@@ -513,12 +499,12 @@ def get_unique_selections(filter_geometries: Optional[list[str]] = None) -> dict
                     weight = fn_comp.weight(i).influence if fn_comp.hasWeights else 1.0
                     elements[f"{node}.{attr}[{index}]"] = weight
 
-                logger.debug(f'Found components: {elements}')
+                logger.debug(f"Found components: {elements}")
 
                 iterator.next()
 
     def __process_double_indexed(selection_list, attr_list):
-        for component_type, attr in zip(selection_list, attr_list):
+        for component_type, attr in zip(selection_list, attr_list, strict=False):
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
                 dag_path, component = iterator.getComponent()
@@ -535,12 +521,12 @@ def get_unique_selections(filter_geometries: Optional[list[str]] = None) -> dict
                     weight = fn_comp.weight(i).influence if fn_comp.hasWeights else 1.0
                     elements[f"{node}.{attr}[{u}][{v}]"] = weight
 
-                logger.debug(f'Found components: {elements}')
+                logger.debug(f"Found components: {elements}")
 
                 iterator.next()
 
     def __process_triple_indexed(selection_list, attr_list):
-        for component_type, attr in zip(selection_list, attr_list):
+        for component_type, attr in zip(selection_list, attr_list, strict=False):
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
                 dag_path, component = iterator.getComponent()
@@ -557,23 +543,19 @@ def get_unique_selections(filter_geometries: Optional[list[str]] = None) -> dict
                     weight = fn_comp.weight(i).influence if fn_comp.hasWeights else 1.0
                     elements[f"{node}.{attr}[{s}][{t}][{u}]"] = weight
 
-                logger.debug(f'Found components: {elements}')
+                logger.debug(f"Found components: {elements}")
 
                 iterator.next()
 
     __process_single_indexed(
         [om.MFn.kCurveCVComponent, om.MFn.kCurveEPComponent, om.MFn.kMeshVertComponent, om.MFn.kMeshEdgeComponent, om.MFn.kMeshPolygonComponent],
-        ['cv', 'ep', 'vtx', 'e', 'f']
+        ["cv", "ep", "vtx", "e", "f"],
     )
 
     __process_double_indexed(
-        [om.MFn.kSurfaceCVComponent, om.MFn.kSubdivCVComponent, om.MFn.kSubdivEdgeComponent, om.MFn.kSubdivFaceComponent],
-        ['cv', 'smp', 'sme', 'smf']
+        [om.MFn.kSurfaceCVComponent, om.MFn.kSubdivCVComponent, om.MFn.kSubdivEdgeComponent, om.MFn.kSubdivFaceComponent], ["cv", "smp", "sme", "smf"]
     )
 
-    __process_triple_indexed(
-        [om.MFn.kLatticeComponent],
-        ['pt']
-    )
+    __process_triple_indexed([om.MFn.kLatticeComponent], ["pt"])
 
     return elements

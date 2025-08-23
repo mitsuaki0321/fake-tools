@@ -1,21 +1,18 @@
-"""User directory and settings management for faketools.
-"""
+"""User directory and settings management for faketools."""
 
 import json
-import os
 from logging import getLogger
-from typing import Optional
+import os
 
 logger = getLogger(__name__)
 
-SETTINGS_FILE_NAME = 'settings'
+SETTINGS_FILE_NAME = "settings"
 
 
 class ToolDirectory:
-    """Tool directory management.
-    """
+    """Tool directory management."""
 
-    __app_directory = os.environ.get('MAYA_APP_DIR', os.path.expanduser('~'))
+    __app_directory = os.environ.get("MAYA_APP_DIR", os.path.expanduser("~"))
 
     def __init__(self, module_name=None, create=True):
         """Initialize the tool directory.
@@ -28,7 +25,7 @@ class ToolDirectory:
         if create and not os.path.exists(self._path):
             os.makedirs(self._path)
 
-    def __create_directory_path(cls, module_name: Optional[str] = None) -> str:
+    def __create_directory_path(cls, module_name: str | None = None) -> str:
         """Create the tool directory path.
 
         Args:
@@ -40,7 +37,7 @@ class ToolDirectory:
         if not module_name:
             return os.path.normpath(os.path.join(cls.__app_directory, __package__))
         else:
-            module_path = module_name.split('.')
+            module_path = module_name.split(".")
             return os.path.normpath(os.path.join(cls.__app_directory, *module_path))
 
     def get_directory(self) -> str:
@@ -59,8 +56,7 @@ class ToolDirectory:
 
 
 class ToolSettings:
-    """Tool settings management.
-    """
+    """Tool settings management."""
 
     def __init__(self, module_name=None):
         """Tool settings management.
@@ -71,9 +67,9 @@ class ToolSettings:
         self.__directory = ToolDirectory(module_name).get_directory()
 
         if not module_name:
-            self.__file_name = f'{SETTINGS_FILE_NAME}.json'
+            self.__file_name = f"{SETTINGS_FILE_NAME}.json"
         else:
-            self.__file_name = f'{module_name}_{SETTINGS_FILE_NAME}.json'
+            self.__file_name = f"{module_name}_{SETTINGS_FILE_NAME}.json"
 
         self.__settings_path = os.path.join(str(self.__directory), self.__file_name)
 
@@ -110,7 +106,7 @@ class ToolSettings:
         if not os.path.exists(self.__settings_path):
             return {}
 
-        with open(self.__settings_path, 'r') as f:
+        with open(self.__settings_path) as f:
             settings = json.load(f)
 
         return settings
@@ -124,7 +120,7 @@ class ToolSettings:
         if not isinstance(settings, dict):
             raise TypeError("Settings must be a dictionary.")
 
-        with open(self.__settings_path, 'w') as f:
+        with open(self.__settings_path, "w") as f:
             json.dump(settings, f, indent=4)
 
         logger.debug(f"Saved settings to: {self.__settings_path}")
@@ -150,12 +146,12 @@ def setup_global_settings() -> dict:
     current_settings = tool_settings.load()
 
     package_directory = os.path.dirname(__file__)
-    settings_file = os.path.join(package_directory, f'{SETTINGS_FILE_NAME}.json')
+    settings_file = os.path.join(package_directory, f"{SETTINGS_FILE_NAME}.json")
 
     if not os.path.exists(settings_file):
-        raise FileNotFoundError(f'Settings file not found: {settings_file}')
+        raise FileNotFoundError(f"Settings file not found: {settings_file}")
 
-    with open(settings_file, 'r') as f:
+    with open(settings_file) as f:
         settings = json.load(f)
 
     for key, value in current_settings.items():
@@ -164,4 +160,4 @@ def setup_global_settings() -> dict:
 
     tool_settings.save(settings)
 
-    logger.info(f'Loaded global settings from: {settings_file}')
+    logger.info(f"Loaded global settings from: {settings_file}")
