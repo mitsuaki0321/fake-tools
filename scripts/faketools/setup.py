@@ -41,3 +41,14 @@ def debug_mode(debug: bool) -> None:
         logger.setLevel(logging.INFO)
 
     logger.info(f"Debug mode: {debug}")
+
+
+def remove_modules() -> None:
+    """Remove all faketools modules from sys.modules."""
+    import sys
+
+    root_module_name = "faketools"
+    module_names = [name for name in list(sys.modules) if name == root_module_name or name.startswith(f"{root_module_name}.")]
+
+    for module_name in module_names:
+        del sys.modules[module_name]
