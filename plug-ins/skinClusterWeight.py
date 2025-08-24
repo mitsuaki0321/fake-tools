@@ -65,16 +65,17 @@ class SkinWeightExport(OpenMaya.MPxCommand):
         - If the components flag is specified, the weights of those components will be retrieved.
         - The components specified by the components flag must be components of the geometry associated with the skinCluster.
         - If the all flag is specified, the weights of all components of the geometry associated with the skinCluster will be retrieved. # noqa
-          In this case, the components flag is ignored.
+        - In this case, the components flag is ignored.
     """
+
     # Command name
-    plugin_cmd_name = 'skinWeightExport'
+    plugin_cmd_name = "skinWeightExport"
 
     # Flags
-    components_flag = '-cps'
-    components_flag_long = '-components'
-    component_all_flag = '-all'
-    component_all_flag_long = '-allComponents'
+    components_flag = "-cps"
+    components_flag_long = "-components"
+    component_all_flag = "-all"
+    component_all_flag_long = "-allComponents"
 
     def __init__(self):
         OpenMaya.MPxCommand.__init__(self)
@@ -85,14 +86,12 @@ class SkinWeightExport(OpenMaya.MPxCommand):
 
     @staticmethod
     def cmdCreator():
-        """
-        """
+        """ """
         return SkinWeightExport()
 
     @classmethod
     def syntaxCreator(cls):
-        """
-        """
+        """ """
         syntax = OpenMaya.MSyntax()
 
         # skinCluster node
@@ -135,14 +134,13 @@ class SkinWeightExport(OpenMaya.MPxCommand):
                     arg_list = arg_data.getFlagArgumentList(self.components_flag, i).asString(0)
                     self.components.append(arg_list)
             else:
-                OpenMaya.MGlobal.displayError('-all or -components flag must be set.')
+                OpenMaya.MGlobal.displayError("-all or -components flag must be set.")
                 return False
 
         return True
 
     def doIt(self, args):
-        """
-        """
+        """ """
         # Parse arguments
         status = self.parse_args(args)
         if not status:
@@ -152,11 +150,11 @@ class SkinWeightExport(OpenMaya.MPxCommand):
         try:
             skinCluster_fn = get_skinCluster_fn(self.skinCluster_name)
         except Exception:
-            OpenMaya.MGlobal.displayError(f'Failed to get skinCluster node: {self.skinCluster_name}')
+            OpenMaya.MGlobal.displayError(f"Failed to get skinCluster node: {self.skinCluster_name}")
             return
 
         if not is_classic_linear(self.skinCluster_name):
-            OpenMaya.MGlobal.displayError('Unsupported skinCluster method.')
+            OpenMaya.MGlobal.displayError("Unsupported skinCluster method.")
             return
 
         # Get weights
@@ -175,39 +173,36 @@ class SkinWeightExport(OpenMaya.MPxCommand):
             components_path, components_obj = component_data
 
             if components_path != geometry_path:
-                OpenMaya.MGlobal.displayError('Component does not belong to the geometry.')
+                OpenMaya.MGlobal.displayError("Component does not belong to the geometry.")
                 return
 
         weights, _ = skinCluster_fn.getWeights(geometry_path, components_obj)
         self.setResult(weights)
 
     def redoIt(self):
-        """Suspends undo recording, performs the operation, and then resumes undo recording.
-        """
+        """Suspends undo recording, performs the operation, and then resumes undo recording."""
         pass
 
     def undoIt(self):
-        """Suspends undo recording, performs the operation, and then resumes undo recording.
-        """
+        """Suspends undo recording, performs the operation, and then resumes undo recording."""
         pass
 
     def isUndoable(self):
-        """Return whether the command is undoable.
-        """
+        """Return whether the command is undoable."""
         return False
 
 
 class SkinWeightImport(OpenMaya.MPxCommand):
-    """Command for skinCluster import weights.
-    """
+    """Command for skinCluster import weights."""
+
     # Command name
-    plugin_cmd_name = 'skinWeightImport'
+    plugin_cmd_name = "skinWeightImport"
 
     # Flags
-    components_flag = '-cps'
-    components_flag_long = '-components'
-    weight_flag = '-w'
-    weight_flag_long = '-weights'
+    components_flag = "-cps"
+    components_flag_long = "-components"
+    weight_flag = "-w"
+    weight_flag_long = "-weights"
 
     def __init__(self):
         OpenMaya.MPxCommand.__init__(self)
@@ -219,14 +214,12 @@ class SkinWeightImport(OpenMaya.MPxCommand):
 
     @staticmethod
     def cmdCreator():
-        """
-        """
+        """ """
         return SkinWeightImport()
 
     @classmethod
     def syntaxCreator(cls):
-        """
-        """
+        """ """
         syntax = OpenMaya.MSyntax()
 
         # skinCluster node
@@ -259,7 +252,7 @@ class SkinWeightImport(OpenMaya.MPxCommand):
         self.skinCluster_name = arg_data.commandArgumentString(0)
 
         if not arg_data.isFlagSet(self.components_flag) or not arg_data.isFlagSet(self.weight_flag):
-            OpenMaya.MGlobal.displayError('Both -components and -weights flags cannot be set.')
+            OpenMaya.MGlobal.displayError("Both -components and -weights flags cannot be set.")
             return False
 
         if arg_data.isFlagSet(self.components_flag):
@@ -279,8 +272,7 @@ class SkinWeightImport(OpenMaya.MPxCommand):
         return True
 
     def doIt(self, args):
-        """
-        """
+        """ """
         # Parse arguments
         status = self.parse_args(args)
         if not status:
@@ -289,17 +281,16 @@ class SkinWeightImport(OpenMaya.MPxCommand):
         self.redoIt()
 
     def redoIt(self):
-        """
-        """
+        """ """
         # Get skinCluster node
         try:
             skinCluster_fn = get_skinCluster_fn(self.skinCluster_name)
         except Exception:
-            OpenMaya.MGlobal.displayError(f'Failed to get skinCluster node: {self.skinCluster_name}')
+            OpenMaya.MGlobal.displayError(f"Failed to get skinCluster node: {self.skinCluster_name}")
             return
 
         if not is_classic_linear(self.skinCluster_name):
-            OpenMaya.MGlobal.displayError('Unsupported skinCluster method.')
+            OpenMaya.MGlobal.displayError("Unsupported skinCluster method.")
             return
 
         # Get weights
@@ -313,7 +304,7 @@ class SkinWeightImport(OpenMaya.MPxCommand):
         components_path, components_obj = component_data
 
         if components_path != geometry_path:
-            OpenMaya.MGlobal.displayError('Component does not belong to the geometry.')
+            OpenMaya.MGlobal.displayError("Component does not belong to the geometry.")
             return
 
         if components_obj.hasFn(OpenMaya.MFn.kSingleIndexedComponent):
@@ -323,31 +314,25 @@ class SkinWeightImport(OpenMaya.MPxCommand):
         elif components_obj.hasFn(OpenMaya.MFn.kTripleIndexedComponent):
             num_components = OpenMaya.MFnTripleIndexedComponent(components_obj).elementCount
         else:
-            OpenMaya.MGlobal.displayError('Unsupported component type.')
+            OpenMaya.MGlobal.displayError("Unsupported component type.")
             return
 
         num_infs = len(skinCluster_fn.influenceObjects())
 
         if len(self.weights) != (num_components * num_infs):
-            OpenMaya.MGlobal.displayError('The number of weights does not match the number of components and influences.')
+            OpenMaya.MGlobal.displayError("The number of weights does not match the number of components and influences.")
             return
 
         influences_index_array = OpenMaya.MIntArray(list(range(num_infs)))
 
-        self.old_weights = skinCluster_fn.setWeights(geometry_path,
-                                                     components_obj,
-                                                     influences_index_array,
-                                                     self.weights,
-                                                     True,
-                                                     True)
+        self.old_weights = skinCluster_fn.setWeights(geometry_path, components_obj, influences_index_array, self.weights, True, True)
 
     def undoIt(self):
-        """
-        """
+        """ """
         try:
             skinCluster_fn = get_skinCluster_fn(self.skinCluster_name)
         except Exception:
-            OpenMaya.MGlobal.displayError(f'Failed to get skinCluster node: {self.skinCluster_name}')
+            OpenMaya.MGlobal.displayError(f"Failed to get skinCluster node: {self.skinCluster_name}")
             return
 
         geometry_path = skinCluster_fn.getPathAtIndex(0)
@@ -359,16 +344,10 @@ class SkinWeightImport(OpenMaya.MPxCommand):
 
         _, components_obj = selection.getComponent(0)
 
-        self.old_weights = skinCluster_fn.setWeights(geometry_path,
-                                                     components_obj,
-                                                     infs_index_array,
-                                                     self.old_weights,
-                                                     True,
-                                                     True)
+        self.old_weights = skinCluster_fn.setWeights(geometry_path, components_obj, infs_index_array, self.old_weights, True, True)
 
     def isUndoable(self):
-        """Return whether the command is undoable.
-        """
+        """Return whether the command is undoable."""
         return True
 
 
@@ -378,20 +357,21 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
     Notes:
         - Copy skinCluster weights from the source skinCluster to the destination skinCluster.
     """
+
     # Command name
-    plugin_cmd_name = 'copySkinWeightsCustom'
+    plugin_cmd_name = "copySkinWeightsCustom"
 
     # Flags
-    src_flag = '-ss'
-    src_flag_long = '-sourceSkin'
-    dst_flag = '-ds'
-    dst_flag_long = '-destinationSkin'
-    blend_weights_flag = '-bw'
-    blend_weights_flag_long = '-blendWeights'
-    only_unlock_influences_flag = '-oui'
-    only_unlock_influences_flag_long = '-onlyUnlockInfluences'
-    reference_orig_flag = '-ros'
-    reference_orig_flag_long = '-referenceOrigShape'
+    src_flag = "-ss"
+    src_flag_long = "-sourceSkin"
+    dst_flag = "-ds"
+    dst_flag_long = "-destinationSkin"
+    blend_weights_flag = "-bw"
+    blend_weights_flag_long = "-blendWeights"
+    only_unlock_influences_flag = "-oui"
+    only_unlock_influences_flag_long = "-onlyUnlockInfluences"
+    reference_orig_flag = "-ros"
+    reference_orig_flag_long = "-referenceOrigShape"
 
     def __init__(self):
         OpenMaya.MPxCommand.__init__(self)
@@ -409,14 +389,12 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
 
     @staticmethod
     def cmdCreator():
-        """
-        """
+        """ """
         return CopySkinWeightsCustom()
 
     @classmethod
     def syntaxCreator(cls):
-        """
-        """
+        """ """
         syntax = OpenMaya.MSyntax()
 
         # source skinCluster
@@ -451,7 +429,7 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
         arg_data = OpenMaya.MArgParser(self.syntax(), args)
 
         if not arg_data.isFlagSet(self.src_flag) or not arg_data.isFlagSet(self.dst_flag):
-            OpenMaya.MGlobal.displayError('Both -source and -destination flags must be set.')
+            OpenMaya.MGlobal.displayError("Both -source and -destination flags must be set.")
             return False
 
         self.src_skinCluster = arg_data.flagArgumentString(self.src_flag, 0)
@@ -460,7 +438,7 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
         if arg_data.isFlagSet(self.blend_weights_flag):
             self.blend_weights = arg_data.flagArgumentDouble(self.blend_weights_flag, 0)
             if self.blend_weights < 0.0 or self.blend_weights > 1.0:
-                OpenMaya.MGlobal.displayError('Blend weights must be between 0.0 and 1.0.')
+                OpenMaya.MGlobal.displayError("Blend weights must be between 0.0 and 1.0.")
                 return False
 
         if arg_data.isFlagSet(self.only_unlock_influences_flag):
@@ -472,8 +450,7 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
         return True
 
     def doIt(self, args):
-        """
-        """
+        """ """
         # Parse arguments
         status = self.parse_args(args)
         if not status:
@@ -482,24 +459,23 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
         self.redoIt()
 
     def redoIt(self):
-        """
-        """
+        """ """
         # Get source skinCluster node
         try:
             src_skinCluster_fn = get_skinCluster_fn(self.src_skinCluster)
         except Exception:
-            OpenMaya.MGlobal.displayError(f'Failed to get skinCluster node: {self.src_skinCluster}')
+            OpenMaya.MGlobal.displayError(f"Failed to get skinCluster node: {self.src_skinCluster}")
             return
 
         # Get destination skinCluster node
         try:
             dst_skinCluster_fn = get_skinCluster_fn(self.dst_skinCluster)
         except Exception:
-            OpenMaya.MGlobal.displayError(f'Failed to get skinCluster node: {self.dst_skinCluster}')
+            OpenMaya.MGlobal.displayError(f"Failed to get skinCluster node: {self.dst_skinCluster}")
             return
 
         if not is_classic_linear(self.src_skinCluster) or not is_classic_linear(self.dst_skinCluster):
-            OpenMaya.MGlobal.displayError('Unsupported skinCluster method.')
+            OpenMaya.MGlobal.displayError("Unsupported skinCluster method.")
             return
 
         # Check influences
@@ -510,24 +486,24 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
 
         diff_infs = list(set(src_infs) - set(dst_infs))
         if diff_infs:
-            OpenMaya.MGlobal.displayError(f'Influences do not match: {diff_infs}')
+            OpenMaya.MGlobal.displayError(f"Influences do not match: {diff_infs}")
             return
 
         if self.only_unlock_infs:
             self.unlocked_infs = []
             for inf in dst_infs_path_array:
-                lock_plug = dst_skinCluster_fn.findPlug('lockWeights', True)
+                lock_plug = dst_skinCluster_fn.findPlug("lockWeights", True)
                 inf_index = dst_skinCluster_fn.indexForInfluenceObject(inf)
                 self.unlocked_infs.append(not lock_plug.elementByLogicalIndex(inf_index).asBool())
 
             if all(self.unlocked_infs):
-                OpenMaya.MGlobal.displayError('lockInfluences flag is set but all influences are locked.')
+                OpenMaya.MGlobal.displayError("lockInfluences flag is set but all influences are locked.")
                 return
 
         # Get source geometry
         src_geometry_path = src_skinCluster_fn.getPathAtIndex(0)
         if src_geometry_path.apiType() != OpenMaya.MFn.kMesh:
-            OpenMaya.MGlobal.displayError('Source geometry must be mesh.')
+            OpenMaya.MGlobal.displayError("Source geometry must be mesh.")
             return
 
         src_comp_obj = get_geometry_components(src_geometry_path)
@@ -557,11 +533,11 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
         num_dst_infs = len(dst_infs)
 
         if src_infs == dst_infs:
-            src_weights_array = [src_weights[i:i + num_src_infs] for i in range(0, len(src_weights), num_src_infs)]
+            src_weights_array = [src_weights[i : i + num_src_infs] for i in range(0, len(src_weights), num_src_infs)]
 
         else:
             src_weights_array = []
-            target_weights_array = [src_weights[i:i + num_src_infs] for i in range(0, len(src_weights), num_src_infs)]
+            target_weights_array = [src_weights[i : i + num_src_infs] for i in range(0, len(src_weights), num_src_infs)]
 
             vertex_count = OpenMaya.MFnMesh(src_geometry_path).numVertices
             for i in range(vertex_count):
@@ -574,7 +550,7 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
 
                 src_weights_array.append(src_weight)
 
-        dst_weights_array = [dst_weights[i:i + num_dst_infs] for i in range(0, len(dst_weights), num_dst_infs)]
+        dst_weights_array = [dst_weights[i : i + num_dst_infs] for i in range(0, len(dst_weights), num_dst_infs)]
 
         # Copy weights
         src_mesh_intersector = OpenMaya.MMeshIntersector()
@@ -606,7 +582,10 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
             uw, vw = src_point_on_mesh.barycentricCoords
 
             src_mit_mesh.setIndex(src_point_on_mesh.face)
-            _, triangle_vtx_indices, = src_mit_mesh.getTriangle(src_point_on_mesh.triangle, OpenMaya.MSpace.kWorld)
+            (
+                _,
+                triangle_vtx_indices,
+            ) = src_mit_mesh.getTriangle(src_point_on_mesh.triangle, OpenMaya.MSpace.kWorld)
 
             calc_weight = OpenMaya.MDoubleArray(num_dst_infs, 0.0)
             for vtx_index, bary_weight in zip(triangle_vtx_indices, [uw, vw, 1 - uw - vw], strict=False):
@@ -652,20 +631,14 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
 
         # Set weights
         influences_index_array = OpenMaya.MIntArray(list(range(num_dst_infs)))
-        self.old_weights = dst_skinCluster_fn.setWeights(dst_geometry_path,
-                                                         dst_comp_obj,
-                                                         influences_index_array,
-                                                         calc_weights,
-                                                         True,
-                                                         True)
+        self.old_weights = dst_skinCluster_fn.setWeights(dst_geometry_path, dst_comp_obj, influences_index_array, calc_weights, True, True)
 
     def undoIt(self):
-        """
-        """
+        """ """
         try:
             dst_skinCluster_fn = get_skinCluster_fn(self.dst_skinCluster)
         except Exception:
-            OpenMaya.MGlobal.displayError(f'Failed to get skinCluster node: {self.dst_skinCluster}')
+            OpenMaya.MGlobal.displayError(f"Failed to get skinCluster node: {self.dst_skinCluster}")
             return
 
         dst_geometry_path = dst_skinCluster_fn.getPathAtIndex(0)
@@ -685,16 +658,10 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
 
         influences_index_array = OpenMaya.MIntArray(list(range(len(dst_skinCluster_fn.influenceObjects()))))
 
-        self.old_weights = dst_skinCluster_fn.setWeights(dst_geometry_path,
-                                                         dst_comp_obj,
-                                                         influences_index_array,
-                                                         self.old_weights,
-                                                         True,
-                                                         True)
+        self.old_weights = dst_skinCluster_fn.setWeights(dst_geometry_path, dst_comp_obj, influences_index_array, self.old_weights, True, True)
 
     def isUndoable(self):
-        """Return whether the command is undoable.
-        """
+        """Return whether the command is undoable."""
         return True
 
 
@@ -716,15 +683,12 @@ def is_classic_linear(skinCluster_name) -> bool:
         skinCluster_node = selection.getDependNode(0)
 
         depend_node_fn = OpenMaya.MFnDependencyNode(skinCluster_node)
-        method_plug = depend_node_fn.findPlug('skinningMethod', True)
+        method_plug = depend_node_fn.findPlug("skinningMethod", True)
 
-        if method_plug.asInt() == 0:
-            return True
-        else:
-            return False
+        return method_plug.asInt() == 0
 
     except Exception as e:
-        OpenMaya.MGlobal.displayError(f'Failed to check skinCluster type: {e}')
+        OpenMaya.MGlobal.displayError(f"Failed to check skinCluster type: {e}")
         return False
 
 
@@ -759,24 +723,23 @@ def get_components_from_name(components) -> tuple[OpenMaya.MDagPath, OpenMaya.MO
         selection.add(component)
 
     if selection.length() == 0:
-        OpenMaya.MGlobal.displayError('No components found.')
+        OpenMaya.MGlobal.displayError("No components found.")
         return
 
     if selection.length() > 1:
-        OpenMaya.MGlobal.displayError('Only one component is allowed.')
+        OpenMaya.MGlobal.displayError("Only one component is allowed.")
         return
 
     components_path, components_obj = selection.getComponent(0)
     if components_obj.isNull():
-        OpenMaya.MGlobal.displayError('Invalid component.')
+        OpenMaya.MGlobal.displayError("Invalid component.")
         return
 
     return components_path, components_obj
 
 
 def get_geometry_components(geometry_path):
-    """Get the components of the geometry.
-    """
+    """Get the components of the geometry."""
     try:
         # Determine the type of geometry and initialize variables
         if geometry_path.apiType() == OpenMaya.MFn.kMesh:
@@ -796,11 +759,11 @@ def get_geometry_components(geometry_path):
         elif geometry_path.apiType() == OpenMaya.MFn.kLattice:
             component_type = OpenMaya.MFn.kLatticeComponent
             geometry_name = geometry_path.fullPathName()
-            s_div = cmds.getAttr(f'{geometry_name}.sDivisions')
-            t_div = cmds.getAttr(f'{geometry_name}.tDivisions')
-            u_div = cmds.getAttr(f'{geometry_name}.uDivisions')
+            s_div = cmds.getAttr(f"{geometry_name}.sDivisions")
+            t_div = cmds.getAttr(f"{geometry_name}.tDivisions")
+            u_div = cmds.getAttr(f"{geometry_name}.uDivisions")
         else:
-            OpenMaya.MGlobal.displayError(f'Unsupported geometry type: {geometry_path.apiTypeStr()}')
+            OpenMaya.MGlobal.displayError(f"Unsupported geometry type: {geometry_path.apiTypeStr()}")
             return OpenMaya.MObject.kNullObj
 
         # Create and populate the appropriate component object
@@ -820,13 +783,13 @@ def get_geometry_components(geometry_path):
             triple_index_comp.setCompleteData(s_div, t_div, u_div)
 
         else:
-            OpenMaya.MGlobal.displayError(f'Unknown component type: {component_type}')
+            OpenMaya.MGlobal.displayError(f"Unknown component type: {component_type}")
             return OpenMaya.MObject.kNullObj
 
         return components_obj
 
     except Exception as e:
-        OpenMaya.MGlobal.displayError(f'Failed to get geometry components: {e}')
+        OpenMaya.MGlobal.displayError(f"Failed to get geometry components: {e}")
         return OpenMaya.MObject.kNullObj
 
 
@@ -840,7 +803,7 @@ def get_original_shape(skinCluster_fn):
         MDagPath: The original shape dag path.
     """
     try:
-        orig_plug = skinCluster_fn.findPlug('originalGeometry', True)
+        orig_plug = skinCluster_fn.findPlug("originalGeometry", True)
         plug_element = orig_plug.elementByLogicalIndex(0)
         orig_shape_obj = plug_element.source().node()
         orig_shape_fn = OpenMaya.MFnDagNode(orig_shape_obj)
@@ -848,7 +811,7 @@ def get_original_shape(skinCluster_fn):
 
         return orig_shape_path
     except Exception as e:
-        OpenMaya.MGlobal.displayError(f'Failed to get original shape: {e}')
+        OpenMaya.MGlobal.displayError(f"Failed to get original shape: {e}")
         return
 
 
@@ -856,54 +819,52 @@ def get_original_shape(skinCluster_fn):
 
 
 def initializePlugin(plugin):
-    """Initialize the script plug-in.
-    """
-    plugin_fn = OpenMaya.MFnPlugin(plugin, 'Mitsuaki Watanabe', '1.0', 'Any')
+    """Initialize the script plug-in."""
+    plugin_fn = OpenMaya.MFnPlugin(plugin, "Mitsuaki Watanabe", "1.0", "Any")
 
     # Register command for skinClusterExport
     try:
         plugin_fn.registerCommand(SkinWeightExport.plugin_cmd_name, SkinWeightExport.cmdCreator, SkinWeightExport.syntaxCreator)
     except Exception as e:
-        sys.stderr.write(f'Failed to register command: {SkinWeightExport.plugin_cmd_name}')
+        sys.stderr.write(f"Failed to register command: {SkinWeightExport.plugin_cmd_name}")
         raise e
 
     # Register command for skinClusterImport
     try:
         plugin_fn.registerCommand(SkinWeightImport.plugin_cmd_name, SkinWeightImport.cmdCreator, SkinWeightImport.syntaxCreator)
     except Exception as e:
-        sys.stderr.write(f'Failed to register command: {SkinWeightImport.plugin_cmd_name}')
+        sys.stderr.write(f"Failed to register command: {SkinWeightImport.plugin_cmd_name}")
         raise e
 
     # Register command for copySkinWeights
     try:
         plugin_fn.registerCommand(CopySkinWeightsCustom.plugin_cmd_name, CopySkinWeightsCustom.cmdCreator, CopySkinWeightsCustom.syntaxCreator)
     except Exception as e:
-        sys.stderr.write(f'Failed to register command: {CopySkinWeightsCustom.plugin_cmd_name}')
+        sys.stderr.write(f"Failed to register command: {CopySkinWeightsCustom.plugin_cmd_name}")
         raise e
 
 
 def uninitializePlugin(plugin):
-    """Uninitialize the script plug-in.
-    """
+    """Uninitialize the script plug-in."""
     plugin_fn = OpenMaya.MFnPlugin(plugin)
 
     # Unregister command for skinClusterExport
     try:
         plugin_fn.deregisterCommand(SkinWeightExport.plugin_cmd_name)
     except Exception as e:
-        sys.stderr.write(f'Failed to unregister command: {SkinWeightExport.plugin_cmd_name}')
+        sys.stderr.write(f"Failed to unregister command: {SkinWeightExport.plugin_cmd_name}")
         raise e
 
     # Unregister command for skinClusterImport
     try:
         plugin_fn.deregisterCommand(SkinWeightImport.plugin_cmd_name)
     except Exception as e:
-        sys.stderr.write(f'Failed to unregister command: {SkinWeightImport.plugin_cmd_name}')
+        sys.stderr.write(f"Failed to unregister command: {SkinWeightImport.plugin_cmd_name}")
         raise e
 
     # Unregister command for copySkinWeights
     try:
         plugin_fn.deregisterCommand(CopySkinWeightsCustom.plugin_cmd_name)
     except Exception as e:
-        sys.stderr.write(f'Failed to unregister command: {CopySkinWeightsCustom.plugin_cmd_name}')
+        sys.stderr.write(f"Failed to unregister command: {CopySkinWeightsCustom.plugin_cmd_name}")
         raise e

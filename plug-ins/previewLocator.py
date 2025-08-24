@@ -53,8 +53,7 @@ default_shape_rotation = (0.0, 0.0, 0.0)
 
 
 class PreviewLocator(OpenMayaUI.MPxLocatorNode):
-    """Simple locator node.
-    """
+    """Simple locator node."""
 
     # Attributes
 
@@ -76,27 +75,23 @@ class PreviewLocator(OpenMayaUI.MPxLocatorNode):
     shape_rotation = None
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         OpenMayaUI.MPxLocatorNode.__init__(self)
 
     def postConstructor(self):
-        """Post constructor.
-        """
+        """Post constructor."""
         # Set the node name
         node_fn = OpenMaya.MFnDependencyNode(self.thisMObject())
         node_fn.setName("previewLocatorShape#")
 
     @staticmethod
     def creator():
-        """Creator.
-        """
+        """Creator."""
         return PreviewLocator()
 
     @staticmethod
     def initialize():
-        """Initialize the node.
-        """
+        """Initialize the node."""
         enum_attr = OpenMaya.MFnEnumAttribute()
         numeric_attr = OpenMaya.MFnNumericAttribute()
         unit_attr = OpenMaya.MFnUnitAttribute()
@@ -134,8 +129,9 @@ class PreviewLocator(OpenMayaUI.MPxLocatorNode):
         PreviewLocator.addAttribute(PreviewLocator.line_width)
 
         # Manipulation color attribute
-        PreviewLocator.manipulation_color = numeric_attr.create("manipulationColor", "mc",
-                                                                OpenMaya.MFnNumericData.kBoolean, default_manipulation_color)
+        PreviewLocator.manipulation_color = numeric_attr.create(
+            "manipulationColor", "mc", OpenMaya.MFnNumericData.kBoolean, default_manipulation_color
+        )
         numeric_attr.keyable = True
         numeric_attr.storable = True
         numeric_attr.writable = True
@@ -178,10 +174,9 @@ class PreviewLocator(OpenMayaUI.MPxLocatorNode):
         PreviewLocator.shape_position_x = unit_attr.create("shapePositionX", "shpx", OpenMaya.MFnUnitAttribute.kDistance, 0.0)
         PreviewLocator.shape_position_y = unit_attr.create("shapePositionY", "shpy", OpenMaya.MFnUnitAttribute.kDistance, 0.0)
         PreviewLocator.shape_position_z = unit_attr.create("shapePositionZ", "shpz", OpenMaya.MFnUnitAttribute.kDistance, 0.0)
-        PreviewLocator.shape_position = numeric_attr.create("shapePosition", "shp",
-                                                            PreviewLocator.shape_position_x,
-                                                            PreviewLocator.shape_position_y,
-                                                            PreviewLocator.shape_position_z)
+        PreviewLocator.shape_position = numeric_attr.create(
+            "shapePosition", "shp", PreviewLocator.shape_position_x, PreviewLocator.shape_position_y, PreviewLocator.shape_position_z
+        )
         numeric_attr.keyable = True
         numeric_attr.storable = True
         numeric_attr.writable = True
@@ -191,10 +186,9 @@ class PreviewLocator(OpenMayaUI.MPxLocatorNode):
         PreviewLocator.shape_rotation_x = unit_attr.create("shapeRotationX", "shrx", OpenMaya.MFnUnitAttribute.kAngle, 0.0)
         PreviewLocator.shape_rotation_y = unit_attr.create("shapeRotationY", "shry", OpenMaya.MFnUnitAttribute.kAngle, 0.0)
         PreviewLocator.shape_rotation_z = unit_attr.create("shapeRotationZ", "shrz", OpenMaya.MFnUnitAttribute.kAngle, 0.0)
-        PreviewLocator.shape_rotation = numeric_attr.create("shapeRotation", "shr",
-                                                            PreviewLocator.shape_rotation_x,
-                                                            PreviewLocator.shape_rotation_y,
-                                                            PreviewLocator.shape_rotation_z)
+        PreviewLocator.shape_rotation = numeric_attr.create(
+            "shapeRotation", "shr", PreviewLocator.shape_rotation_x, PreviewLocator.shape_rotation_y, PreviewLocator.shape_rotation_z
+        )
         numeric_attr.keyable = True
         numeric_attr.storable = True
         numeric_attr.writable = True
@@ -204,25 +198,22 @@ class PreviewLocator(OpenMayaUI.MPxLocatorNode):
 
         PreviewLocator.addAttribute(PreviewLocator.shape)
 
-    def draw(self, view, path, style, status):
-        """Draw the locator.
-        """
+    def draw(self):
+        """Draw the locator."""
         return None
 
 
 class PreviewLocatorData(OpenMaya.MUserData):
-    """Simple locator data.
-    """
+    """Simple locator data."""
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         OpenMaya.MUserData.__init__(self, False)  # Don't delete after draw
 
 
 class PreviewLocatorDrawOverride(OpenMayaRender.MPxDrawOverride):
-    """Simple locator draw override.
-    """
+    """Simple locator draw override."""
+
     # Jack parameter
     line_x = [OpenMaya.MPoint(-1.0, 0.0, 0.0), OpenMaya.MPoint(1.0, 0.0, 0.0)]
     line_y = [OpenMaya.MPoint(0.0, -1.0, 0.0), OpenMaya.MPoint(0.0, 1.0, 0.0)]
@@ -241,30 +232,25 @@ class PreviewLocatorDrawOverride(OpenMayaRender.MPxDrawOverride):
     circle_direction = [OpenMaya.MVector(1.0, 0.0, 0.0), OpenMaya.MVector(0.0, 1.0, 0.0), OpenMaya.MVector(0.0, 0.0, 1.0)]
 
     def __init__(self, obj):
-        """Constructor.
-        """
+        """Constructor."""
         OpenMayaRender.MPxDrawOverride.__init__(self, obj, PreviewLocatorDrawOverride.draw)
 
     @staticmethod
     def creator(obj):
-        """Creator.
-        """
+        """Creator."""
         return PreviewLocatorDrawOverride(obj)
 
     @staticmethod
-    def draw(context, data):
-        """Draw the object.
-        """
+    def draw():
+        """Draw the object."""
         return None
 
     def supportedDrawAPIs(self):
-        """Get the supported draw APIs.
-        """
+        """Get the supported draw APIs."""
         return OpenMayaRender.MRenderer.kOpenGL | OpenMayaRender.MRenderer.kOpenGLCoreProfile | OpenMayaRender.MRenderer.kDirectX11
 
-    def prepareForDraw(self, obj_path, camera_path, frame_context, old_data):
-        """Prepare for drawing.
-        """
+    def prepareForDraw(self, obj_path, old_data):
+        """Prepare for drawing."""
         data = old_data
         if not isinstance(data, PreviewLocatorData):
             data = PreviewLocatorData()
@@ -333,13 +319,11 @@ class PreviewLocatorDrawOverride(OpenMayaRender.MPxDrawOverride):
         return data
 
     def hasUIDrawables(self):
-        """Check if the draw override has UI drawables.
-        """
+        """Check if the draw override has UI drawables."""
         return True
 
-    def addUIDrawables(self, obj_path, draw_manager, frame_context, data):
-        """Add UI drawables.
-        """
+    def addUIDrawables(self, draw_manager, data):
+        """Add UI drawables."""
         if not isinstance(data, PreviewLocatorData):
             return
 
@@ -482,34 +466,30 @@ class PreviewLocatorDrawOverride(OpenMayaRender.MPxDrawOverride):
 
 
 def initializePlugin(plugin):
-    """Initialize the plug-in.
-    """
+    """Initialize the plug-in."""
     plugin_fn = OpenMaya.MFnPlugin(plugin, "Mitsuaki Watanabe", "1.0", "Any")
     try:
-        plugin_fn.registerNode(k_plugin_node_name,
-                               k_plugin_node_id,
-                               PreviewLocator.creator,
-                               PreviewLocator.initialize,
-                               OpenMaya.MPxNode.kLocatorNode,
-                               k_plugin_classfication
-                               )
+        plugin_fn.registerNode(
+            k_plugin_node_name,
+            k_plugin_node_id,
+            PreviewLocator.creator,
+            PreviewLocator.initialize,
+            OpenMaya.MPxNode.kLocatorNode,
+            k_plugin_classfication,
+        )
     except Exception as e:
         sys.stderr.write(f"Failed to register node: {e}")
         raise e
 
     try:
-        OpenMayaRender.MDrawRegistry.registerDrawOverrideCreator(k_plugin_classfication,
-                                                                 k_draw_registrant_id,
-                                                                 PreviewLocatorDrawOverride.creator
-                                                                 )
+        OpenMayaRender.MDrawRegistry.registerDrawOverrideCreator(k_plugin_classfication, k_draw_registrant_id, PreviewLocatorDrawOverride.creator)
     except Exception as e:
         sys.stderr.write(f"Failed to register node: {e}")
         raise e
 
 
 def uninitializePlugin(plugin):
-    """Uninitialize the plug-in.
-    """
+    """Uninitialize the plug-in."""
     plugin_fn = OpenMaya.MFnPlugin(plugin)
     try:
         plugin_fn.deregisterNode(k_plugin_node_id)
@@ -518,9 +498,7 @@ def uninitializePlugin(plugin):
         raise e
 
     try:
-        OpenMayaRender.MDrawRegistry.deregisterDrawOverrideCreator(k_plugin_classfication,
-                                                                   k_draw_registrant_id
-                                                                   )
+        OpenMayaRender.MDrawRegistry.deregisterDrawOverrideCreator(k_plugin_classfication, k_draw_registrant_id)
     except Exception as e:
         sys.stderr.write(f"Failed to deregister node: {e}")
         raise e
