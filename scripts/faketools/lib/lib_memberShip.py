@@ -8,6 +8,8 @@ logger = getLogger(__name__)
 
 
 class ComponentTags:
+    """Maya Component Tags class."""
+
     def __init__(self, shape: str, tag_name: str):
         """Initialize the class.
 
@@ -231,6 +233,8 @@ class ComponentTags:
 
 
 class DeformerMembership:
+    """Deformer membership class."""
+
     def __init__(self, deformer: str):
         """Initialize the class.
 
@@ -489,7 +493,7 @@ class DeformerMembership:
 
 
 def is_use_component_tag() -> bool:
-    """Check if the component tag is available.
+    """Check if the component tag is available from the Maya preferences.
 
     Returns:
         bool: Whether the component tag is available.

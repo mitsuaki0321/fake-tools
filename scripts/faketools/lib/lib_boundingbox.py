@@ -13,6 +13,8 @@ logger = getLogger(__name__)
 
 
 class BoundingBox(ABC):
+    """Abstract base class for bounding boxes."""
+
     def __init__(self, points: list[list[float]] | np.ndarray):
         """Initialize the BoundingBox with a list of points.
 
@@ -317,13 +319,13 @@ class AxisAlignedBoundingBox(BoundingBox):
 
         Returns:
             tuple containing:
-              - minimum volume (float)
-              - rotation matrix R (3*3 numpy.ndarray) (each row is a local axis)
-              - local min point (numpy.ndarray)
-              - local max point (numpy.ndarray)
-              - optimal world translation T (numpy.ndarray)
-              - local center (numpy.ndarray)
-              - fixed_index (int): The index of the fixed axis in the local coordinate system (0: x, 1: y, 2: z)
+                - minimum volume (float)
+                - rotation matrix R (3*3 numpy.ndarray) (each row is a local axis)
+                - local min point (numpy.ndarray)
+                - local max point (numpy.ndarray)
+                - optimal world translation T (numpy.ndarray)
+                - local center (numpy.ndarray)
+                - fixed_index (int): The index of the fixed axis in the local coordinate system (0: x, 1: y, 2: z)
         """
         best_volume = np.inf
         best_R = None

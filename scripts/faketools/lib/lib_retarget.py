@@ -113,6 +113,8 @@ class RBFDeform:
 
 
 class IndexQueryMethod:
+    """Index query method base class."""
+
     def get_indices(self, mesh_points: list[list[float]], positions: list[list[float]]) -> list[list[int]]:
         raise NotImplementedError("Method not implemented.")
 

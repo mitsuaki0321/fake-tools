@@ -29,6 +29,8 @@ TANGENT_TYPES = [
 
 
 class InfinityType:
+    """Infinity type class."""
+
     _infinity_types = ("Constant", "Linear", "Constant", "Cycle", "Cycle Relative", "Oscillate")
 
     def __init__(self, anim_curve: str):
@@ -138,6 +140,8 @@ class KeyframeData:
 
 
 class TimeKeyframe:
+    """Time keyframe class."""
+
     def __init__(self, plug: str):
         """Initialize the keyframe object.
 
@@ -254,6 +258,8 @@ class TimeKeyframe:
 
 
 class AttributeKeyframe:
+    """Attribute keyframe class."""
+
     def __init__(self, plug: str):
         """Initialize the keyframe object.
 

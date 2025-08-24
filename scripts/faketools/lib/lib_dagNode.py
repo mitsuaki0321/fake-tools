@@ -10,6 +10,8 @@ logger = getLogger(__name__)
 
 
 class CleanUpNode:
+    """Clean up the dagNode."""
+
     def __init__(self, node: str):
         """Initialize the NodeCleaner with a target node.
 

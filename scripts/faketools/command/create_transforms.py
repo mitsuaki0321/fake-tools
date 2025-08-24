@@ -469,7 +469,7 @@ def inner_divide(**kwargs) -> list[dict[str, list[float]]]:
     result_positions = []
     result_rotations = []
     for i in range(num_transforms - 1):
-        positions = lib_math.inner_divide(reference_positions[i], reference_positions[i + 1], divisions)
+        positions = lib_math.inner_divide(reference_positions[i], reference_positions[i + 1], spans=divisions)
         if i != (num_transforms - 2):
             positions.pop(-1)
         result_positions.extend(positions)
@@ -486,6 +486,7 @@ def inner_divide(**kwargs) -> list[dict[str, list[float]]]:
 
 
 def _get_selected_positions(
+    *,
     only_component: bool = False,
     flatten_components: bool = False,
     include_rotation: bool = False,

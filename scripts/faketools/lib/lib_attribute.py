@@ -6,15 +6,13 @@ import maya.api.OpenMaya as om
 import maya.cmds as cmds
 
 
-def is_modifiable(node: str, attribute: str, **kwargs) -> bool:
+def is_modifiable(node: str, attribute: str, *, children: bool = False) -> bool:
     """Returns whether the attribute is modifiable.
 
     Args:
         node (str): The node name.
         attribute (str): The attribute name.
-
-    Keyword Args:
-        children (bool): Whether to check children attributes. Default is False.
+        children (bool): Whether to check child attributes. Default is False.
 
     Notes:
         - The static writable flag is not checked, so it may return False even if the attribute is actually not modifiable.
@@ -30,8 +28,6 @@ def is_modifiable(node: str, attribute: str, **kwargs) -> bool:
 
     if not cmds.attributeQuery(attribute, node=node, exists=True):
         raise ValueError(f"Attribute does not exist: {node}.{attribute}")
-
-    children = kwargs.get("children", False)
 
     sel = om.MSelectionList()
     sel.add(node)
@@ -68,9 +64,9 @@ class AttributeLockHandler:
 
     def __init__(self):
         """Constructor."""
-        self.__lock_attrs = []
+        self._lock_attrs = []
 
-    def stock_lock_attrs(self, node: str, attributes: list, include_parent: bool = False) -> None:
+    def stock_lock_attrs(self, node: str, attributes: list, *, include_parent: bool = False) -> None:
         """Stocks the lock attributes.
 
         Args:
@@ -98,7 +94,7 @@ class AttributeLockHandler:
             if not cmds.getAttr(f"{node}.{attr}", lock=True):
                 continue
             cmds.setAttr(f"{node}.{attr}", lock=False)
-            self.__lock_attrs.append(attr)
+            self._lock_attrs.append(attr)
 
     def restore_lock_attrs(self, node: str) -> None:
         """Restores the lock attributes.
@@ -106,9 +102,9 @@ class AttributeLockHandler:
         Args:
             node (str): The target node.
         """
-        if not self.__lock_attrs:
+        if not self._lock_attrs:
             return
 
-        for attr in self.__lock_attrs:
+        for attr in self._lock_attrs:
             cmds.setAttr(f"{node}.{attr}", lock=True)
-        self.__lock_attrs.clear()
+        self._lock_attrs.clear()

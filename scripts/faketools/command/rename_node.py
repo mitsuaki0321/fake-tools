@@ -28,7 +28,7 @@ def solve_rename(nodes: list[str], regex_name: str, **kwargs) -> list[str]:
     Returns:
         list[str]: The renamed node list.
     """
-    logger.debug("Start")
+    logger.debug("Start Rename")
 
     # Check node
     if not nodes:
@@ -87,7 +87,7 @@ def substitute_rename(nodes: list[str], regex_name: str, replace_name: str) -> l
     Returns:
         list[str]: The substituted node list.
     """
-    logger.debug("Start")
+    logger.debug("Start Rename")
 
     # Check node
     if not nodes:

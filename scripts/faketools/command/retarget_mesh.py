@@ -13,7 +13,7 @@ from ..lib import lib_cluster, lib_component, lib_mesh, lib_retarget, lib_select
 logger = Logger(__name__)
 
 
-def _get_points_from_soft_selection(src_objs: list[str], trg_mesh: str, radius: float = 1.0) -> list[str]:
+def _get_points_from_soft_selection(src_objs: list[str], trg_mesh: str, *, radius: float = 1.0) -> list[str]:
     """Get the points from the soft selection.
 
     Args:
@@ -81,7 +81,7 @@ def _compute_src_indices(
 
 
 def retarget_mesh(
-    src_mesh: str, dst_meshs: list[str], trg_meshs: list[str], is_create: bool = True, max_vertices: int = 1000, radius_multiplier: float = 1.0
+    src_mesh: str, dst_meshs: list[str], trg_meshs: list[str], *, is_create: bool = True, max_vertices: int = 1000, radius_multiplier: float = 1.0
 ) -> list[str]:
     """Retarget the mesh to another mesh.
 

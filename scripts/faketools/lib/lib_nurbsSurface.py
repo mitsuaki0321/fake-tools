@@ -12,6 +12,8 @@ logger = getLogger(__name__)
 
 
 class NurbsSurface:
+    """NurbsSurface class."""
+
     def __init__(self, surface: str):
         if not cmds.objExists(surface):
             raise ValueError(f"Node does not exist: {surface}")

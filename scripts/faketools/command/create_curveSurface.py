@@ -86,7 +86,7 @@ def main(
     return result_objs
 
 
-def _get_selected_nodes(select_type: str, skip: int = 0, reverse: bool = False) -> list[list[str]]:
+def _get_selected_nodes(select_type: str, *, skip: int = 0, reverse: bool = False) -> list[list[str]]:
     """Get selected nodes or hierarchy nodes.
 
     Args:

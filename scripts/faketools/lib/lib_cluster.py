@@ -21,7 +21,7 @@ class Clustering(ABC):
         """Initialize the Cluster with a target mesh.
 
         Args:
-          mesh (str): The target mesh.
+            mesh (str): The target mesh.
         """
         if not mesh:
             raise ValueError("Mesh is not specified.")

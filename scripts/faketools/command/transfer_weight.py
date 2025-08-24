@@ -15,8 +15,11 @@ logger = getLogger(__name__)
 
 
 class SkinWeightsCopyPaste:
+    """SkinCluster weights copy and paste class."""
+
     def __init__(
         self,
+        *,
         method: str = "oneToAll",
         blend_weights: float = 1.0,
     ):

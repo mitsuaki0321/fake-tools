@@ -16,6 +16,8 @@ logger = getLogger(__name__)
 
 
 class DrivenKeyExportImport:
+    """Export and import driven keys."""
+
     def export_driven_keys(self, output_file: str):
         """Export driven keys."""
         sel_nodes = cmds.ls(sl=True)
@@ -92,6 +94,8 @@ class DrivenKeyExportImport:
 
 
 class DrivenKeyTransfer:
+    """Transfer driven keys."""
+
     def one_to_all(self):
         """Transfer driven keys from selected node to all selected nodes."""
         sel_nodes = cmds.ls(sl=True)

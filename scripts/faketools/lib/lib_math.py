@@ -16,7 +16,7 @@ logger = getLogger(__name__)
 # Utilities
 
 
-def round_up(value, decimal_places=0) -> float:
+def round_up(value, *, decimal_places=0) -> float:
     """Round up the value.
 
     Args:
@@ -30,7 +30,7 @@ def round_up(value, decimal_places=0) -> float:
     return math.ceil(value * factor) / factor
 
 
-def round_down(value, decimal_places=0) -> float:
+def round_down(value, *, decimal_places=0) -> float:
     """Round down the value.
 
     Args:
@@ -64,7 +64,7 @@ def get_distance(point_a: list[float], point_b: list[float]) -> float:
     return distance
 
 
-def inner_divide(point_a: list[float], point_b: list[float], spans: int = 1) -> list[list[float]]:
+def inner_divide(point_a: list[float], point_b: list[float], *, spans: int = 1) -> list[list[float]]:
     """Divide the line segment.
 
     Args:

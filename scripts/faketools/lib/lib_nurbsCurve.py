@@ -446,6 +446,8 @@ class NurbsCurvePositions:
 
 
 class ConvertNurbsCurve:
+    """ConvertNurbsCurve class."""
+
     def __init__(self, curve: str):
         """Initialize the ModifyNurbsCurve class.
 

@@ -9,6 +9,8 @@ logger = getLogger(__name__)
 
 
 class ComponentFilter:
+    """Component filter class for filtering components by type."""
+
     def __init__(self, components: list[str]):
         """Initialize the component filter with a list of components.
 
@@ -264,6 +266,8 @@ class ComponentFilter:
 
 
 class ComponentSelection:
+    """Component selection class for selecting components by various criteria."""
+
     def __init__(self, components: list[str]):
         """Initialize the component selection with a list of components.
 
@@ -344,7 +348,7 @@ class ComponentSelection:
 
         return result_components
 
-    def same_position_selection(self, driver_mesh: str, **kwargs) -> list[str]:
+    def same_position_selection(self, driver_mesh: str, *, max_distance: float = 0.001) -> list[str]:
         """Same position selection of components.
 
         Notes:
@@ -352,12 +356,11 @@ class ComponentSelection:
 
         Args:
             driver_mesh (str): The driver mesh object.
+            max_distance (float): The maximum distance to consider as the same position. Default is 0.001.
 
         Returns:
             list[str]: The same position selected components.
         """
-        max_distance = kwargs.get("max_distance", 0.001)
-
         if not driver_mesh:
             raise ValueError("Driver mesh is not specified.")
 
@@ -390,8 +393,12 @@ class ComponentSelection:
 
         return result_components
 
-    def uv_area_selection(self, **kwargs) -> list[str]:
+    def uv_area_selection(self, uv: str = "u", area: list[float] = None) -> list[str]:
         """UV area selection of components.
+
+        Args:
+            uv (str): The UV direction to select components. Default is 'u'. Options are 'u' and 'v'.
+            area (list[float]): The UV area to select components. Default is [0.0, 1.0].
 
         Notes:
             - Only nurbsCurve and nurbsSurface components are supported.
@@ -399,8 +406,8 @@ class ComponentSelection:
         Returns:
             list[str]: The parameter selected components.
         """
-        uv = kwargs.get("uv", "u")
-        area = kwargs.get("area", [0.0, 1.0])  # min, max
+        if area is None:
+            area = [0.0, 1.0]
 
         components = cmds.filterExpand(self._components, sm=28, ex=True)
         if not components:
@@ -481,6 +488,12 @@ def get_unique_selections(filter_geometries: list[str] | None = None) -> dict[st
     elements = {}
 
     def _process_single_indexed(selection_list, attr_list):
+        """Process single indexed components.
+
+        Args:
+            selection_list (list): List of component types.
+            attr_list (list): List of attribute names.
+        """
         for component_type, attr in zip(selection_list, attr_list, strict=False):
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
@@ -502,6 +515,12 @@ def get_unique_selections(filter_geometries: list[str] | None = None) -> dict[st
                 iterator.next()
 
     def _process_double_indexed(selection_list, attr_list):
+        """Process double indexed components.
+
+        Args:
+            selection_list (list): List of component types.
+            attr_list (list): List of attribute names.
+        """
         for component_type, attr in zip(selection_list, attr_list, strict=False):
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
@@ -523,6 +542,12 @@ def get_unique_selections(filter_geometries: list[str] | None = None) -> dict[st
                 iterator.next()
 
     def _process_triple_indexed(selection_list, attr_list):
+        """Process triple indexed components.
+
+        Args:
+            selection_list (list): List of component types.
+            attr_list (list): List of attribute names.
+        """
         for component_type, attr in zip(selection_list, attr_list, strict=False):
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
