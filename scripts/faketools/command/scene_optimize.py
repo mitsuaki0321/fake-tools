@@ -116,7 +116,7 @@ class OptimizeUnusedNodes(OptimizeBase):
     _label = "UnusedNodes"
     _description = "Delete unused nodes.Called by maya MLdeleteUnused"
 
-    def optimize(self) -> None:
+    def optimize(self, echo: bool = False) -> None:
         """Optimizes the scene unused nodes.
 
         Notes:

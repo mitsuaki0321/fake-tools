@@ -78,8 +78,8 @@ class MainWindow(base_window.BaseMainWindow):
                 layout.addWidget(off_button, i, 5)
 
                 # Signal & Slot
-                on_button.clicked.connect(lambda attr=attribute: self._all_on_checked(self.checkboxes[attr]))
-                off_button.clicked.connect(lambda attr=attribute: self._all_off_checked(self.checkboxes[attr]))
+                on_button.clicked[bool].connect(lambda _, attr=attribute: self._all_on_checked(self.checkboxes[attr]))
+                off_button.clicked[bool].connect(lambda _, attr=attribute: self._all_off_checked(self.checkboxes[attr]))
 
         self.central_layout.addLayout(layout)
 
@@ -110,12 +110,14 @@ class MainWindow(base_window.BaseMainWindow):
         connect_value_button.clicked.connect(self._connect_attr)
         zero_out_button.clicked.connect(self._zero_out)
 
-    def _all_on_checked(self, checkboxes):
+    @staticmethod
+    def _all_on_checked(checkboxes):
         """All on checked."""
         for checkbox in checkboxes:
             checkbox.setChecked(True)
 
-    def _all_off_checked(self, checkboxes):
+    @staticmethod
+    def _all_off_checked(checkboxes):
         """All off checked."""
         for checkbox in checkboxes:
             checkbox.setChecked(False)

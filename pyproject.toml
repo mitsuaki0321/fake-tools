@@ -8,7 +8,7 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.ruff.lint]
-select = ["E", "F", "UP", "B", "SIM", "I", "ARG"]
+select = ["E", "F", "UP", "B", "SIM", "I"]
 ignore = ["E203", "E501", "E701", "SIM108"]
 
 [tool.ruff.lint.isort]
