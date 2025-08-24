@@ -233,13 +233,13 @@ class MainWindow(base_window.BaseMainWindow):
 
     def _source_display_attributes(self) -> None:
         """Display the attributes of the selected source nodes."""
-        self.__display_attributes(self.source_node_list, self.source_attr_list, self.__source_list_attributes)
+        self._display_attributes(self.source_node_list, self.source_attr_list, self._source_list_attributes)
 
     def _dest_display_attributes(self) -> None:
         """Display the attributes of the selected destination nodes."""
-        self.__display_attributes(self.dest_node_list, self.dest_attr_list, self.__dest_list_attributes)
+        self._display_attributes(self.dest_node_list, self.dest_attr_list, self.__dest_list_attributes)
 
-    def __display_attributes(
+    def _display_attributes(
         self,
         node_list_widget: nodeAttr_widgets.NodeListView,
         attr_list_widget: nodeAttr_widgets.AttributeListView,
@@ -269,7 +269,7 @@ class MainWindow(base_window.BaseMainWindow):
             item = QStandardItem(attr)
             attr_list_widget.model().sourceModel().appendRow(item)
 
-    def __source_list_attributes(self, node: str) -> list[str]:
+    def _source_list_attributes(self, node: str) -> list[str]:
         """List the attributes of the node.
 
         Args:
@@ -278,7 +278,7 @@ class MainWindow(base_window.BaseMainWindow):
         Returns:
             list[str]: The attributes of the node.
         """
-        return self.__list_attributes(node)
+        return self._list_attributes(node)
 
     def __dest_list_attributes(self, node: str) -> list[str]:
         """List the attributes of the node.
@@ -289,9 +289,9 @@ class MainWindow(base_window.BaseMainWindow):
         Returns:
             list[str]: The attributes of the node.
         """
-        return self.__list_attributes(node)
+        return self._list_attributes(node)
 
-    def __list_attributes(self, node: str) -> list[str]:
+    def _list_attributes(self, node: str) -> list[str]:
         """List the attributes of the node.
 
         Args:
@@ -347,15 +347,15 @@ class MainWindow(base_window.BaseMainWindow):
     @maya_ui.error_handler
     def _copy_value(self) -> None:
         """Copy the value of the source attribute to the destination attribute."""
-        self.__transfer_attribute(self.__copy_value)
+        self._transfer_attribute(self._copy_value)
 
     @maya_ui.undo_chunk("Connect Attribute")
     @maya_ui.error_handler
     def _connect_attribute(self) -> None:
         """Connect the source attribute to the destination attribute."""
-        self.__transfer_attribute(self.__connect_attribute)
+        self._transfer_attribute(self._connect_attribute)
 
-    def __transfer_attribute(self, func: callable) -> None:
+    def _transfer_attribute(self, func: callable) -> None:
         """Transfer the attribute value.
 
         Args:
@@ -386,7 +386,7 @@ class MainWindow(base_window.BaseMainWindow):
                 func(source_node, source_attr, dest_node, dest_attr)
 
     @staticmethod
-    def __copy_value(source_node: str, source_attr: str, dest_node: str, dest_attr: str) -> None:
+    def _copy_value(source_node: str, source_attr: str, dest_node: str, dest_attr: str) -> None:
         """Copy the value of the source attribute to the destination attribute.
 
         Args:
@@ -428,7 +428,7 @@ class MainWindow(base_window.BaseMainWindow):
         logger.debug(f"Copied: {source_plug} -> {dest_plug}")
 
     @staticmethod
-    def __connect_attribute(source_node: str, source_attr: str, dest_node: str, dest_attr: str) -> None:
+    def _connect_attribute(source_node: str, source_attr: str, dest_node: str, dest_attr: str) -> None:
         """Connect the source attribute to the destination attribute.
 
         Args:
@@ -519,10 +519,10 @@ class OperationSwitchWidget(QWidget):
         self.setLayout(layout)
 
         # Signal & Slot
-        self.connect_button.clicked.connect(self.__toggle_checked)
-        self.command_button.clicked.connect(self.__toggle_checked)
+        self.connect_button.clicked.connect(self._toggle_checked)
+        self.command_button.clicked.connect(self._toggle_checked)
 
-    def __toggle_checked(self) -> None:
+    def _toggle_checked(self) -> None:
         """Toggle the checked state of the buttons."""
         sender = self.sender()
         if sender == self.connect_button:
@@ -560,9 +560,9 @@ class OperationSwitchButton(QPushButton):
 
         self.setCheckable(True)
         self.setChecked(False)
-        self.toggled.connect(self.__update_style)
+        self.toggled.connect(self._update_style)
 
-    def __update_style(self, checked: bool) -> None:
+    def _update_style(self, checked: bool) -> None:
         """Update the button style based on the checked state.
 
         Args:

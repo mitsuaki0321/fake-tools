@@ -104,8 +104,8 @@ class MainWindow(base_window.BaseMainWindow):
         self.view = nodeStock_view.NodeStockGraphicsView(self.scenes[0], self)
         self.central_layout.addWidget(self.view, stretch=1)
 
-        self.__create_button_grid(rows=rows, cols=cols, button_size=button_size, spacing=5)
-        self.__load_scene_data(0)
+        self._create_button_grid(rows=rows, cols=cols, button_size=button_size, spacing=5)
+        self._load_scene_data(0)
 
         separator = extra_widgets.HorizontalSeparator()
         self.central_layout.addWidget(separator)
@@ -135,7 +135,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.status_bar.setSizeGripEnabled(False)
         layout.addWidget(self.status_bar)
 
-        self.node_length_label = QLabel(f"{self.__get_node_length_label(0)}   ")
+        self.node_length_label = QLabel(f"{self._get_node_length_label(0)}   ")
         self.node_length_label.setFixedWidth(self.node_length_label.sizeHint().width())
         self.status_separator = extra_widgets.VerticalSeparator()
         self.node_names_label = QLabel()
@@ -155,8 +155,8 @@ class MainWindow(base_window.BaseMainWindow):
         self.name_replace_field.set_re(self.tool_options.read("name_replace_re", False))
 
         # Signals & Slots
-        self.switch_buttons.button_selection_changed.connect(self.__switch_scene)
-        self.tool_bar.refresh_button_clicked.connect(self.__refresh_window)
+        self.switch_buttons.button_selection_changed.connect(self._switch_scene)
+        self.tool_bar.refresh_button_clicked.connect(self._refresh_window)
         self.view.rubber_band_selection.connect(self._select_nodes_rubber_band)
 
         # For updating the status bar
@@ -172,7 +172,7 @@ class MainWindow(base_window.BaseMainWindow):
         height = minimum_size.height()
         self.resize(width, height)
 
-    def __switch_scene(self, index: int) -> None:
+    def _switch_scene(self, index: int) -> None:
         """Switch the scene in the graphic widget.
 
         Args:
@@ -181,9 +181,9 @@ class MainWindow(base_window.BaseMainWindow):
         if 0 <= index < len(self.scenes):
             self.view.setScene(self.scenes[index])
             self.view.setAlignment(Qt.AlignCenter)
-            self.__load_scene_data(index)
+            self._load_scene_data(index)
 
-    def __create_button_grid(self, rows, cols, button_size, spacing) -> None:
+    def _create_button_grid(self, rows, cols, button_size, spacing) -> None:
         """Create a grid of buttons in each scene.
 
         Args:
@@ -209,22 +209,22 @@ class MainWindow(base_window.BaseMainWindow):
                     button.middle_button_clicked.connect(self._add_nodes)
                     button.right_button_clicked.connect(self._remove_nodes)
                     button.hovered.connect(self.__update_status_bar)
-                    button.unhovered.connect(self.__clear_status_bar)
-                    button.hovered.connect(self.__highlight_nodes)
-                    button.unhovered.connect(self.__unhighlight_nodes)
+                    button.unhovered.connect(self._clear_status_bar)
+                    button.hovered.connect(self._highlight_nodes)
+                    button.unhovered.connect(self._unhighlight_nodes)
                     scene.addItem(button)
 
             self.view.setSceneRect(scene.sceneRect())
 
         logger.debug(f"Created button grid: {rows}x{cols}")
 
-    def __load_scene_data(self, index: int) -> None:
+    def _load_scene_data(self, index: int) -> None:
         """Load the data for the specified scene.
 
         Args:
             index (int): The index of the scene.
         """
-        scene_file_name = self.__get_file_prefix(index)
+        scene_file_name = self._get_file_prefix(index)
         storage_file = self.node_storage.get_file(scene_file_name)
         self._current_scene_data = storage_file.get_data()
         scene = self.scenes[index]
@@ -236,11 +236,11 @@ class MainWindow(base_window.BaseMainWindow):
 
         logger.debug(f"Loaded scene data: {scene_file_name}")
 
-    def __get_file_prefix(self, index: int) -> str:
+    def _get_file_prefix(self, index: int) -> str:
         """Make the file prefix."""
         return f"{self._stock_file_name}_{index}"
 
-    def __get_node_stock_file(self, button: nodeStock_view.NodeStockButton) -> node_storage.NodeStockFile:
+    def _get_node_stock_file(self, button: nodeStock_view.NodeStockButton) -> node_storage.NodeStockFile:
         """Get the node stock file from the button.
 
         Args:
@@ -253,17 +253,17 @@ class MainWindow(base_window.BaseMainWindow):
             return TypeError("Button must be an instance of NodeStockButton.")
 
         scene_index = self.scenes.index(button.scene())
-        name = self.__get_file_prefix(scene_index)
+        name = self._get_file_prefix(scene_index)
 
         return self.node_storage.get_file(name)
 
-    def __refresh_window(self) -> None:
+    def _refresh_window(self) -> None:
         """Refresh the window."""
-        self.__load_scene_data(self.switch_buttons.button_group.checkedId())
+        self._load_scene_data(self.switch_buttons.button_group.checkedId())
         self.name_space_box.refresh_name_spaces()
 
     @staticmethod
-    def __get_node_length_label(node_count: int) -> str:
+    def _get_node_length_label(node_count: int) -> str:
         """Get the node length label.
 
         Args:
@@ -283,7 +283,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.current_button = button
         nodes = self._current_scene_data.get(button.key, [])
         if not nodes:
-            self.node_length_label.setText(self.__get_node_length_label(0))
+            self.node_length_label.setText(self._get_node_length_label(0))
             self.node_names_label.clear()
             return
 
@@ -291,15 +291,15 @@ class MainWindow(base_window.BaseMainWindow):
         node_names = " ".join(nodes)
         max_width = self.status_bar.width() - self.status_bar_spacing - 5
         elided_text = self.font_metrics.elidedText(node_names, Qt.ElideRight, max_width)
-        self.node_length_label.setText(self.__get_node_length_label(node_count))
+        self.node_length_label.setText(self._get_node_length_label(node_count))
         self.node_names_label.setText(elided_text)
 
-    def __clear_status_bar(self) -> None:
+    def _clear_status_bar(self) -> None:
         """Clear the status bar."""
-        self.node_length_label.setText(self.__get_node_length_label(0))
+        self.node_length_label.setText(self._get_node_length_label(0))
         self.node_names_label.clear()
 
-    def __highlight_nodes(self, button: nodeStock_view.NodeStockButton) -> None:
+    def _highlight_nodes(self, button: nodeStock_view.NodeStockButton) -> None:
         """Highlight the nodes in the Maya scene when the button is hovered.
 
         Args:
@@ -314,8 +314,8 @@ class MainWindow(base_window.BaseMainWindow):
             return
 
         # Get the replace and name space settings.
-        nodes = self.__replace_node_names(nodes, echo_error=False)
-        nodes = self.__name_space_with_nodes(nodes)
+        nodes = self._replace_node_names(nodes, echo_error=False)
+        nodes = self._name_space_with_nodes(nodes)
         nodes = [node for node in nodes if cmds.objExists(node)]
         if not nodes:
             return
@@ -324,7 +324,7 @@ class MainWindow(base_window.BaseMainWindow):
         cmds.hilite(nodes)
         self._hilite_nodes = nodes
 
-    def __unhighlight_nodes(self) -> None:
+    def _unhighlight_nodes(self) -> None:
         """Unhighlight the nodes in the Maya scene when the button is unhovered."""
         if not self._hilite_nodes:
             return
@@ -332,15 +332,15 @@ class MainWindow(base_window.BaseMainWindow):
         cmds.hilite(self._hilite_nodes, u=True)
         cmds.select(self._hilite_selected_nodes, r=True)
 
-    def __select_nodes(self, nodes: list[str]) -> None:
+    def _select_nodes(self, nodes: list[str]) -> None:
         """Select the nodes in the scene.
 
         Args:
             nodes (list[str]): The nodes to select.
         """
         # Get the replace and name space settings.
-        nodes = self.__replace_node_names(nodes, echo_error=True)
-        nodes = self.__name_space_with_nodes(nodes)
+        nodes = self._replace_node_names(nodes, echo_error=True)
+        nodes = self._name_space_with_nodes(nodes)
 
         # Validate the nodes.
         not_exists_nodes = [node for node in nodes if not cmds.objExists(node)]
@@ -365,7 +365,7 @@ class MainWindow(base_window.BaseMainWindow):
         if self.tool_bar.is_hilite():
             self._hilite_selected_nodes = cmds.ls(sl=True)
 
-    def __replace_node_names(self, nodes: list[str], echo_error: bool = False) -> list[str]:
+    def _replace_node_names(self, nodes: list[str], echo_error: bool = False) -> list[str]:
         """Replace the node names.
 
         Args:
@@ -400,7 +400,7 @@ class MainWindow(base_window.BaseMainWindow):
             logger.debug("No search and replace text.")
             return nodes
 
-    def __name_space_with_nodes(self, nodes: list[str]) -> list[str]:
+    def _name_space_with_nodes(self, nodes: list[str]) -> list[str]:
         """Get the name space with the nodes.
 
         Args:
@@ -428,7 +428,7 @@ class MainWindow(base_window.BaseMainWindow):
         if not nodes:
             return
 
-        self.__select_nodes(nodes)
+        self._select_nodes(nodes)
 
         logger.debug(f"Selected nodes: {nodes}")
 
@@ -448,7 +448,7 @@ class MainWindow(base_window.BaseMainWindow):
             logger.debug("No nodes to select.")
             return
 
-        self.__select_nodes(nodes)
+        self._select_nodes(nodes)
 
         logger.debug(f"Selected nodes by rubber band: {nodes}")
 
@@ -461,7 +461,7 @@ class MainWindow(base_window.BaseMainWindow):
             return
 
         # Add the nodes to the storage file.
-        node_stock_file = self.__get_node_stock_file(button)
+        node_stock_file = self._get_node_stock_file(button)
         node_stock_file.add_nodes(button.key, sel_nodes, overwrite=True)
 
         # Update the current scene data.
@@ -476,7 +476,7 @@ class MainWindow(base_window.BaseMainWindow):
     def _remove_nodes(self, button: nodeStock_view.NodeStockButton) -> None:
         """Remove the nodes from nodeStorage when the right button is clicked."""
         # Remove the nodes from the storage file.
-        node_stock_file = self.__get_node_stock_file(button)
+        node_stock_file = self._get_node_stock_file(button)
         nodes = node_stock_file.get_nodes(button.key)
         if not nodes:
             logger.debug("No nodes registered to the button.")
@@ -588,13 +588,13 @@ class StockAreaSwitchButtons(QWidget):
         self.setLayout(self.main_layout)
 
         # Signals & Slots
-        self.button_group.buttonClicked.connect(self.__button_clicked)
+        self.button_group.buttonClicked.connect(self._button_clicked)
 
     def set_index(self, index: int) -> None:
         """Set the index of the radio button to be selected."""
         self.button_group.button(index).setChecked(True)
 
-    def __button_clicked(self, button: QRadioButton) -> None:
+    def _button_clicked(self, button: QRadioButton) -> None:
         """Emit the signal when the button is clicked."""
         self.button_selection_changed.emit(self.button_group.id(button))
 

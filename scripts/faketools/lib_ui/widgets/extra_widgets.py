@@ -206,8 +206,8 @@ class ModifierSpinBox(QDoubleSpinBox):
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
-        self.__shift_multiplier = 10.0
-        self.__ctrl_multiplier = 0.1
+        self._shift_multiplier = 10.0
+        self._ctrl_multiplier = 0.1
 
     def setShiftStepMultiplier(self, value: float):
         """Set the step value based on the shift key.
@@ -215,7 +215,7 @@ class ModifierSpinBox(QDoubleSpinBox):
         Args:
             value (float): The multiplier shift value.
         """
-        self.__shift_multiplier = value
+        self._shift_multiplier = value
 
     def setCtrlStepMultiplier(self, value: float):
         """Set the step value based on the control key.
@@ -223,7 +223,7 @@ class ModifierSpinBox(QDoubleSpinBox):
         Args:
             value (float): The multiplier control value.
         """
-        self.__ctrl_multiplier = value
+        self._ctrl_multiplier = value
 
     def stepBy(self, steps):
         """Step by value. (Overrides QDoubleSpinBox.stepBy)
@@ -236,8 +236,8 @@ class ModifierSpinBox(QDoubleSpinBox):
 
         multiplier = 1.0
         if modifiers & Qt.ControlModifier:
-            multiplier = self.__ctrl_multiplier * 0.1
+            multiplier = self._ctrl_multiplier * 0.1
         elif modifiers & Qt.ShiftModifier:
-            multiplier = self.__shift_multiplier
+            multiplier = self._shift_multiplier
 
         self.setValue(self.value() + self.singleStep() * steps * multiplier)

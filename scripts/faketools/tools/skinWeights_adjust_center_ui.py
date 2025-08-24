@@ -103,18 +103,18 @@ class AdjustCenterSkinWeightsWidgets(QWidget):
         self.setLayout(self.main_layout)
 
         # Signal & Slot
-        self.auto_search_checkbox.stateChanged.connect(self.toggle_auto_search)
-        self.src_infs_button.clicked.connect(partial(self.___set_selected_nodes, self.src_infs_field))
-        self.target_infs_button.clicked.connect(partial(self.___set_selected_nodes, self.target_infs_field))
-        static_inf_button.clicked.connect(partial(self.__set_selected_node, self.static_inf_field))
+        self.auto_search_checkbox.stateChanged.connect(self._toggle_auto_search)
+        self.src_infs_button.clicked.connect(partial(self._set_selected_nodes, self.src_infs_field))
+        self.target_infs_button.clicked.connect(partial(self._set_selected_nodes, self.target_infs_field))
+        static_inf_button.clicked.connect(partial(self._set_selected_node, self.static_inf_field))
 
         button.clicked.connect(self.exchange_influences)
 
         # Initialize UI
         self.auto_search_checkbox.setCheckState(Qt.Checked)
-        self.toggle_auto_search(Qt.Checked)
+        self._toggle_auto_search(Qt.Checked)
 
-    def toggle_auto_search(self, state):
+    def _toggle_auto_search(self, state):
         """Toggle the auto search."""
         if state == Qt.Checked:
             self.src_label.setEnabled(False)
@@ -132,7 +132,7 @@ class AdjustCenterSkinWeightsWidgets(QWidget):
             self.target_infs_button.setEnabled(True)
 
     @maya_ui.error_handler
-    def ___set_selected_nodes(self, field):
+    def _set_selected_nodes(self, field):
         """Set the selected nodes to the field."""
         nodes = cmds.ls(sl=True, type="joint")
         if not nodes:
@@ -144,7 +144,7 @@ class AdjustCenterSkinWeightsWidgets(QWidget):
         field.setText(" ".join(nodes))
 
     @maya_ui.error_handler
-    def __set_selected_node(self, field):
+    def _set_selected_node(self, field):
         """Set the selected node to the field."""
         nodes = cmds.ls(sl=True, type="joint")
         if not nodes:

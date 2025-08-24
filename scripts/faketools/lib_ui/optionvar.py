@@ -19,7 +19,7 @@ class ToolOptionSettings:
         """
         self.tool_name = tool_name
 
-    def __full_key(self, key: str) -> str:
+    def _full_key(self, key: str) -> str:
         """Formats the key with the tool name.
 
         Args:
@@ -40,7 +40,7 @@ class ToolOptionSettings:
         Returns:
             Any: The value for the specified key. If the key does not exist, returns the default value.
         """
-        full_key = self.__full_key(key)
+        full_key = self._full_key(key)
         if not cmds.optionVar(exists=full_key):
             return default
         value = cmds.optionVar(q=full_key)
@@ -59,7 +59,7 @@ class ToolOptionSettings:
         Raises:
             ValueError: If the value is not JSON serializable.
         """
-        full_key = self.__full_key(key)
+        full_key = self._full_key(key)
         try:
             value = json.dumps(value)
         except (TypeError, ValueError) as e:
@@ -75,7 +75,7 @@ class ToolOptionSettings:
         Raises:
             KeyError: If the key does not exist.
         """
-        full_key = self.__full_key(key)
+        full_key = self._full_key(key)
         if not cmds.optionVar(exists=full_key):
             raise KeyError(f"Key '{key}' does not exist")
         cmds.optionVar(remove=full_key)
@@ -89,4 +89,4 @@ class ToolOptionSettings:
         Returns:
             bool: True if the key exists, False otherwise.
         """
-        return cmds.optionVar(exists=self.__full_key(key))
+        return cmds.optionVar(exists=self._full_key(key))

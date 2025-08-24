@@ -34,7 +34,7 @@ class MainWindow(base_window.BaseMainWindow):
 
         # Menu
         self.menu = self.menuBar()
-        self.__add_menu()
+        self._add_menu()
 
         # Add skinWeights bar
         self.skinWeightsBar = skinWeights_bar_ui.SkinWeightsBar()
@@ -84,7 +84,7 @@ class MainWindow(base_window.BaseMainWindow):
             "Influence Exchange": influence_exchanger_ui.InfluenceExchangerWidgets,
         }
 
-    def __add_menu(self):
+    def _add_menu(self):
         """Add menu."""
         edit_menu = self.menu.addMenu("Edit")
 
@@ -129,7 +129,7 @@ class MainWindow(base_window.BaseMainWindow):
     @maya_ui.error_handler
     def rebind_skinCluster(self):
         """Rebind the skinCluster."""
-        target_skinClusters = self.__get_skinClusters()
+        target_skinClusters = self._get_skinClusters()
         influences = cmds.ls(sl=True, type="joint")
 
         if target_skinClusters:
@@ -186,7 +186,7 @@ class MainWindow(base_window.BaseMainWindow):
         for mesh in meshs:
             convert_weight.average_skin_weights_shell(mesh)
 
-    def __get_skinClusters(self):
+    def _get_skinClusters(self):
         """Get the skinClusters."""
         shapes = cmds.ls(sl=True, dag=True, type="deformableShape", objectsOnly=True, ni=True)
         skinClusters = cmds.ls(sl=True, type="skinCluster")

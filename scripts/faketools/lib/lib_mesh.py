@@ -502,7 +502,7 @@ class MeshEdge(MeshComponent):
 
         mit_vertex = om.MItMeshVertex(self._dag_path)
 
-        def __get_vertex_tangents(edge_vertices: list[int]) -> list[om.MVector]:
+        def _get_vertex_tangents(edge_vertices: list[int]) -> list[om.MVector]:
             """Get the vertex tangents."""
             result_tangents = []
             for index in edge_vertices:
@@ -530,7 +530,7 @@ class MeshEdge(MeshComponent):
                 continue
 
             edge_vertices = self._mesh_fn.getEdgeVertices(edge_id)
-            vertex_tangents = __get_vertex_tangents(edge_vertices)
+            vertex_tangents = _get_vertex_tangents(edge_vertices)
             edge_tangent = (vertex_tangents[0] + vertex_tangents[1]) / 2.0
 
             tangents.append(edge_tangent)

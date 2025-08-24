@@ -49,7 +49,7 @@ class MainWindow(base_window.BaseMainWindow):
 
         # Menu
         self.menu = self.menuBar()
-        self.__add_menu()
+        self._add_menu()
 
         layout = QGridLayout()
 
@@ -282,17 +282,17 @@ class MainWindow(base_window.BaseMainWindow):
         self.to_skin_cage_spinBox.setValue(self.tool_options.read("skin_cage_division_levels", 1))
 
         # Signal & Slot
-        self.is_bind_checkbox.stateChanged.connect(self.__change_bind_mode)
-        self.object_button_group.buttonClicked.connect(self.__change_surface_mode)
+        self.is_bind_checkbox.stateChanged.connect(self._change_bind_mode)
+        self.object_button_group.buttonClicked.connect(self._change_surface_mode)
         self.to_skin_cage_checkbox.stateChanged.connect(self.to_skin_cage_div_label.setEnabled)
         self.to_skin_cage_checkbox.stateChanged.connect(self.to_skin_cage_spinBox.setEnabled)
 
         create_button.clicked.connect(self.create_curve_surface)
 
-        self.__change_bind_mode()
-        self.__change_surface_mode()
+        self._change_bind_mode()
+        self._change_surface_mode()
 
-    def __add_menu(self):
+    def _add_menu(self):
         """Add the menu."""
         menu = self.menu.addMenu("Edit")
 
@@ -310,7 +310,7 @@ class MainWindow(base_window.BaseMainWindow):
         action = menu.addAction("Create Curve on Surface V")
         action.triggered.connect(partial(self.create_curve_on_surface, "v"))
 
-    def __change_bind_mode(self):
+    def _change_bind_mode(self):
         """Change the bind method."""
         is_bind = self.is_bind_checkbox.isChecked()
 
@@ -332,7 +332,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.to_skin_cage_div_label.setEnabled(is_bind and is_surface and is_to_skin_cage)
         self.to_skin_cage_spinBox.setEnabled(is_bind and is_surface and is_to_skin_cage)
 
-    def __change_surface_mode(self):
+    def _change_surface_mode(self):
         """Change the surface mode."""
         is_curve = self.object_button_group.buttons()[0].isChecked()
 

@@ -688,8 +688,8 @@ class DagNodeValues:
     """This class stores the values of the specified attributes of the specified nodes.
 
     Attributes:
-        __data (dict): Stored specified node attribute value data.
-        __target_attrs (list[str]): Target attributes.
+        _data (dict): Stored specified node attribute value data.
+        _target_attrs (list[str]): Target attributes.
     """
 
     def __init__(self, target_attrs: list[str]):
@@ -698,8 +698,8 @@ class DagNodeValues:
         Args:
             target_attrs (list[str]): Target attributes.
         """
-        self.__data = {}
-        self.__target_attrs = target_attrs
+        self._data = {}
+        self._target_attrs = target_attrs
 
     def has_node(self, node: str) -> bool:
         """Check if the node exists in the data.
@@ -710,7 +710,7 @@ class DagNodeValues:
         Returns:
             bool: True if exists.
         """
-        return node in self.__data
+        return node in self._data
 
     def add_node(self, node: str):
         """Add a node.
@@ -725,7 +725,7 @@ class DagNodeValues:
             cmds.warning(f"Node already added to data: {node}")
             return
 
-        self.__data[node] = {attr: cmds.getAttr(f"{node}.{attr}") for attr in self.__target_attrs}
+        self._data[node] = {attr: cmds.getAttr(f"{node}.{attr}") for attr in self._target_attrs}
 
     def remove_node(self, node: str):
         """Remove a node.
@@ -737,7 +737,7 @@ class DagNodeValues:
             cmds.warning(f"Node does not exist in data: {node}")
             return
 
-        del self.__data[node]
+        del self._data[node]
 
     def update_node(self, node: str):
         """Update a node.
@@ -752,7 +752,7 @@ class DagNodeValues:
             cmds.warning(f"Node does not exist in data: {node}")
             return
 
-        self.__data[node].update({attr: cmds.getAttr(f"{node}.{attr}") for attr in self.__target_attrs})
+        self._data[node].update({attr: cmds.getAttr(f"{node}.{attr}") for attr in self._target_attrs})
 
     def get_node_value(self, node: str, attr: str) -> float:
         """Get a node value.
@@ -767,10 +767,10 @@ class DagNodeValues:
         if not self.has_node(node):
             raise ValueError(f"Node does not exist in data: {node}")
 
-        if attr not in self.__target_attrs:
+        if attr not in self._target_attrs:
             raise ValueError(f"Attribute does not exist in settings attributes: {attr}")
 
-        return self.__data[node][attr]
+        return self._data[node][attr]
 
 
 def show_ui():

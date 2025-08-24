@@ -81,13 +81,13 @@ class CombineSkinWeightsWidgets(QWidget):
         self.setLayout(self.main_layout)
 
         # Signal & Slot
-        src_infs_button.clicked.connect(partial(self.___set_selected_nodes, self.src_infs_field))
-        target_infs_button.clicked.connect(partial(self.__set_selected_node, self.target_inf_field))
+        src_infs_button.clicked.connect(partial(self._set_selected_nodes, self.src_infs_field))
+        target_infs_button.clicked.connect(partial(self._set_selected_node, self.target_inf_field))
 
         button.clicked.connect(self.combine_skin_weights)
 
     @maya_ui.error_handler
-    def ___set_selected_nodes(self, field):
+    def _set_selected_nodes(self, field):
         """Set the selected nodes to the field."""
         nodes = cmds.ls(sl=True, type="joint")
         if not nodes:
@@ -99,7 +99,7 @@ class CombineSkinWeightsWidgets(QWidget):
         field.setText(" ".join(nodes))
 
     @maya_ui.error_handler
-    def __set_selected_node(self, field):
+    def _set_selected_node(self, field):
         """Set the selected node to the field."""
         nodes = cmds.ls(sl=True, type="joint")
         if not nodes:

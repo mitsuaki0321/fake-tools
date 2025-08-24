@@ -97,7 +97,7 @@ class MainWindow(base_window.BaseMainWindow):
         layout = QHBoxLayout()
 
         # Data Information
-        self.node_length_label = QLabel(f"{self.__get_node_length_label(0)}  ")
+        self.node_length_label = QLabel(f"{self._get_node_length_label(0)}  ")
         self.node_length_label.setFixedWidth(self.node_length_label.sizeHint().width())
         layout.addWidget(self.node_length_label)
 
@@ -105,7 +105,7 @@ class MainWindow(base_window.BaseMainWindow):
         separator.setFixedWidth(separator.sizeHint().width() * 2)
         layout.addWidget(separator)
 
-        self.method_label = QLabel(self.__get_method_label("None"))
+        self.method_label = QLabel(self._get_method_label("None"))
         layout.addWidget(self.method_label)
 
         layout.addStretch(1)
@@ -159,18 +159,18 @@ class MainWindow(base_window.BaseMainWindow):
         self.object_size_box.setValue(self.tool_options.read("object_size", 1.0))
 
         # Signals & Slots
-        self.method_box.currentIndexChanged.connect(self.__update_method_options)
-        self.create_new_checkbox.stateChanged.connect(self.__update_create_new_options)
-        self.file_list_view.clicked.connect(self.__update_data_information)
+        self.method_box.currentIndexChanged.connect(self._update_method_options)
+        self.create_new_checkbox.stateChanged.connect(self._update_create_new_options)
+        self.file_list_view.clicked.connect(self._update_data_information)
         export_button.clicked.connect(self.export_transform_position)
         import_button.clicked.connect(self.import_transform_position)
 
         selection_model = self.file_list_view.selectionModel()
-        selection_model.selectionChanged.connect(self.__insert_file_name)
+        selection_model.selectionChanged.connect(self._insert_file_name)
 
         # Initial state
-        self.__update_create_new_options()
-        self.__update_file_list()
+        self._update_create_new_options()
+        self._update_file_list()
 
         minimum_size = self.minimumSizeHint()
         width = minimum_size.width() * 1.1
@@ -191,14 +191,14 @@ class MainWindow(base_window.BaseMainWindow):
             output_directory=self.output_directory, file_name=file_name, method=method, rbf_radius=rbf_radius
         )
 
-        self.__update_file_list()
-        self.__select_file(file_name)
+        self._update_file_list()
+        self._select_file(file_name)
 
     @maya_ui.undo_chunk("Import Transform Position")
     @maya_ui.error_handler
     def import_transform_position(self) -> None:
         """Import the positions of the selected objects."""
-        sel_file_path = self.__get_selected_file_path()
+        sel_file_path = self._get_selected_file_path()
         if not sel_file_path:
             cmds.error("No file selected.")
 
@@ -223,7 +223,7 @@ class MainWindow(base_window.BaseMainWindow):
     @maya_ui.error_handler
     def _select_data_nodes(self) -> None:
         """Select the transform nodes from the selected file."""
-        sel_file_path = self.__get_selected_file_path()
+        sel_file_path = self._get_selected_file_path()
         if not sel_file_path:
             cmds.error("No file selected.")
 
@@ -239,12 +239,12 @@ class MainWindow(base_window.BaseMainWindow):
     @maya_ui.error_handler
     def _remove_file(self) -> None:
         """Remove the selected file from the file list. ( Deletes the file )"""
-        sel_file_path = self.__get_selected_file_path()
+        sel_file_path = self._get_selected_file_path()
         if not sel_file_path:
             cmds.error("No file selected.")
 
         os.remove(sel_file_path)
-        self.__update_file_list()
+        self._update_file_list()
 
         logger.debug(f"Removed file: {sel_file_path}")
 
@@ -268,7 +268,7 @@ class MainWindow(base_window.BaseMainWindow):
         action.triggered.connect(self._remove_file)
 
         action = menu.addAction("Refresh")
-        action.triggered.connect(self.__update_file_list)
+        action.triggered.connect(self._update_file_list)
 
         menu.addSeparator()
 
@@ -277,7 +277,7 @@ class MainWindow(base_window.BaseMainWindow):
 
         menu.exec_(self.file_list_view.mapToGlobal(point))
 
-    def __update_method_options(self) -> None:
+    def _update_method_options(self) -> None:
         """Update the method options based on the selected method."""
         method = self.method_box.currentText().lower()
         if method == "rbf":
@@ -287,7 +287,7 @@ class MainWindow(base_window.BaseMainWindow):
             self.rbf_radius_label.setEnabled(False)
             self.rbf_radius_box.setEnabled(False)
 
-    def __update_file_list(self) -> None:
+    def _update_file_list(self) -> None:
         """Update the file list."""
         directory_file_list = glob.glob(os.path.join(self.output_directory, "*.pkl"))
         file_list = [os.path.splitext(os.path.basename(file))[0] for file in directory_file_list]
@@ -296,29 +296,29 @@ class MainWindow(base_window.BaseMainWindow):
 
         logger.debug(f"Updated file list: {file_list}")
 
-    def __update_data_information(self) -> None:
+    def _update_data_information(self) -> None:
         """Update the data information.
 
         Args:
             node_count (int): The number of nodes.
             method (str): The method.
         """
-        sel_file_path = self.__get_selected_file_path()
+        sel_file_path = self._get_selected_file_path()
         try:
             transform_data = retarget_transforms.load_transform_position_data(sel_file_path)
         except Exception as e:
             logger.error(f"Failed to load transform data: {sel_file_path}\n{e}")
-            self.node_length_label.setText(self.__get_node_length_label(0))
-            self.method_label.setText(self.__get_method_label("None"))
+            self.node_length_label.setText(self._get_node_length_label(0))
+            self.method_label.setText(self._get_method_label("None"))
             return
 
         node_count = len(transform_data["transforms"])
         method = transform_data["method"]
 
-        self.node_length_label.setText(self.__get_node_length_label(node_count))
-        self.method_label.setText(self.__get_method_label(method))
+        self.node_length_label.setText(self._get_node_length_label(node_count))
+        self.method_label.setText(self._get_method_label(method))
 
-    def __insert_file_name(self, item) -> None:
+    def _insert_file_name(self, item) -> None:
         """Insert the file name to the file name field.
 
         Args:
@@ -331,7 +331,7 @@ class MainWindow(base_window.BaseMainWindow):
         file_name = self.file_list_model.data(indices[0])
         self.file_name_field.setText(file_name)
 
-    def __get_selected_file_path(self) -> str:
+    def _get_selected_file_path(self) -> str:
         """Get the selected file path.
 
         Returns:
@@ -349,7 +349,7 @@ class MainWindow(base_window.BaseMainWindow):
 
         return file_path
 
-    def __select_file(self, file_name: str) -> None:
+    def _select_file(self, file_name: str) -> None:
         """Select the file in the file list.
 
         Args:
@@ -362,7 +362,7 @@ class MainWindow(base_window.BaseMainWindow):
         index = file_list.index(file_name)
         self.file_list_view.setCurrentIndex(self.file_list_model.index(index))
 
-    def __update_create_new_options(self) -> None:
+    def _update_create_new_options(self) -> None:
         """Enable/Disable based on the state of the Create New checkbox."""
         state = self.create_new_checkbox.isChecked()
         self.object_type_label.setEnabled(state)
@@ -372,7 +372,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.restore_hierarchy_checkbox.setEnabled(state)
 
     @staticmethod
-    def __get_node_length_label(node_count: int) -> str:
+    def _get_node_length_label(node_count: int) -> str:
         """Get the node length label.
 
         Args:
@@ -384,7 +384,7 @@ class MainWindow(base_window.BaseMainWindow):
         return f"Nodes: {node_count}"
 
     @staticmethod
-    def __get_method_label(method: str) -> str:
+    def _get_method_label(method: str) -> str:
         """Get the method label.
 
         Args:

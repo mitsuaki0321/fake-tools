@@ -240,20 +240,20 @@ def list_all_namespace() -> list[str]:
     """
     result_namespaces = []
 
-    def __list_namespace(namespace):
+    def _list_namespace(namespace):
         """List the namespace."""
         result_namespaces.append(namespace)
 
         sub_namespaces = cmds.namespaceInfo(namespace, listOnlyNamespaces=True)
         if sub_namespaces:
             for sub_ns in sub_namespaces:
-                __list_namespace(sub_ns)
+                _list_namespace(sub_ns)
 
     root_namespaces = [ns for ns in cmds.namespaceInfo(listOnlyNamespaces=True) if ns not in ["UI", "shared"]]
     if not root_namespaces:
         return result_namespaces
 
     for ns in root_namespaces:
-        __list_namespace(ns)
+        _list_namespace(ns)
 
     return result_namespaces

@@ -481,7 +481,7 @@ class ConvertNurbsCurve:
                 new_positions.append(positions[0] + (positions[1] - positions[0]) * (j + 1) / (divisions + 1))
             new_positions.append(positions[1])
 
-        def __calculate_new_positions(
+        def _calculate_new_positions(
             nurbs_curve: NurbsCurve, target_positions: list[om.MPoint], target_lengths: list[float], open_form: bool = False
         ) -> list[om.MPoint]:
             """Calculate new positions."""
@@ -519,7 +519,7 @@ class ConvertNurbsCurve:
             closest_positions, params = fit_nurbs_curve.get_closest_positions(positions)
             lengths = [fit_nurbs_curve.fn.findLengthFromParam(param) for param in params]
 
-            new_positions = __calculate_new_positions(fit_nurbs_curve, closest_positions, lengths, form_open)
+            new_positions = _calculate_new_positions(fit_nurbs_curve, closest_positions, lengths, form_open)
 
             cmds.delete(fit_curve)
 
@@ -528,7 +528,7 @@ class ConvertNurbsCurve:
             closest_positions, params = self.nurbs_curve.get_closest_positions(positions)
             lengths = [self.nurbs_curve.fn.findLengthFromParam(param) for param in params]
 
-            new_positions = __calculate_new_positions(self.nurbs_curve, closest_positions, lengths, form_open)
+            new_positions = _calculate_new_positions(self.nurbs_curve, closest_positions, lengths, form_open)
         else:
             cmds.error("Degree is not 1 or 3. Unsupported operation.")
 
@@ -538,7 +538,7 @@ class ConvertNurbsCurve:
         if not form_open:
             cmds.closeCurve(inserted_curve, ch=False, ps=0, rpo=True)
 
-        self.__transfer_shape(inserted_curve)
+        self._transfer_shape(inserted_curve)
 
         if degree == 3:
             self.center_curve()
@@ -584,7 +584,7 @@ class ConvertNurbsCurve:
         fit_curve = cmds.fitBspline(self.curve, ch=0, tol=0.01)[0]
         fit_curve_shp = cmds.listRelatives(fit_curve, s=True)[0]
 
-        self.__transfer_shape(fit_curve_shp)
+        self._transfer_shape(fit_curve_shp)
 
     def set_degree(self, degree: int):
         """Set the degree.
@@ -614,7 +614,7 @@ class ConvertNurbsCurve:
             degree=1,
         )
 
-    def __transfer_shape(self, source_curve: str):
+    def _transfer_shape(self, source_curve: str):
         """Transfer the shape, after delete the source curve.
 
         Args:

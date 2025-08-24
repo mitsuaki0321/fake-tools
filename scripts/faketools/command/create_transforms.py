@@ -24,7 +24,7 @@ logger = getLogger(__name__)
 class CreateTransforms:
     """Create transform nodes at positions."""
 
-    __shape_types = ["locator", "joint"]
+    _shape_types = ["locator", "joint"]
 
     def __init__(
         self,
@@ -45,7 +45,7 @@ class CreateTransforms:
             reverse (bool): Whether to reverse the transform node. Default is False.
             rotation_offset (tuple[float] | None): The rotation to add to the current rotation. Default is None.
         """
-        if shape_type not in self.__shape_types:
+        if shape_type not in self._shape_types:
             raise ValueError("Invalid shape type.")
 
         self.func = func
@@ -113,7 +113,7 @@ class PreviewLocatorForTransform:
     """Preview locator for create transform nodes."""
 
     preview_locator_name = "createTransformPreview"
-    __shape_types = ["locator", "joint"]
+    _shape_types = ["locator", "joint"]
 
     def __init__(
         self,
@@ -136,7 +136,7 @@ class PreviewLocatorForTransform:
             rotation_offset (tuple[float, float, float]): The rotation to add to the current rotation. Default is (0.0, 0.0, 0.0).
             color (tuple[float, float, float]): The color of the preview locator. Default is (1.0, 1.0, 1.0).
         """
-        if shape_type not in self.__shape_types:
+        if shape_type not in self._shape_types:
             raise ValueError("Invalid shape type.")
 
         self.func = func
@@ -357,7 +357,7 @@ def bounding_box_center() -> list[dict[str, list[float]]]:
     Returns:
         list[{position: list[float], rotation: list[float]}]: The position and rotation.
     """
-    positions = __get_selected_positions()
+    positions = _get_selected_positions()
     if not positions:
         logger.warning("No valid object selected.")
         return
@@ -375,7 +375,7 @@ def gravity_center() -> list[dict[str, list[float]]]:
     Returns:
         list[{position: list[float], rotation: list[float]}]: The position and rotation.
     """
-    positions = __get_selected_positions()
+    positions = _get_selected_positions()
     if not positions:
         logger.warning("No valid object selected.")
         return
@@ -399,7 +399,7 @@ def each_positions(**kwargs) -> list[dict[str, list[float]]]:
     include_rotation = kwargs.get("include_rotation", False)
     tangent_from_component = kwargs.get("tangent_from_component", False)
 
-    positions = __get_selected_positions(include_rotation=include_rotation, tangent_from_component=tangent_from_component)
+    positions = _get_selected_positions(include_rotation=include_rotation, tangent_from_component=tangent_from_component)
     if not positions:
         logger.warning("No valid object selected.")
         return
@@ -421,7 +421,7 @@ def closest_position(**kwargs) -> list[dict[str, list[float]]]:
     include_rotation = kwargs.get("include_rotation", False)
     tangent_from_component = kwargs.get("tangent_from_component", False)
 
-    positions = __get_selected_positions(
+    positions = _get_selected_positions(
         only_component=True, include_rotation=include_rotation, closest_position=True, tangent_from_component=tangent_from_component
     )
     if not positions:
@@ -485,7 +485,7 @@ def inner_divide(**kwargs) -> list[dict[str, list[float]]]:
     return [{"position": result_positions, "rotation": result_rotations}]
 
 
-def __get_selected_positions(
+def _get_selected_positions(
     only_component: bool = False,
     flatten_components: bool = False,
     include_rotation: bool = False,

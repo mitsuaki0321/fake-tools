@@ -166,7 +166,7 @@ def _bind_curve_surface(infs: list[str], obj: str) -> str:
     if not_joint_infs:
         cmds.error(f"Invalid influence type: {not_joint_infs}")
 
-    shape = __validate_geometry(obj, ["nurbsCurve", "mesh", "nurbsSurface"])
+    shape = _validate_geometry(obj, ["nurbsCurve", "mesh", "nurbsSurface"])
     skinCluster = cmds.skinCluster(infs, shape, tsb=True)[0]
 
     logger.debug(f"Created skinCluster: {infs} -> {obj}")
@@ -187,13 +187,13 @@ def _transfer_curve_weights(curve: str, surface: str) -> None:
     if not surface:
         cmds.error("No target surface specified.")
 
-    curve_shape = __validate_geometry(curve, "nurbsCurve")
+    curve_shape = _validate_geometry(curve, "nurbsCurve")
 
     curve_skinCluster = lib_skinCluster.get_skinCluster(curve_shape)
     if not curve_skinCluster:
         cmds.error(f"No skinCluster found: {curve}")
 
-    surface_shape = __validate_geometry(surface, ["nurbsSurface", "mesh"])
+    surface_shape = _validate_geometry(surface, ["nurbsSurface", "mesh"])
 
     surface_skinCluster = lib_skinCluster.get_skinCluster(surface_shape)
     if not surface_skinCluster:
@@ -230,7 +230,7 @@ def _to_skin_cage_from_length(surface: str, division_levels: int = 1) -> str:
     if division_levels < 1:
         cmds.error("Invalid division levels.")
 
-    surface_shape = __validate_geometry(surface, "nurbsSurface")
+    surface_shape = _validate_geometry(surface, "nurbsSurface")
 
     skinCluster = lib_skinCluster.get_skinCluster(surface_shape)
     if not skinCluster:
@@ -557,8 +557,8 @@ class CurveWeightSetting:
                         weights[j] = 1.0 - t
                         weights[j + 1] = t
                     elif method == "ease":
-                        weights[j] = 1.0 - self.__ease_weight(t, ease_type="inout")
-                        weights[j + 1] = self.__ease_weight(t, ease_type="inout")
+                        weights[j] = 1.0 - self._ease_weight(t, ease_type="inout")
+                        weights[j + 1] = self._ease_weight(t, ease_type="inout")
                     elif method == "step":
                         weights[j] = 1.0
 
@@ -576,8 +576,8 @@ class CurveWeightSetting:
                         weights[-1] = 1.0 - t
                         weights[0] = t
                     elif method == "ease":
-                        weights[-1] = 1.0 - self.__ease_weight(t, ease_type="inout")
-                        weights[0] = self.__ease_weight(t, ease_type="inout")
+                        weights[-1] = 1.0 - self._ease_weight(t, ease_type="inout")
+                        weights[0] = self._ease_weight(t, ease_type="inout")
                     elif method == "step":
                         weights[-1] = 1.0
                 else:
@@ -662,7 +662,7 @@ class CurveWeightSetting:
         return smooth_weights
 
     @staticmethod
-    def __ease_weight(t, ease_type="in") -> float:
+    def _ease_weight(t, ease_type="in") -> float:
         """Ease-In/Ease-Out weight calculation.
 
         Args:
@@ -685,7 +685,7 @@ class CurveWeightSetting:
         raise ValueError("Invalid ease_type. Use 'in', 'out', or 'inout'.")
 
 
-def __validate_geometry(geometry: str, node_types: list[str] = None) -> str:
+def _validate_geometry(geometry: str, node_types: list[str] = None) -> str:
     """Validate the geometry.
 
     Args:

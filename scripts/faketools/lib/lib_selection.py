@@ -211,7 +211,7 @@ class DagHierarchy:
         """
         result_nodes = []
 
-        def __get_children_recursive(node: str):
+        def _get_children_recursive(node: str):
             """Get the children nodes recursively."""
             if node not in result_nodes:
                 result_nodes.append(node)
@@ -226,10 +226,10 @@ class DagHierarchy:
 
             if children:
                 for child in children:
-                    __get_children_recursive(child)
+                    _get_children_recursive(child)
 
         for node in self.nodes:
-            __get_children_recursive(node)
+            _get_children_recursive(node)
 
         return result_nodes
 
@@ -395,7 +395,7 @@ class SelectionMode:
         if not mode:
             ValueError("Mode is not specified.")
 
-        if not self.__validate_object_mode():
+        if not self._validate_object_mode():
             return None
 
         if mode not in self.object_mode_types:
@@ -431,7 +431,7 @@ class SelectionMode:
         if not modes:
             ValueError("Modes are not specified.")
 
-        if not self.__validate_object_mode():
+        if not self._validate_object_mode():
             return
 
         for mode in modes:
@@ -448,7 +448,7 @@ class SelectionMode:
         Returns:
             list[str]: The current object mode.
         """
-        if not self.__validate_object_mode():
+        if not self._validate_object_mode():
             return None
 
         modes = []
@@ -473,7 +473,7 @@ class SelectionMode:
         if not mode:
             ValueError("Mode is not specified.")
 
-        if not self.__validate_component_mode():
+        if not self._validate_component_mode():
             return None
 
         if mode not in self.component_mode_types:
@@ -509,7 +509,7 @@ class SelectionMode:
         if not modes:
             ValueError("Modes are not specified.")
 
-        if not self.__validate_component_mode():
+        if not self._validate_component_mode():
             return
 
         for mode in modes:
@@ -526,7 +526,7 @@ class SelectionMode:
         Returns:
             list[str]: The current component mode.
         """
-        if self.__validate_component_mode():
+        if self._validate_component_mode():
             return None
 
         modes = []
@@ -536,7 +536,7 @@ class SelectionMode:
 
         return modes
 
-    def __validate_object_mode(self) -> bool:
+    def _validate_object_mode(self) -> bool:
         """Validate the object mode."""
         if self.get_mode() != "object":
             logger.debug("The current mode is not object.")
@@ -544,7 +544,7 @@ class SelectionMode:
 
         return True
 
-    def __validate_component_mode(self):
+    def _validate_component_mode(self):
         """Validate the component mode."""
         if self.get_mode() != "component":
             logger.debug("The current mode is not component.")

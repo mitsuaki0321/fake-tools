@@ -78,8 +78,8 @@ class MainWindow(base_window.BaseMainWindow):
                 layout.addWidget(off_button, i, 5)
 
                 # Signal & Slot
-                on_button.clicked.connect(lambda attr=attribute: self.__all_on_checked(self.checkboxes[attr]))
-                off_button.clicked.connect(lambda attr=attribute: self.__all_off_checked(self.checkboxes[attr]))
+                on_button.clicked.connect(lambda attr=attribute: self._all_on_checked(self.checkboxes[attr]))
+                off_button.clicked.connect(lambda attr=attribute: self._all_off_checked(self.checkboxes[attr]))
 
         self.central_layout.addLayout(layout)
 
@@ -106,23 +106,23 @@ class MainWindow(base_window.BaseMainWindow):
                     checkbox.setChecked(value)
 
         # Signal & Slot
-        copy_value_button.clicked.connect(self.__copy_value)
-        connect_value_button.clicked.connect(self.__connect_attr)
-        zero_out_button.clicked.connect(self.__zero_out)
+        copy_value_button.clicked.connect(self._copy_value)
+        connect_value_button.clicked.connect(self._connect_attr)
+        zero_out_button.clicked.connect(self._zero_out)
 
-    def __all_on_checked(self, checkboxes):
+    def _all_on_checked(self, checkboxes):
         """All on checked."""
         for checkbox in checkboxes:
             checkbox.setChecked(True)
 
-    def __all_off_checked(self, checkboxes):
+    def _all_off_checked(self, checkboxes):
         """All off checked."""
         for checkbox in checkboxes:
             checkbox.setChecked(False)
 
     @maya_ui.undo_chunk("Connect Transform: Copy Value")
     @maya_ui.error_handler
-    def __copy_value(self):
+    def _copy_value(self):
         """Copy Value."""
         sel_nodes = cmds.ls(sl=True, type="transform")
         if not sel_nodes:
@@ -136,7 +136,7 @@ class MainWindow(base_window.BaseMainWindow):
         src_node = sel_nodes[0]
         dest_nodes = sel_nodes[1:]
 
-        enable_attributes = self.__get_enable_attributes()
+        enable_attributes = self._get_enable_attributes()
         if not enable_attributes:
             cmds.error("Select attributes.")
             return
@@ -170,7 +170,7 @@ class MainWindow(base_window.BaseMainWindow):
 
     @maya_ui.undo_chunk("Connect Transform: Connect Value")
     @maya_ui.error_handler
-    def __connect_attr(self):
+    def _connect_attr(self):
         """Connect Value."""
         sel_nodes = cmds.ls(sl=True, type="transform")
         if not sel_nodes:
@@ -184,7 +184,7 @@ class MainWindow(base_window.BaseMainWindow):
         src_node = sel_nodes[0]
         dest_nodes = sel_nodes[1:]
 
-        enable_attributes = self.__get_enable_attributes()
+        enable_attributes = self._get_enable_attributes()
         if not enable_attributes:
             cmds.error("Select attributes.")
             return
@@ -214,14 +214,14 @@ class MainWindow(base_window.BaseMainWindow):
 
     @maya_ui.undo_chunk("Connect Transform: Zero Out")
     @maya_ui.error_handler
-    def __zero_out(self):
+    def _zero_out(self):
         """Zero Out."""
         sel_nodes = cmds.ls(sl=True, type="transform")
         if not sel_nodes:
             cmds.error("Select transform nodes.")
             return
 
-        enable_attributes = self.__get_enable_attributes()
+        enable_attributes = self._get_enable_attributes()
         if not enable_attributes:
             cmds.error("Select attributes.")
             return
@@ -251,7 +251,7 @@ class MainWindow(base_window.BaseMainWindow):
 
                 logger.debug(f"Zero out: {attr}")
 
-    def __get_enable_attributes(self):
+    def _get_enable_attributes(self):
         """Get enable attributes from checkboxes."""
         enable_attributes = []
         for attribute, checkboxes in self.checkboxes.items():

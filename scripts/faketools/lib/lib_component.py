@@ -15,56 +15,56 @@ class ComponentFilter:
         Args:
             components (list[str]): List of component names
         """
-        self.__selection_list = om.MSelectionList()
+        self._selection_list = om.MSelectionList()
         self.add_selection_list(components)
 
     def add_selection_list(self, components: list[str]) -> None:
         """Add components to the selection list."""
         for component in components:
-            self.__selection_list.add(component)
+            self._selection_list.add(component)
 
     def clear_selection_list(self) -> None:
         """Clear the selection list."""
-        self.__selection_list.clear()
+        self._selection_list.clear()
 
     def has_component(self) -> bool:
         """Check if the selection list has any components."""
-        it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kComponent)
+        it_selection_list = om.MItSelectionList(self._selection_list, om.MFn.kComponent)
         return not it_selection_list.isDone()
 
     def has_vertex(self) -> bool:
         """Check if the selection list has vertex components."""
-        it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kMeshVertComponent)
+        it_selection_list = om.MItSelectionList(self._selection_list, om.MFn.kMeshVertComponent)
         return not it_selection_list.isDone()
 
     def has_edge(self) -> bool:
         """Check if the selection list has edge components."""
-        it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kMeshEdgeComponent)
+        it_selection_list = om.MItSelectionList(self._selection_list, om.MFn.kMeshEdgeComponent)
         return not it_selection_list.isDone()
 
     def has_face(self) -> bool:
         """Check if the selection list has face components."""
-        it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kMeshPolygonComponent)
+        it_selection_list = om.MItSelectionList(self._selection_list, om.MFn.kMeshPolygonComponent)
         return not it_selection_list.isDone()
 
     def has_curve_cv(self) -> bool:
         """Check if the selection list has curve CV components."""
-        it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kCurveCVComponent)
+        it_selection_list = om.MItSelectionList(self._selection_list, om.MFn.kCurveCVComponent)
         return not it_selection_list.isDone()
 
     def has_curve_ep(self) -> bool:
         """Check if the selection list has curve EP components."""
-        it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kCurveEPComponent)
+        it_selection_list = om.MItSelectionList(self._selection_list, om.MFn.kCurveEPComponent)
         return not it_selection_list.isDone()
 
     def has_surface_cv(self) -> bool:
         """Check if the selection list has surface CV components."""
-        it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kSurfaceCVComponent)
+        it_selection_list = om.MItSelectionList(self._selection_list, om.MFn.kSurfaceCVComponent)
         return not it_selection_list.isDone()
 
     def has_lattice_point(self) -> bool:
         """Check if the selection list has lattice point components."""
-        it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kLatticeComponent)
+        it_selection_list = om.MItSelectionList(self._selection_list, om.MFn.kLatticeComponent)
         return not it_selection_list.isDone()
 
     def get_vertex_components(self, as_component_name: bool = False) -> dict[str, list[int]]:
@@ -159,7 +159,7 @@ class ComponentFilter:
         Returns:
             dict[str, list[tuple[int, int]]]: The nurbsSurface shape name and UV indices ( pair indices ).
         """
-        it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kSurfaceCVComponent)
+        it_selection_list = om.MItSelectionList(self._selection_list, om.MFn.kSurfaceCVComponent)
         if it_selection_list.isDone():
             return {}
 
@@ -188,7 +188,7 @@ class ComponentFilter:
         Returns:
             dict[str, list[tuple[int, int, int]]]: The lattice shape name and lattice indices ( tuple indices ).
         """
-        it_selection_list = om.MItSelectionList(self.__selection_list, om.MFn.kLatticeComponent)
+        it_selection_list = om.MItSelectionList(self._selection_list, om.MFn.kLatticeComponent)
         if it_selection_list.isDone():
             return {}
 
@@ -247,7 +247,7 @@ class ComponentFilter:
         Returns:
             dict[str, list[int]]: The shape name and component indices.
         """
-        it_selection_list = om.MItSelectionList(self.__selection_list, component_type)
+        it_selection_list = om.MItSelectionList(self._selection_list, component_type)
         if it_selection_list.isDone():
             return {}
 
@@ -280,15 +280,15 @@ class ComponentSelection:
         if not components:
             raise ValueError("Components are not supported. Only mesh, nurbsCurve, nurbsSurface, and lattice components are supported.")
 
-        self.__components = components
+        self._components = components
 
-    def __get_positions(self) -> list[float]:
+    def _get_positions(self) -> list[float]:
         """Get the component positions.
 
         Returns:
             list[float]: The component positions.
         """
-        positions = cmds.xform(self.__components, q=True, ws=True, t=True)
+        positions = cmds.xform(self._components, q=True, ws=True, t=True)
         return list(zip(positions[::3], positions[1::3], positions[2::3], strict=False))
 
     def reverse_selection(self) -> list[str]:
@@ -300,7 +300,7 @@ class ComponentSelection:
         Returns:
             list[str]: The reversed selected components.
         """
-        cmds.select(self.__components, r=True)
+        cmds.select(self._components, r=True)
         cmds.InvertSelection()
         return cmds.ls(sl=True, fl=True)
 
@@ -313,7 +313,7 @@ class ComponentSelection:
         Returns:
             list[str]: The unique selected components.
         """
-        cmds.select(self.__components, r=True)
+        cmds.select(self._components, r=True)
         return list(get_unique_selections().keys())
 
     def x_area_selection(self, area: str = "center") -> list[str]:
@@ -328,16 +328,16 @@ class ComponentSelection:
         if area not in ["center", "left", "right"]:
             raise ValueError(f"Invalid area: {area}")
 
-        positions = self.__get_positions()
+        positions = self._get_positions()
 
         if area == "center":
-            result_components = [component for component, position in zip(self.__components, positions, strict=False) if 0.001 > position[0] > -0.001]
+            result_components = [component for component, position in zip(self._components, positions, strict=False) if 0.001 > position[0] > -0.001]
             logger.debug(f"Center area components: {result_components}")
         elif area == "left":
-            result_components = [component for component, position in zip(self.__components, positions, strict=False) if position[0] > 0.001]
+            result_components = [component for component, position in zip(self._components, positions, strict=False) if position[0] > 0.001]
             logger.debug(f"Left area components: {result_components}")
         elif area == "right":
-            result_components = [component for component, position in zip(self.__components, positions, strict=False) if position[0] < -0.001]
+            result_components = [component for component, position in zip(self._components, positions, strict=False) if position[0] < -0.001]
             logger.debug(f"Right area components: {result_components}")
 
         logger.debug(f"X area components: {result_components}")
@@ -374,10 +374,10 @@ class ComponentSelection:
         mesh_intersector = om.MMeshIntersector()
         mesh_intersector.create(mesh_dag_path.node(), mesh_dag_path.inclusiveMatrix())
 
-        component_positions = self.__get_positions()
+        component_positions = self._get_positions()
 
         result_components = []
-        for component, position in zip(self.__components, component_positions, strict=False):
+        for component, position in zip(self._components, component_positions, strict=False):
             component_point = om.MPoint(position)
             point_on_mesh = mesh_intersector.getClosestPoint(component_point, max_distance)
 
@@ -402,7 +402,7 @@ class ComponentSelection:
         uv = kwargs.get("uv", "u")
         area = kwargs.get("area", [0.0, 1.0])  # min, max
 
-        components = cmds.filterExpand(self.__components, sm=28, ex=True)
+        components = cmds.filterExpand(self._components, sm=28, ex=True)
         if not components:
             raise ValueError("Components are not supported. Only nurbsCurve and nurbsSurface components are supported.")
 
@@ -480,7 +480,7 @@ def get_unique_selections(filter_geometries: list[str] | None = None) -> dict[st
 
     elements = {}
 
-    def __process_single_indexed(selection_list, attr_list):
+    def _process_single_indexed(selection_list, attr_list):
         for component_type, attr in zip(selection_list, attr_list, strict=False):
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
@@ -501,7 +501,7 @@ def get_unique_selections(filter_geometries: list[str] | None = None) -> dict[st
 
                 iterator.next()
 
-    def __process_double_indexed(selection_list, attr_list):
+    def _process_double_indexed(selection_list, attr_list):
         for component_type, attr in zip(selection_list, attr_list, strict=False):
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
@@ -522,7 +522,7 @@ def get_unique_selections(filter_geometries: list[str] | None = None) -> dict[st
 
                 iterator.next()
 
-    def __process_triple_indexed(selection_list, attr_list):
+    def _process_triple_indexed(selection_list, attr_list):
         for component_type, attr in zip(selection_list, attr_list, strict=False):
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
@@ -543,15 +543,15 @@ def get_unique_selections(filter_geometries: list[str] | None = None) -> dict[st
 
                 iterator.next()
 
-    __process_single_indexed(
+    _process_single_indexed(
         [om.MFn.kCurveCVComponent, om.MFn.kCurveEPComponent, om.MFn.kMeshVertComponent, om.MFn.kMeshEdgeComponent, om.MFn.kMeshPolygonComponent],
         ["cv", "ep", "vtx", "e", "f"],
     )
 
-    __process_double_indexed(
+    _process_double_indexed(
         [om.MFn.kSurfaceCVComponent, om.MFn.kSubdivCVComponent, om.MFn.kSubdivEdgeComponent, om.MFn.kSubdivFaceComponent], ["cv", "smp", "sme", "smf"]
     )
 
-    __process_triple_indexed([om.MFn.kLatticeComponent], ["pt"])
+    _process_triple_indexed([om.MFn.kLatticeComponent], ["pt"])
 
     return elements

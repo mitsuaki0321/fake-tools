@@ -28,7 +28,7 @@ def cleanup_driven_keys(node: str) -> None:
         logger.debug(f"No driven keys found: {node}")
         return
 
-    def __check_deletable(anim_curve_node: str) -> bool:
+    def _check_deletable(anim_curve_node: str) -> bool:
         """Check if the animation curve is deletable.
 
         Notes:
@@ -60,7 +60,7 @@ def cleanup_driven_keys(node: str) -> None:
             anim_curve_nodes = cmds.ls(anim_curve_plugs, objectsOnly=True)
             anim_curve_deleted_nodes = []
             for anim_curve_node in anim_curve_nodes:
-                if __check_deletable(anim_curve_node):
+                if _check_deletable(anim_curve_node):
                     cmds.delete(anim_curve_node)
                     anim_curve_deleted_nodes.append(anim_curve_node)
                     logger.debug(f"Deleted animation curve node: {anim_curve_node}")
@@ -76,7 +76,7 @@ def cleanup_driven_keys(node: str) -> None:
                 logger.debug(f"Deleted blendWeighted node: {blendWeighted_node}")
         else:
             print(driven_source_node)
-            if __check_deletable(driven_source_node):
+            if _check_deletable(driven_source_node):
                 cmds.delete(driven_source_node)
                 logger.debug(f"Deleted animation curve node: {driven_source_node}")
 

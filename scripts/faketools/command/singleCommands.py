@@ -108,7 +108,7 @@ class LockAndHide(AllCommand):
         """
         attrs = maya_ui.get_channels()
 
-        def __get_channel_box_attrs(node: str) -> list[str]:
+        def _get_channel_box_attrs(node: str) -> list[str]:
             """Get the channel box attributes."""
             keyable_attrs = cmds.listAttr(node, keyable=True) or []
             non_keyable_attrs = cmds.listAttr(node, channelBox=True) or []
@@ -116,7 +116,7 @@ class LockAndHide(AllCommand):
 
         for node in nodes:
             if not attrs:
-                attrs = __get_channel_box_attrs(node)
+                attrs = _get_channel_box_attrs(node)
 
             for attr in attrs:
                 if not cmds.attributeQuery(attr, node=node, exists=True):

@@ -29,12 +29,12 @@ class SkinWeightsCopyPaste:
         if method not in ["oneToAll", "oneToOne"]:
             raise ValueError(f"Invalid method: {method}")
 
-        self.__method = method
+        self._method = method
 
         if not 0.0 <= blend_weights <= 1.0:
             raise ValueError(f"Invalid blend weights: {blend_weights}")
 
-        self.__blend_weights = blend_weights
+        self._blend_weights = blend_weights
 
         self._src_components = []
         self._src_weights = []
@@ -51,7 +51,7 @@ class SkinWeightsCopyPaste:
         Returns:
             str: The method.
         """
-        return self.__method
+        return self._method
 
     def set_method(self, method: str) -> None:
         """Set the method.
@@ -68,7 +68,7 @@ class SkinWeightsCopyPaste:
         if method not in ["oneToAll", "oneToOne"]:
             raise ValueError(f"Invalid method: {method}")
 
-        self.__method = method
+        self._method = method
 
         logger.debug(f"Set method: {method}")
 
@@ -79,7 +79,7 @@ class SkinWeightsCopyPaste:
         Returns:
             float: The blend weights.
         """
-        return self.__blend_weights
+        return self._blend_weights
 
     def set_blend_weights(self, blend_weights: float) -> None:
         """Set the blend weights.
@@ -93,7 +93,7 @@ class SkinWeightsCopyPaste:
         if not 0.0 <= blend_weights <= 1.0:
             raise ValueError(f"Invalid blend weights: {blend_weights}")
 
-        self.__blend_weights = blend_weights
+        self._blend_weights = blend_weights
 
         logger.debug(f"Set blend weights: {blend_weights}")
 
@@ -175,7 +175,7 @@ class SkinWeightsCopyPaste:
         if len(shapes) > 1:
             cmds.error("Multiple shapes selected.")
 
-        if self.__method == "oneToOne" and len(self._src_components) != len(components):
+        if self._method == "oneToOne" and len(self._src_components) != len(components):
             cmds.error(f"The source and destination components do not match: {self._src_components} != {components}")
 
         skinCluster = lib_skinCluster.get_skinCluster(shapes[0])
@@ -201,7 +201,7 @@ class SkinWeightsCopyPaste:
 
             self._src_weights.append(order_weight)
 
-        if self.__method == "oneToAll":
+        if self._method == "oneToAll":
             self._src_weights = [self._src_weights[0]] * len(self._dst_components)
 
         logger.debug(f"Set destination components: {self._dst_components}")
@@ -273,7 +273,7 @@ class SkinWeightsCopyPaste:
         for src_weight, dst_weight in zip(self._src_weights, self._dst_weights, strict=False):
             new_weight = []
             for src_w, dst_w in zip(src_weight, dst_weight, strict=False):
-                new_weight.append(src_w * self.__blend_weights + dst_w * (1.0 - self.__blend_weights))
+                new_weight.append(src_w * self._blend_weights + dst_w * (1.0 - self._blend_weights))
 
             new_weights.append(new_weight)
 

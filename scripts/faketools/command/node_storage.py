@@ -10,7 +10,7 @@ logger = getLogger(__name__)
 class NodeStockFile:
     """Node Stock File."""
 
-    __file_suffix = "stockData"
+    _file_suffix = "stockData"
 
     def __init__(self, file_path: str):
         """Constructor.
@@ -20,7 +20,7 @@ class NodeStockFile:
         if not self.__class__.validate_file(file_path):
             raise ValueError(f"Invalid file: {file_path}")
 
-        self.__file_path = file_path
+        self._file_path = file_path
 
     @classmethod
     def _get_file_suffix(cls) -> str:
@@ -29,7 +29,7 @@ class NodeStockFile:
         Returns:
             str: The file suffix.
         """
-        return f".{cls.__file_suffix}.json"
+        return f".{cls._file_suffix}.json"
 
     @property
     def name(self) -> str:
@@ -38,7 +38,7 @@ class NodeStockFile:
         Returns:
             str: The name.
         """
-        return self.perse_file_name(os.path.basename(self.__file_path))
+        return self.perse_file_name(os.path.basename(self._file_path))
 
     @property
     def file_name(self) -> str:
@@ -47,7 +47,7 @@ class NodeStockFile:
         Returns:
             str: The file name.
         """
-        return os.path.basename(self.__file_path)
+        return os.path.basename(self._file_path)
 
     @classmethod
     def create_file_name(cls, name: str) -> str:
@@ -124,13 +124,13 @@ class NodeStockFile:
             dict: The data.
         """
         try:
-            with open(self.__file_path) as f:
+            with open(self._file_path) as f:
                 data = json.load(f)
         except (OSError, json.JSONDecodeError) as e:
-            logger.error(f"Failed to load data: {self.__file_path} {e}")
+            logger.error(f"Failed to load data: {self._file_path} {e}")
             data = {}
 
-        logger.debug(f"Get data: {self.__file_path} {data}")
+        logger.debug(f"Get data: {self._file_path} {data}")
 
         return data
 
@@ -187,7 +187,7 @@ class NodeStockFile:
             else:
                 data[key] = nodes
 
-        with open(self.__file_path, "w") as f:
+        with open(self._file_path, "w") as f:
             json.dump(data, f, indent=4)
 
         logger.debug(f"Set nodes: {key} {nodes}")
@@ -205,7 +205,7 @@ class NodeStockFile:
         else:
             data.pop(key)
 
-        with open(self.__file_path, "w") as f:
+        with open(self._file_path, "w") as f:
             json.dump(data, f, indent=4)
 
         logger.debug(f"Removed nodes: {key}")
@@ -219,7 +219,7 @@ class NodeStorage:
         if not os.path.exists(storage_directory):
             raise ValueError(f"Storage directory does not exist: {storage_directory}")
 
-        self.__storage_directory = storage_directory
+        self._storage_directory = storage_directory
 
     def get_directory(self) -> str:
         """Get the storage directory.
@@ -227,7 +227,7 @@ class NodeStorage:
         Returns:
             str: The storage directory.
         """
-        return self.__storage_directory
+        return self._storage_directory
 
     def get_file(self, name: str) -> NodeStockFile:
         """Get the storage file.
@@ -242,9 +242,9 @@ class NodeStorage:
             NodeStockFile: The storage file.
         """
         file_name = NodeStockFile.create_file_name(name)
-        file_path = os.path.join(self.__storage_directory, file_name)
+        file_path = os.path.join(self._storage_directory, file_name)
         if not os.path.exists(file_path):
-            return NodeStockFile.create(name, self.__storage_directory)
+            return NodeStockFile.create(name, self._storage_directory)
 
         return NodeStockFile(file_path)
 
@@ -255,8 +255,8 @@ class NodeStorage:
             list[NodeStockFile]: The storage files.
         """
         files = []
-        for file_name in os.listdir(self.__storage_directory):
-            file_path = os.path.join(self.__storage_directory, file_name)
+        for file_name in os.listdir(self._storage_directory):
+            file_path = os.path.join(self._storage_directory, file_name)
             if not NodeStockFile.validate_file(file_path):
                 continue
 

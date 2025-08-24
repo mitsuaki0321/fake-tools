@@ -137,7 +137,7 @@ class TransformHierarchy:
     """Class to register and retrieve the hierarchy of transform nodes.
 
     Attributes:
-        __hierarchy (dict): The hierarchy data.
+        _hierarchy (dict): The hierarchy data.
         {
             'node_name': {
                 'parent': str, # Parent node name.

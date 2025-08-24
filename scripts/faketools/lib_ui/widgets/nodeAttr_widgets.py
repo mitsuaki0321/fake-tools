@@ -222,19 +222,19 @@ class AttributeListView(QListView):
         """Show context menu for attribute list."""
         menu = QMenu()
 
-        menu.addAction("Lock", self.__lock_attributes)
-        menu.addAction("Unlock", self.__unlock_attributes)
+        menu.addAction("Lock", self._lock_attributes)
+        menu.addAction("Unlock", self._unlock_attributes)
 
         menu.addSeparator()
 
-        menu.addAction("Keyable", self.__keyable_attributes)
-        menu.addAction("Unkeyable", self.__unkeyable_attributes)
+        menu.addAction("Keyable", self._keyable_attributes)
+        menu.addAction("Unkeyable", self._unkeyable_attributes)
 
         menu.exec_(position)
 
     @maya_ui.undo_chunk("Lock Attributes")
     @maya_ui.error_handler
-    def __lock_attributes(self) -> None:
+    def _lock_attributes(self) -> None:
         """Lock the selected attributes."""
         selected_nodes = self.node_widgets.get_selected_nodes()
         selected_attrs = self.get_selected_attributes()
@@ -250,7 +250,7 @@ class AttributeListView(QListView):
 
     @maya_ui.undo_chunk("Unlock Attributes")
     @maya_ui.error_handler
-    def __unlock_attributes(self) -> None:
+    def _unlock_attributes(self) -> None:
         """Unlock the selected attributes."""
         selected_nodes = self.node_widgets.get_selected_nodes()
         selected_attrs = self.get_selected_attributes()
@@ -266,7 +266,7 @@ class AttributeListView(QListView):
 
     @maya_ui.undo_chunk("Keyable Attributes")
     @maya_ui.error_handler
-    def __keyable_attributes(self) -> None:
+    def _keyable_attributes(self) -> None:
         """Set the selected attributes keyable."""
         selected_nodes = self.node_widgets.get_selected_nodes()
         selected_attrs = self.get_selected_attributes()
@@ -280,7 +280,7 @@ class AttributeListView(QListView):
 
     @maya_ui.undo_chunk("Unkeyable Attributes")
     @maya_ui.error_handler
-    def __unkeyable_attributes(self) -> None:
+    def _unkeyable_attributes(self) -> None:
         """Set the selected attributes unkeyable."""
         selected_nodes = self.node_widgets.get_selected_nodes()
         selected_attrs = self.get_selected_attributes()
@@ -382,18 +382,18 @@ class NodeAttributeWidgets(QWidget):
             return
 
         selected_nodes = [index.data() for index in selected_indexes]
-        common_attributes = self.__list_attributes(selected_nodes[0])
+        common_attributes = self._list_attributes(selected_nodes[0])
 
         if len(selected_nodes) > 1:
             for node in selected_nodes[1:]:
-                node_attrs = self.__list_attributes(node)
+                node_attrs = self._list_attributes(node)
                 common_attributes = [attr for attr in common_attributes if attr in node_attrs]
 
         for attr in common_attributes:
             item = QStandardItem(attr)
             self.attr_list.model().sourceModel().appendRow(item)
 
-    def __list_attributes(self, node, **kwargs) -> list[str]:
+    def _list_attributes(self, node, **kwargs) -> list[str]:
         """List the attributes of the node.
 
         Args:

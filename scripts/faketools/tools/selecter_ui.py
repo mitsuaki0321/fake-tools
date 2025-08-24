@@ -493,7 +493,7 @@ class SubstitutionSelectionWidget(QWidget):
     @selecter_handler
     def select_substitution(self, nodes: list[str]):
         """Select the substitution nodes."""
-        search_text, replace_text = self.__get_substitution_option()
+        search_text, replace_text = self._get_substitution_option()
 
         nodes = [node.split("|")[-1] for node in nodes]
         convert_names = lib_name.substitute_names(nodes, search_text, replace_text)
@@ -524,7 +524,7 @@ class SubstitutionSelectionWidget(QWidget):
     @maya_ui.error_handler
     def rename_substitution(self):
         """Rename the substitution nodes."""
-        search_text, replace_text = self.__get_substitution_option()
+        search_text, replace_text = self._get_substitution_option()
 
         nodes = cmds.ls(sl=True, fl=True)
         if not nodes:
@@ -544,7 +544,7 @@ class SubstitutionSelectionWidget(QWidget):
 
         mirror_pos = self.mirror_pos_checkbox.isChecked()
         mirror_rot = self.mirror_rot_checkbox.isChecked()
-        search_text, replace_text = self.__get_substitution_option()
+        search_text, replace_text = self._get_substitution_option()
 
         nodes = [node.split("|")[-1] for node in nodes]
         convert_names = lib_name.substitute_names(nodes, search_text, replace_text)
@@ -572,7 +572,7 @@ class SubstitutionSelectionWidget(QWidget):
     @maya_ui.error_handler
     def duplicate_substitution(self):
         """Duplicate the substitution nodes."""
-        search_text, replace_text = self.__get_substitution_option()
+        search_text, replace_text = self._get_substitution_option()
 
         mirror = self.mirror_checkbox.isChecked()
         mirror_pos = self.mirror_pos_checkbox.isChecked()
@@ -603,7 +603,7 @@ class SubstitutionSelectionWidget(QWidget):
     @maya_ui.error_handler
     def duplicate_original_substitution(self):
         """Duplicate the original substitution nodes."""
-        search_text, replace_text = self.__get_substitution_option()
+        search_text, replace_text = self._get_substitution_option()
 
         nodes = cmds.ls(sl=True, fl=True)
         if not nodes:
@@ -613,7 +613,7 @@ class SubstitutionSelectionWidget(QWidget):
 
         cmds.select(result_nodes, r=True)
 
-    def __get_substitution_option(self):
+    def _get_substitution_option(self):
         """Get the substitution option.
 
         Returns:

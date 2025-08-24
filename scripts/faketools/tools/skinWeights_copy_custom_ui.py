@@ -109,11 +109,11 @@ class SkinWeightsCopyCustomWidgets(QWidget):
         self.add_missing_infs_checkBox.setChecked(self.tool_options.read("add_missing_infs", True))
 
         # Signal & Slot
-        self.blend_field.textChanged.connect(self.__blend_value_change)
-        self.blend_slider.valueChanged.connect(self.__blend_value_change)
+        self.blend_field.textChanged.connect(self._blend_value_change)
+        self.blend_slider.valueChanged.connect(self._blend_value_change)
         execute_button.clicked.connect(self.copy_skin_weights)
 
-    def __blend_value_change(self):
+    def _blend_value_change(self):
         """Change the blend value."""
         sender = self.sender()
 

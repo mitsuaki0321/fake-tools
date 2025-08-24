@@ -64,9 +64,9 @@ class MainWindow(base_window.BaseMainWindow):
         self.view_list = []
 
         # Maya ui name
-        central_layout_name = self.__ui_name("centralLayout")
-        scroll_area_name = self.__ui_name("scrollArea")
-        content_layout_name = self.__ui_name("contentLayout")
+        central_layout_name = self._ui_name("centralLayout")
+        scroll_area_name = self._ui_name("scrollArea")
+        content_layout_name = self._ui_name("contentLayout")
 
         # Central widget
         self.central_layout.setObjectName(central_layout_name)
@@ -325,7 +325,7 @@ class MainWindow(base_window.BaseMainWindow):
 
         return QPixmap.fromImage(composite)
 
-    def __ui_name(self, name) -> str:
+    def _ui_name(self, name) -> str:
         """Get the UI name.
 
         Args:

@@ -25,7 +25,7 @@ class ComponentTags:
             raise ValueError(f"Node does not exist: {shape}")
 
         self.shape = shape
-        self.__name = tag_name
+        self._name = tag_name
 
     @property
     def name(self) -> str:
@@ -34,7 +34,7 @@ class ComponentTags:
         Returns:
             str: The tag name.
         """
-        return self.__name
+        return self._name
 
     @property
     def num_components(self) -> int:
@@ -44,7 +44,7 @@ class ComponentTags:
             int: The number of components.
         """
         shape_output = f"{self.shape}.{cmds.deformableShape(self.shape, localShapeOutAttr=True)[0]}"
-        return cmds.geometryAttrInfo(shape_output, elementCount=True, componentTagExpression=self.__name)
+        return cmds.geometryAttrInfo(shape_output, elementCount=True, componentTagExpression=self._name)
 
     @property
     def component_type(self) -> str:
@@ -54,7 +54,7 @@ class ComponentTags:
             str: The component type.
         """
         shape_output = f"{self.shape}.{cmds.deformableShape(self.shape, localShapeOutAttr=True)[0]}"
-        return cmds.geometryAttrInfo(shape_output, componentTagCategory=True, componentTagExpression=self.__name)
+        return cmds.geometryAttrInfo(shape_output, componentTagCategory=True, componentTagExpression=self._name)
 
     @classmethod
     def exists(cls, shape: str, tag_name: str) -> bool:
@@ -117,7 +117,7 @@ class ComponentTags:
             list[str]: The tag components.
         """
         shape_output = f"{self.shape}.{cmds.deformableShape(self.shape, localShapeOutAttr=True)[0]}"
-        components = cmds.geometryAttrInfo(shape_output, components=True, componentTagExpression=self.__name)
+        components = cmds.geometryAttrInfo(shape_output, components=True, componentTagExpression=self._name)
         components = [f"{self.shape}.{comp}" for comp in components]
 
         return components
@@ -134,12 +134,12 @@ class ComponentTags:
         if not components:
             raise ValueError("No components specified")
 
-        status = cmds.componentTag(components, tagName=self.__name, modify="add")
+        status = cmds.componentTag(components, tagName=self._name, modify="add")
         if not status:
-            cmds.warning(f"Failed to add components to tag: {self.__name}")
+            cmds.warning(f"Failed to add components to tag: {self._name}")
             return False
 
-        logger.debug(f"Added components to tag: {self.__name}")
+        logger.debug(f"Added components to tag: {self._name}")
 
         return True
 
@@ -155,12 +155,12 @@ class ComponentTags:
         if not components:
             raise ValueError("No components specified")
 
-        status = cmds.componentTag(components, tagName=self.__name, modify="replace")
+        status = cmds.componentTag(components, tagName=self._name, modify="replace")
         if not status:
-            cmds.warning(f"Failed to replace components in tag: {self.__name}")
+            cmds.warning(f"Failed to replace components in tag: {self._name}")
             return False
 
-        logger.debug(f"Replaced components in tag: {self.__name}")
+        logger.debug(f"Replaced components in tag: {self._name}")
 
         return True
 
@@ -176,12 +176,12 @@ class ComponentTags:
         if not components:
             raise ValueError("No components specified")
 
-        status = cmds.componentTag(components, tagName=self.__name, modify="remove")
+        status = cmds.componentTag(components, tagName=self._name, modify="remove")
         if not status:
-            cmds.warning(f"Failed to remove components from tag: {self.__name}")
+            cmds.warning(f"Failed to remove components from tag: {self._name}")
             return False
 
-        logger.debug(f"Removed components from tag: {self.__name}")
+        logger.debug(f"Removed components from tag: {self._name}")
 
         return True
 
@@ -191,12 +191,12 @@ class ComponentTags:
         Returns:
             bool: Whether the tag was cleared.
         """
-        status = cmds.componentTag(self.shape, tagName=self.__name, modify="clear")
+        status = cmds.componentTag(self.shape, tagName=self._name, modify="clear")
         if not status:
-            cmds.warning(f"Failed to clear tag: {self.__name}")
+            cmds.warning(f"Failed to clear tag: {self._name}")
             return False
 
-        logger.debug(f"Cleared tag: {self.__name}")
+        logger.debug(f"Cleared tag: {self._name}")
 
         return True
 
@@ -212,22 +212,22 @@ class ComponentTags:
         if not new_name:
             raise ValueError("No new name specified")
 
-        status = cmds.componentTag(self.shape, tagName=self.__name, newTagName=new_name, rename=True)
+        status = cmds.componentTag(self.shape, tagName=self._name, newTagName=new_name, rename=True)
         if not status:
-            cmds.warning(f"Failed to rename tag: {self.__name} -> {new_name}")
+            cmds.warning(f"Failed to rename tag: {self._name} -> {new_name}")
             return False
 
-        self.__name = new_name
+        self._name = new_name
 
-        logger.debug(f"Renamed tag: {self.__name}")
+        logger.debug(f"Renamed tag: {self._name}")
 
         return True
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}('{self.shape}', '{self.__name}')"
+        return f"{self.__class__.__name__}('{self.shape}', '{self._name}')"
 
     def __str__(self) -> str:
-        return f"{self.__name}"
+        return f"{self._name}"
 
 
 class DeformerMembership:
@@ -249,7 +249,7 @@ class DeformerMembership:
         if not is_use_component_tag():
             raise ValueError("Component tags are not enabled for maya preferences")
 
-        self.__deformer_name = deformer
+        self._deformer_name = deformer
 
     @property
     def deformer_name(self) -> str:
@@ -258,7 +258,7 @@ class DeformerMembership:
         Returns:
             str: The deformer name.
         """
-        return self.__deformer_name
+        return self._deformer_name
 
     @property
     def num_shapes(self) -> int:
@@ -275,7 +275,7 @@ class DeformerMembership:
         Returns:
             list[str]: The bound shapes.
         """
-        return cmds.deformer(self.__deformer_name, q=True, geometry=True)
+        return cmds.deformer(self._deformer_name, q=True, geometry=True)
 
     def get_shape_indices(self) -> list[int]:
         """Get the shape indices bound to the deformer.
@@ -283,7 +283,7 @@ class DeformerMembership:
         Returns:
             list[int]: The deformer input indices.
         """
-        return cmds.deformer(self.__deformer_name, q=True, geometryIndices=True)
+        return cmds.deformer(self._deformer_name, q=True, geometryIndices=True)
 
     def get_all_indices(self) -> list[int]:
         """Get the shape all indices bound to the deformer.
@@ -291,7 +291,7 @@ class DeformerMembership:
         Returns:
             list[int]: The deformer input indices.
         """
-        return cmds.getAttr(f"{self.__deformer_name}.input", multiIndices=True)
+        return cmds.getAttr(f"{self._deformer_name}.input", multiIndices=True)
 
     def get_components(self) -> list[str]:
         """Get the all components bound to the deformer.
@@ -302,7 +302,7 @@ class DeformerMembership:
         Returns:
             list[str]: The bound components.
         """
-        return cmds.deformer(self.__deformer_name, q=True, components=True)
+        return cmds.deformer(self._deformer_name, q=True, components=True)
 
     def get_shape_components(self, index: int = 0) -> list[str]:
         """Get the shape components bound to the deformer.
@@ -321,7 +321,7 @@ class DeformerMembership:
 
         shape = self.get_shapes()[index]
         shape_transform = cmds.listRelatives(shape, parent=True, path=True)[0]
-        components = cmds.deformer(self.__deformer_name, q=True, components=True)
+        components = cmds.deformer(self._deformer_name, q=True, components=True)
 
         return [c for c in components if c.startswith(shape_transform)]
 
@@ -367,7 +367,7 @@ class DeformerMembership:
             if num_shape_components == len(components):
                 expression = "*"
             else:
-                expression = self.__deformer_name
+                expression = self._deformer_name
                 if not ComponentTags.exists(shape, expression):
                     component_tag = ComponentTags.create(shape, expression)
                 else:
@@ -382,7 +382,7 @@ class DeformerMembership:
         # Remove the old shapes.
         for shape in current_shapes:
             if shape not in component_data:
-                cmds.deformer(self.__deformer_name, e=True, g=shape, rm=True)
+                cmds.deformer(self._deformer_name, e=True, g=shape, rm=True)
 
                 logger.debug(f"Removed shape: {shape}")
 
@@ -405,7 +405,7 @@ class DeformerMembership:
             cmds.warning(f"Shape is already bound to deformer: {shape}")
             return
 
-        cmds.deformer(self.__deformer_name, e=True, g=shape)
+        cmds.deformer(self._deformer_name, e=True, g=shape)
 
         logger.debug(f"Added shape to deformer: {shape}")
 
@@ -429,7 +429,7 @@ class DeformerMembership:
             cmds.warning(f"Shape is not bound to deformer: {shape}")
             return
 
-        cmds.deformer(self.__deformer_name, e=True, g=shape, rm=True)
+        cmds.deformer(self._deformer_name, e=True, g=shape, rm=True)
 
         logger.debug(f"Removed shape from deformer: {shape}")
 
@@ -446,7 +446,7 @@ class DeformerMembership:
         if index not in all_indices:
             raise ValueError("Index does not exist")
 
-        return cmds.getAttr(f"{self.__deformer_name}.input[{index}].componentTagExpression")
+        return cmds.getAttr(f"{self._deformer_name}.input[{index}].componentTagExpression")
 
     def set_tag_expression(self, index: int = 0, tag_exp: str = "*", is_check: bool = True) -> None:
         """Set the component tag.
@@ -477,12 +477,12 @@ class DeformerMembership:
                     logger.warning(f"The result is empty or the component tag expression is invalid: {tag_exp}")
                     return
 
-        cmds.setAttr(f"{self.__deformer_name}.input[{index}].componentTagExpression", tag_exp, type="string")
+        cmds.setAttr(f"{self._deformer_name}.input[{index}].componentTagExpression", tag_exp, type="string")
 
-        logger.debug(f"Set component tag expression: {tag_exp} -> {self.__deformer_name}.input[{index}]")
+        logger.debug(f"Set component tag expression: {tag_exp} -> {self._deformer_name}.input[{index}]")
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}('{self.__deformer_name}')"
+        return f"{self.__class__.__name__}('{self._deformer_name}')"
 
     def __str__(self) -> str:
         return self.__repr__()

@@ -123,19 +123,19 @@ class SkinWeightsMeshConverterWidgets(QWidget):
         self.v_div_field.setText(str(self.tool_options.read("v_divisions", "2")))
 
         # Signal & Slot
-        self.mesh_div_field.textChanged.connect(partial(self.__update_preview_values, self.mesh_div_field))
-        self.mesh_div_slider.valueChanged.connect(partial(self.__update_preview_values, self.mesh_div_slider))
-        self.u_div_field.textChanged.connect(partial(self.__update_preview_values, self.u_div_field))
-        self.u_div_slider.valueChanged.connect(partial(self.__update_preview_values, self.u_div_slider))
-        self.v_div_field.textChanged.connect(partial(self.__update_preview_values, self.v_div_field))
-        self.v_div_slider.valueChanged.connect(partial(self.__update_preview_values, self.v_div_slider))
+        self.mesh_div_field.textChanged.connect(partial(self._update_preview_values, self.mesh_div_field))
+        self.mesh_div_slider.valueChanged.connect(partial(self._update_preview_values, self.mesh_div_slider))
+        self.u_div_field.textChanged.connect(partial(self._update_preview_values, self.u_div_field))
+        self.u_div_slider.valueChanged.connect(partial(self._update_preview_values, self.u_div_slider))
+        self.v_div_field.textChanged.connect(partial(self._update_preview_values, self.v_div_field))
+        self.v_div_slider.valueChanged.connect(partial(self._update_preview_values, self.v_div_slider))
 
         template_button.clicked.connect(self.create_template_mesh)
         convert_button.clicked.connect(self.convert_skin_weights_to_mesh)
 
     @maya_ui.undo_chunk("Update Preview Values")
     @maya_ui.error_handler
-    def __update_preview_values(self, sender):
+    def _update_preview_values(self, sender):
         """Update the preview values."""
         # Check slide and field values
         if sender == self.mesh_div_field:

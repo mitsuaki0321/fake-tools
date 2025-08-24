@@ -66,29 +66,29 @@ class MainWindow(base_window.BaseMainWindow):
             checkbox.setChecked(self.tool_options.read(checkbox.text(), True))
 
         # Signal & Slot
-        all_on_checked_button.clicked.connect(self.__all_on_checked)
-        all_off_checked_button.clicked.connect(self.__all_off_checked)
-        toggle_checked_button.clicked.connect(self.__toggle_checked)
-        execute_button.clicked.connect(self.__execute)
+        all_on_checked_button.clicked.connect(self._all_on_checked)
+        all_off_checked_button.clicked.connect(self._all_off_checked)
+        toggle_checked_button.clicked.connect(self._toggle_checked)
+        execute_button.clicked.connect(self._execute)
 
-    def __all_on_checked(self):
+    def _all_on_checked(self):
         """All on checked."""
         for checkbox in self.enable_checkboxes:
             checkbox.setChecked(True)
 
-    def __all_off_checked(self):
+    def _all_off_checked(self):
         """All off checked."""
         for checkbox in self.enable_checkboxes:
             checkbox.setChecked(False)
 
-    def __toggle_checked(self):
+    def _toggle_checked(self):
         """Toggle checked."""
         for checkbox in self.enable_checkboxes:
             checkbox.setChecked(not checkbox.isChecked())
 
     @maya_ui.error_handler
     @maya_ui.undo_chunk("Optimize Scene")
-    def __execute(self):
+    def _execute(self):
         """Execute."""
         if not all([checkbox.isChecked() for checkbox in self.enable_checkboxes]):
             cmds.warning("Please check the optimizer you want to execute.")

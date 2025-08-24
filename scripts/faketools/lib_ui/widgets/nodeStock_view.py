@@ -55,7 +55,7 @@ class NodeStockButton(QGraphicsRectItem, QObject):
 
         QObject.__init__(self)
         QGraphicsRectItem.__init__(self, 0, 0, size, size)
-        self.__key = key
+        self._key = key
         self.size = size
 
         base_color = QColor(base_color)
@@ -98,7 +98,7 @@ class NodeStockButton(QGraphicsRectItem, QObject):
     @property
     def key(self):
         """str: The stock key."""
-        return self.__key
+        return self._key
 
     def _get_lightness_color(self, color, factor) -> QColor:
         """Adjust the brightness of a color for hover and pressed states.

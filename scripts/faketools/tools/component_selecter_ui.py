@@ -44,7 +44,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.tool_options = optionvar.ToolOptionSettings(__name__)
 
         self.menu = self.menuBar()
-        self.__add_menu()
+        self._add_menu()
 
         # Unique selection
         label = QLabel("Unique Selection")
@@ -147,7 +147,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.min_param_spinbox.valueChanged.connect(self.__update_uv_spinbox)
         self.max_param_spinbox.valueChanged.connect(self.__update_uv_spinbox)
 
-    def __add_menu(self):
+    def _add_menu(self):
         """Add menu."""
         menu = self.menu.addMenu("Edit")
 
@@ -215,7 +215,7 @@ class MainWindow(base_window.BaseMainWindow):
     @maya_ui.error_handler
     def right_area_selection(self):
         """Right area selection."""
-        sel_components = self.__select_objects_to_components()
+        sel_components = self._select_objects_to_components()
         if not sel_components:
             cmds.error("Select transform or shape nodes.")
 
@@ -229,7 +229,7 @@ class MainWindow(base_window.BaseMainWindow):
     @maya_ui.error_handler
     def left_area_selection(self):
         """Left selection."""
-        sel_components = self.__select_objects_to_components()
+        sel_components = self._select_objects_to_components()
         if not sel_components:
             cmds.error("Select transform or shape nodes.")
 
@@ -243,7 +243,7 @@ class MainWindow(base_window.BaseMainWindow):
     @maya_ui.error_handler
     def center_area_selection(self):
         """Center selection."""
-        sel_components = self.__select_objects_to_components()
+        sel_components = self._select_objects_to_components()
         if not sel_components:
             cmds.error("Select transform or shape nodes.")
 
@@ -257,7 +257,7 @@ class MainWindow(base_window.BaseMainWindow):
     @maya_ui.error_handler
     def uv_area_selection(self):
         """UV area selection."""
-        sel_components = self.__select_objects_to_components(filter_types=["nurbsCurve", "nurbsSurface"])
+        sel_components = self._select_objects_to_components(filter_types=["nurbsCurve", "nurbsSurface"])
         if not sel_components:
             cmds.error("Select transform or shape nodes. (nurbsCurve, nurbsSurface)")
 
@@ -293,7 +293,7 @@ class MainWindow(base_window.BaseMainWindow):
             cmds.symmetricModelling(s=True)
             cmds.select(cmds.ls(sl=True), sym=True)
 
-    def __select_objects_to_components(self, filter_types: list[str] = None) -> list[str]:
+    def _select_objects_to_components(self, filter_types: list[str] = None) -> list[str]:
         """Convert objects to components.
 
         Args:

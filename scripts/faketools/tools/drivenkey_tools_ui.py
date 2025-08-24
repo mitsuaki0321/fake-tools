@@ -54,7 +54,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.root_path = user_directory.ToolDirectory(__name__).get_directory()
 
         self.menu_bar = self.menuBar()
-        self.__add_menu()
+        self._add_menu()
 
         one_to_all_button = QPushButton("One to All")
         self.central_layout.addWidget(one_to_all_button)
@@ -145,16 +145,16 @@ class MainWindow(base_window.BaseMainWindow):
         self.value_scale_check_box.set_values(self.tool_options.read("value_scale", []))
 
         # Signal & Slot
-        one_to_all_button.clicked.connect(self.transfer_one_to_all)
-        one_to_replace_button.clicked.connect(self.transfer_one_to_replace)
+        one_to_all_button.clicked.connect(self._transfer_one_to_all)
+        one_to_replace_button.clicked.connect(self._transfer_one_to_replace)
         mirror_curve_time_button.clicked.connect(self.mirror_curve_time)
         mirror_curve_value_button.clicked.connect(self.mirror_curve_value)
-        self.mirror_check_box.stateChanged.connect(self.__update_mirror_check_box)
+        self.mirror_check_box.stateChanged.connect(self._update_mirror_check_box)
 
         # Initial state
-        self.__update_mirror_check_box()
+        self._update_mirror_check_box()
 
-    def __add_menu(self):
+    def _add_menu(self):
         """Add the menu."""
         menu = self.menu_bar.addMenu("Export/Import")
 
@@ -227,13 +227,13 @@ class MainWindow(base_window.BaseMainWindow):
 
     @maya_ui.undo_chunk("Transfer Driven Key")
     @maya_ui.error_handler
-    def transfer_one_to_all(self):
+    def _transfer_one_to_all(self):
         """Transfer driven key one to all."""
         transfer_drivenkey.DrivenKeyTransfer().one_to_all()
 
     @maya_ui.undo_chunk("Transfer Driven Key")
     @maya_ui.error_handler
-    def transfer_one_to_replace(self):
+    def _transfer_one_to_replace(self):
         """Transfer driven key one to replace."""
         regex = self.regex_line_edit.text()
         replace_to = self.replace_to_line_edit.text()
@@ -299,7 +299,7 @@ class MainWindow(base_window.BaseMainWindow):
         for node in sel_nodes:
             manage_drivenkey.cleanup_driven_keys(node)
 
-    def __update_mirror_check_box(self):
+    def _update_mirror_check_box(self):
         """Update the mirror check box."""
         state = self.mirror_check_box.isChecked()
 
@@ -339,7 +339,7 @@ class MirrorCheckBox(QWidget):
         """
         super().__init__(parent)
 
-        self.__attribute = attribute
+        self._attribute = attribute
 
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -367,7 +367,7 @@ class MirrorCheckBox(QWidget):
         values = []
         for check_box, axis in [(self.x_check_box, "X"), (self.y_check_box, "Y"), (self.z_check_box, "Z")]:
             if check_box.isChecked():
-                values.append(f"{self.__attribute}{axis}")
+                values.append(f"{self._attribute}{axis}")
 
         return values
 
@@ -378,7 +378,7 @@ class MirrorCheckBox(QWidget):
             values (list[str]): The values.
         """
         for check_box, axis in [(self.x_check_box, "X"), (self.y_check_box, "Y"), (self.z_check_box, "Z")]:
-            attribute = f"{self.__attribute}{axis}"
+            attribute = f"{self._attribute}{axis}"
             if attribute in values:
                 check_box.setChecked(True)
             else:

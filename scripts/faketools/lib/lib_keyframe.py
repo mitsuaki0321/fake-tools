@@ -29,7 +29,7 @@ TANGENT_TYPES = [
 
 
 class InfinityType:
-    __infinity_types = ["Constant", "Linear", "Constant", "Cycle", "Cycle Relative", "Oscillate"]
+    _infinity_types = ("Constant", "Linear", "Constant", "Cycle", "Cycle Relative", "Oscillate")
 
     def __init__(self, anim_curve: str):
         """Initialize the infinity type object.
@@ -55,7 +55,7 @@ class InfinityType:
         Returns:
             list[str]: The infinity types.
         """
-        return cls.__infinity_types
+        return cls._infinity_types
 
     @property
     def infinity_types(self) -> list[str]:
@@ -64,7 +64,7 @@ class InfinityType:
         Returns:
             list[str]: The infinity types.
         """
-        return self.__infinity_types
+        return self._infinity_types
 
     def get_pre_infinity(self) -> str:
         """Get the pre infinity type.
@@ -80,10 +80,10 @@ class InfinityType:
         Args:
             infinity_type (str): The pre infinity type.
         """
-        if infinity_type not in self.__infinity_types:
+        if infinity_type not in self._infinity_types:
             raise ValueError(f"Invalid pre infinity type: {infinity_type}")
 
-        cmds.setAttr(f"{self.anim_curve}.preInfinity", self.__infinity_types.index(infinity_type))
+        cmds.setAttr(f"{self.anim_curve}.preInfinity", self._infinity_types.index(infinity_type))
 
     def get_post_infinity(self) -> str:
         """Get the post infinity type.
@@ -99,10 +99,10 @@ class InfinityType:
         Args:
             infinity_type (str): The post infinity type.
         """
-        if infinity_type not in self.__infinity_types:
+        if infinity_type not in self._infinity_types:
             raise ValueError(f"Invalid post infinity type: {infinity_type}")
 
-        cmds.setAttr(f"{self.anim_curve}.postInfinity", self.__infinity_types.index(infinity_type))
+        cmds.setAttr(f"{self.anim_curve}.postInfinity", self._infinity_types.index(infinity_type))
 
 
 @dataclass
@@ -303,7 +303,7 @@ class AttributeKeyframe:
         source_node = cmds.ls(source_plugs[0], objectsOnly=True)[0]
         anim_curves = []
 
-        def __find_anim_curve(node):
+        def _find_anim_curve(node):
             """Find the animation curve node."""
             if cmds.nodeType(node) in ["animCurveUU", "animCurveUL", "animCurveUA", "animCurveUT"]:
                 anim_curves.append(node)
@@ -311,9 +311,9 @@ class AttributeKeyframe:
             elif cmds.nodeType(node) == "blendWeighted":
                 bw_source_nodes = cmds.listConnections(node, s=True, d=False)
                 for bw_source_node in bw_source_nodes:
-                    __find_anim_curve(bw_source_node)
+                    _find_anim_curve(bw_source_node)
 
-        __find_anim_curve(source_node)
+        _find_anim_curve(source_node)
         if not anim_curves:
             logger.warning(f"Failed to find animation curve: {self.plug}")
             return None

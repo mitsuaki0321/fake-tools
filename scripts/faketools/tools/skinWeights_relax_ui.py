@@ -251,10 +251,10 @@ class BiharmonicSkinWeightsWidgets(SkinWeightsWidgets):
         self.first_order_slider.setValue(float(self.first_order_field.text()) * 100)
 
         # Signal & Slot
-        self.first_order_field.textChanged.connect(self.__update_field_slider_value)
-        self.first_order_slider.valueChanged.connect(self.__update_field_slider_value)
+        self.first_order_field.textChanged.connect(self._update_field_slider_value)
+        self.first_order_slider.valueChanged.connect(self._update_field_slider_value)
 
-    def __update_field_slider_value(self):
+    def _update_field_slider_value(self):
         """Update the field and slider value."""
         sender = self.sender()
 
@@ -311,10 +311,10 @@ class RelaxSkinWeightsWidgets(SkinWeightsWidgets):
         self.relaxation_factor_slider.setValue(float(self.relaxation_factor_field.text()) * 100)
 
         # Signal & Slot
-        self.relaxation_factor_field.textChanged.connect(self.__update_field_slider_value)
-        self.relaxation_factor_slider.valueChanged.connect(self.__update_field_slider_value)
+        self.relaxation_factor_field.textChanged.connect(self._update_field_slider_value)
+        self.relaxation_factor_slider.valueChanged.connect(self._update_field_slider_value)
 
-    def __update_field_slider_value(self):
+    def _update_field_slider_value(self):
         """Update the field and slider value."""
         sender = self.sender()
 
@@ -449,14 +449,14 @@ class MainWindow(base_window.BaseMainWindow):
 
         # Signal & Slot
         self.method_box.currentIndexChanged.connect(self.method_stack_widget.setCurrentIndex)
-        self.iterations_field.textChanged.connect(self.__update_field_slider_value)
-        self.iterations_slider.valueChanged.connect(self.__update_field_slider_value)
-        self.after_blend_field.textChanged.connect(self.__update_field_slider_value)
-        self.after_blend_slider.valueChanged.connect(self.__update_field_slider_value)
+        self.iterations_field.textChanged.connect(self._update_field_slider_value)
+        self.iterations_slider.valueChanged.connect(self._update_field_slider_value)
+        self.after_blend_field.textChanged.connect(self._update_field_slider_value)
+        self.after_blend_slider.valueChanged.connect(self._update_field_slider_value)
 
         execute_button.clicked.connect(self.relax_weights)
 
-    def __update_field_slider_value(self):
+    def _update_field_slider_value(self):
         """Update the field and slider value."""
         sender = self.sender()
 
