@@ -37,7 +37,7 @@ class NodeStockButton(QGraphicsRectItem, QObject):
     hovered = Signal(object)
     unhovered = Signal()
 
-    def __init__(self, key: str, x: int, y: int, size: int, *args, **kwargs):
+    def __init__(self, key: str, x: int, y: int, size: int, **kwargs):
         """Initialize the short button.
 
         Args:
@@ -167,7 +167,7 @@ class NodeStockButton(QGraphicsRectItem, QObject):
         self.is_stoked = False
         self.update()
 
-    def paint(self, painter, option, widget=None) -> None:
+    def paint(self, painter) -> None:
         """Custom paint to draw the button with hover and pressed state."""
         rect = self.rect().adjusted(0, 0, -1, -1)
         inner_rect = rect.adjusted(3, 3, -3, -3)

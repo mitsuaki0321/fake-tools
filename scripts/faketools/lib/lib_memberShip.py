@@ -78,9 +78,7 @@ class ComponentTags:
 
         shape_output = f"{shape}.{cmds.deformableShape(shape, localShapeOutAttr=True)[0]}"
         tags = cmds.geometryAttrInfo(shape_output, componentTagNames=True)
-        if tag_name in tags:
-            return True
-        return False
+        return tag_name in tags
 
     @classmethod
     def create(cls, shape: str, tag_name: str) -> "ComponentTags":
@@ -500,10 +498,7 @@ def is_use_component_tag() -> bool:
     selection_component_tags = cmds.optionVar(q="deformationSelectionComponentTags")
     tweak_creation = cmds.optionVar(q="deformationCreateTweak")
 
-    if use_component_tags == 1 and selection_component_tags == 1 and tweak_creation == 0:
-        return True
-
-    return False
+    return bool(use_component_tags == 1 and selection_component_tags == 1 and tweak_creation == 0)
 
 
 def remove_deformer_blank_indices(deformer: str):

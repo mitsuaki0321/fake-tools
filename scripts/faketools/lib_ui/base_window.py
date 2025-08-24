@@ -47,7 +47,7 @@ class BaseMainWindow(QMainWindow):
         self.central_layout.setSpacing(int(default_widget_spacing * 0.75))
 
 
-def get_spacing(widget: QWidget = QWidget(), direction: str = "vertical") -> int:
+def get_spacing(widget: QWidget, direction: str = "vertical") -> int:
     """Get default widget spacing.
 
     Args:

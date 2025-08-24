@@ -37,10 +37,8 @@ logger = getLogger(__name__)
 
 
 class CombineSkinWeightsWidgets(QWidget):
-
     def __init__(self, parent=None, window_mode: bool = False):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__(parent=parent)
 
         self.main_layout = QVBoxLayout()
@@ -53,29 +51,29 @@ class CombineSkinWeightsWidgets(QWidget):
 
         layout = QGridLayout()
 
-        label = QLabel('Source Influences:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        label = QLabel("Source Influences:", alignment=Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(label, 0, 0)
 
         self.src_infs_field = QLineEdit()
         layout.addWidget(self.src_infs_field, 0, 1)
 
-        src_infs_button = QPushButton('SET')
+        src_infs_button = QPushButton("SET")
         layout.addWidget(src_infs_button, 0, 2)
 
-        label = QLabel('Target Influence:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        label = QLabel("Target Influence:", alignment=Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(label, 1, 0)
 
         self.target_inf_field = QLineEdit()
         layout.addWidget(self.target_inf_field, 1, 1)
 
-        target_infs_button = QPushButton('SET')
+        target_infs_button = QPushButton("SET")
         layout.addWidget(target_infs_button, 1, 2)
 
         layout.setColumnStretch(1, 1)
 
         self.main_layout.addLayout(layout)
 
-        button = QPushButton('Combine Skin Weights')
+        button = QPushButton("Combine Skin Weights")
         self.main_layout.addWidget(button)
 
         self.main_layout.addStretch()
@@ -90,61 +88,57 @@ class CombineSkinWeightsWidgets(QWidget):
 
     @maya_ui.error_handler
     def ___set_selected_nodes(self, field):
-        """Set the selected nodes to the field.
-        """
-        nodes = cmds.ls(sl=True, type='joint')
+        """Set the selected nodes to the field."""
+        nodes = cmds.ls(sl=True, type="joint")
         if not nodes:
             if not cmds.ls(sl=True):
-                field.setText('')
+                field.setText("")
             else:
-                cmds.error('Select joints.')
+                cmds.error("Select joints.")
 
-        field.setText(' '.join(nodes))
+        field.setText(" ".join(nodes))
 
     @maya_ui.error_handler
     def __set_selected_node(self, field):
-        """Set the selected node to the field.
-        """
-        nodes = cmds.ls(sl=True, type='joint')
+        """Set the selected node to the field."""
+        nodes = cmds.ls(sl=True, type="joint")
         if not nodes:
             if not cmds.ls(sl=True):
-                field.setText('')
+                field.setText("")
             else:
-                cmds.error('Select a joint.')
+                cmds.error("Select a joint.")
 
         field.setText(nodes[0])
 
-    @maya_ui.undo_chunk('Combine Skin Weights')
+    @maya_ui.undo_chunk("Combine Skin Weights")
     @maya_ui.error_handler
     def combine_skin_weights(self):
-        """Combine the skin weights.
-        """
+        """Combine the skin weights."""
         src_infs = self.src_infs_field.text().split()
         target_inf = self.target_inf_field.text()
 
         if not src_infs:
-            cmds.error('No source influences.')
+            cmds.error("No source influences.")
         if not target_inf:
-            cmds.error('No target influence.')
+            cmds.error("No target influence.")
 
         components = cmds.filterExpand(sm=[28, 31, 46], ex=True)
         if not components:
-            cmds.error('No components selected.')
+            cmds.error("No components selected.")
 
         convert_weight.combine_skin_weights(src_infs, target_inf, components)
 
-        logger.info('Combined skin weights')
+        logger.info("Combined skin weights")
 
 
 def show_ui():
-    """Show the main window.
-    """
-    window_name = f'{__name__}MainWindow'
+    """Show the main window."""
+    window_name = f"{__name__}MainWindow"
     maya_qt.delete_widget(window_name)
 
     window = QMainWindow(parent=maya_qt.get_maya_pointer())
     window.setObjectName(window_name)
-    window.setWindowTitle('Skin Weights Combine')
+    window.setWindowTitle("Skin Weights Combine")
     window.setAttribute(Qt.WA_DeleteOnClose)
 
     widgets = CombineSkinWeightsWidgets(window_mode=True)

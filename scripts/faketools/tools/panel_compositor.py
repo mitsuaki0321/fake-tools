@@ -50,16 +50,13 @@ tool_options = optionvar.ToolOptionSettings(__name__)
 
 
 class MainWindow(base_window.BaseMainWindow):
-
-    _default_image_label = 'Captured image will appear here'
+    _default_image_label = "Captured image will appear here"
     _panel_height = 500
-    _background_color = '#000000'
+    _background_color = "#000000"
 
-    def __init__(self, parent=None, object_name='MainWindow', window_title='Main Window'):
+    def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
         """Constructor."""
-        super(MainWindow, self).__init__(parent=parent,
-                                         object_name=object_name,
-                                         window_title=window_title)
+        super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
         self.panel_layout_list = []
         self.panel_list = []
@@ -67,9 +64,9 @@ class MainWindow(base_window.BaseMainWindow):
         self.view_list = []
 
         # Maya ui name
-        central_layout_name = self.__ui_name('centralLayout')
-        scroll_area_name = self.__ui_name('scrollArea')
-        content_layout_name = self.__ui_name('contentLayout')
+        central_layout_name = self.__ui_name("centralLayout")
+        scroll_area_name = self.__ui_name("scrollArea")
+        content_layout_name = self.__ui_name("contentLayout")
 
         # Central widget
         self.central_layout.setObjectName(central_layout_name)
@@ -95,7 +92,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.control_panel_size_widget = ControlPanelSizeWidget()
         tool_bar_layout.addWidget(self.control_panel_size_widget, alignment=Qt.AlignRight | Qt.AlignVCenter)
 
-        self.clear_button = extra_widgets.ToolIconButton('trash-2')
+        self.clear_button = extra_widgets.ToolIconButton("trash-2")
         tool_bar_layout.addWidget(self.clear_button, alignment=Qt.AlignRight | Qt.AlignVCenter)
 
         self.central_layout.addLayout(tool_bar_layout)
@@ -135,29 +132,29 @@ class MainWindow(base_window.BaseMainWindow):
         self.control_panel_size_widget.size_fit_signal.connect(self.fit_panel)
 
     def _add_panel(self):
-        """Add the panel.
-        """
+        """Add the panel."""
         camera = self.camera_list_widget.get_current_camera()
         if not camera:
             return
 
         if camera in self.loaded_camera_list:
-            cmds.warning(f'Camera already loaded: {camera}')
+            cmds.warning(f"Camera already loaded: {camera}")
             return
 
         if self.play_button.is_play():
-            cmds.warning('Stop the capture before loading the camera.')
+            cmds.warning("Stop the capture before loading the camera.")
             return
 
-        panel_layout = cmds.paneLayout(configuration='single', height=self._panel_height, p=self.content_layout.objectName())
+        panel_layout = cmds.paneLayout(configuration="single", height=self._panel_height, p=self.content_layout.objectName())
         panel = cmds.modelPanel(cam=camera, p=panel_layout)
-        cmds.modelEditor(modelPanel=panel,
-                         displayAppearance='smoothShaded',
-                         allObjects=False,
-                         polymeshes=True,
-                         grid=False,
-                         headsUpDisplay=False,
-                         )
+        cmds.modelEditor(
+            modelPanel=panel,
+            displayAppearance="smoothShaded",
+            allObjects=False,
+            polymeshes=True,
+            grid=False,
+            headsUpDisplay=False,
+        )
         cmds.modelPanel(panel, e=True, cam=camera)
         view = omui.M3dView.getM3dViewFromModelPanel(panel)
 
@@ -166,17 +163,16 @@ class MainWindow(base_window.BaseMainWindow):
         self.loaded_camera_list.append(camera)
         self.view_list.append(view)
 
-        logger.debug(f'Add panel: {panel}')
+        logger.debug(f"Add panel: {panel}")
 
     def run_capture(self):
-        """Run the capture.
-        """
+        """Run the capture."""
         if self.play_button.is_play():
             self.play_button.stop()
             self.timer.stop()
         else:
             if not self.view_list:
-                cmds.warning('No camera loaded.')
+                cmds.warning("No camera loaded.")
                 return
 
             self.image_label.clear()
@@ -191,28 +187,27 @@ class MainWindow(base_window.BaseMainWindow):
             size (int): Panel size.
         """
         if self.play_button.is_play():
-            cmds.warning('Stop the capture before resizing the panels.')
+            cmds.warning("Stop the capture before resizing the panels.")
             return
 
         if not self.panel_layout_list:
-            cmds.warning('No panels to resize.')
+            cmds.warning("No panels to resize.")
             return
 
         for panel_layout in self.panel_layout_list:
             current_size = cmds.paneLayout(panel_layout, q=True, height=True)
             cmds.paneLayout(panel_layout, e=True, height=current_size + size)
 
-        logger.debug(f'Resized the panels: {size}')
+        logger.debug(f"Resized the panels: {size}")
 
     def fit_panel(self):
-        """Fit the panel size to window size.
-        """
+        """Fit the panel size to window size."""
         if self.play_button.is_play():
-            cmds.warning('Stop the capture before fitting the panels.')
+            cmds.warning("Stop the capture before fitting the panels.")
             return
 
         if not self.panel_layout_list:
-            cmds.warning('No panels to fit.')
+            cmds.warning("No panels to fit.")
             return
 
         label_size = self.image_label.size()
@@ -225,26 +220,25 @@ class MainWindow(base_window.BaseMainWindow):
 
         # self.resize(panel_width, panel_height)
 
-        logger.debug('Fitted the panels to the window size.')
+        logger.debug("Fitted the panels to the window size.")
 
     def clear_panels(self):
-        """Clear the panels.
-        """
+        """Clear the panels."""
         if self.play_button.is_play():
-            cmds.warning('Stop the capture before clearing the panels.')
+            cmds.warning("Stop the capture before clearing the panels.")
             return
 
         for panel in self.panel_list:
             if cmds.modelPanel(panel, q=True, exists=True):
                 cmds.deleteUI(panel)
 
-                logger.debug(f'Deleted panel: {panel}')
+                logger.debug(f"Deleted panel: {panel}")
 
         for panel_layout in self.panel_layout_list:
             if cmds.paneLayout(panel_layout, q=True, exists=True):
                 cmds.deleteUI(panel_layout)
 
-                logger.debug(f'Deleted panel layout: {panel_layout}')
+                logger.debug(f"Deleted panel layout: {panel_layout}")
 
         self.panel_layout_list.clear()
         self.panel_list.clear()
@@ -254,8 +248,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.image_label.setText(self._default_image_label)
 
     def _capture(self):
-        """Capture the model panels.
-        """
+        """Capture the model panels."""
         if self.capturing:
             return
 
@@ -270,7 +263,7 @@ class MainWindow(base_window.BaseMainWindow):
 
             images.append(image)
 
-        logger.debug(f'Captured {len(images)} images.')
+        logger.debug(f"Captured {len(images)} images.")
 
         pixmap = self._composite_images(images)
         self.image_label.setPixmap(pixmap)
@@ -291,7 +284,7 @@ class MainWindow(base_window.BaseMainWindow):
             mImg = om.MImage()
             view.readColorBuffer(mImg, True)
         except Exception as e:
-            logger.error(f'Failed to capture the model panel: {e}')
+            logger.error(f"Failed to capture the model panel: {e}")
             return None
 
         width, height = mImg.getSize()
@@ -300,7 +293,7 @@ class MainWindow(base_window.BaseMainWindow):
         nbytes = width * height * 4
         pixelPtr = mImg.pixels()
         if not pixelPtr:
-            logger.error('Failed to get the pixel data.')
+            logger.error("Failed to get the pixel data.")
             return None
 
         buffer = (ctypes.c_ubyte * nbytes).from_address(pixelPtr)
@@ -341,32 +334,29 @@ class MainWindow(base_window.BaseMainWindow):
         Returns:
             str: UI name.
         """
-        return '{}_{}'.format(__name__.replace('.', '_'), name)
+        return "{}_{}".format(__name__.replace(".", "_"), name)
 
     def closeEvent(self, event):
-        """Close event.
-        """
-        if hasattr(self, 'timer') and self.timer.isActive():
+        """Close event."""
+        if hasattr(self, "timer") and self.timer.isActive():
             self.timer.stop()
-            logger.debug('Stopped the timer.')
+            logger.debug("Stopped the timer.")
 
         self.clear_panels()
 
-        super(MainWindow, self).closeEvent(event)
+        super().closeEvent(event)
 
 
 class CameraListWidget(QWidget):
-    """Camera list widget.
-    """
+    """Camera list widget."""
+
     load_camera_signal = Signal(str)
 
-    _ignore_camera_list = ['perspShape', 'topShape', 'sideShape', 'frontShape',
-                           'rightShape', 'leftShape', 'bottomShape']
+    _ignore_camera_list = ["perspShape", "topShape", "sideShape", "frontShape", "rightShape", "leftShape", "bottomShape"]
 
     def __init__(self, parent=None):
-        """Constructor.
-        """
-        super(CameraListWidget, self).__init__(parent)
+        """Constructor."""
+        super().__init__(parent)
 
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -376,10 +366,10 @@ class CameraListWidget(QWidget):
         self.camera_box.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
         layout.addWidget(self.camera_box)
 
-        self.load_button = extra_widgets.ToolIconButton('download')
+        self.load_button = extra_widgets.ToolIconButton("download")
         layout.addWidget(self.load_button)
 
-        self.reload_button = extra_widgets.ToolIconButton('refresh-cw-2')
+        self.reload_button = extra_widgets.ToolIconButton("refresh-cw-2")
         layout.addWidget(self.reload_button)
 
         self.setLayout(layout)
@@ -392,18 +382,17 @@ class CameraListWidget(QWidget):
         self.camera_box.setMinimumWidth(self.camera_box.sizeHint().width() * 2)
 
     def _set_camera_list(self):
-        """Set the camera list.
-        """
-        camera_list = cmds.ls(type='camera')
+        """Set the camera list."""
+        camera_list = cmds.ls(type="camera")
         camera_list = [camera for camera in camera_list if camera not in self._ignore_camera_list]
 
         if not camera_list:
-            cmds.warning('Camera not found.')
+            cmds.warning("Camera not found.")
             return
 
         self.camera_box.addItems(camera_list)
 
-        logger.debug(f'Set camera list: {camera_list}')
+        logger.debug(f"Set camera list: {camera_list}")
 
     def get_current_camera(self) -> str:
         """Get the current camera.
@@ -413,18 +402,17 @@ class CameraListWidget(QWidget):
         """
         camera = self.camera_box.currentText()
         if not camera:
-            cmds.warning('Camera not selected.')
+            cmds.warning("Camera not selected.")
             return None
 
         if not cmds.objExists(camera):
-            cmds.warning(f'Camera not found: {camera}')
+            cmds.warning(f"Camera not found: {camera}")
             return None
 
         return camera
 
     def _load_camera(self):
-        """Load the camera.
-        """
+        """Load the camera."""
         camera = self.get_current_camera()
         if camera is None:
             return
@@ -432,35 +420,30 @@ class CameraListWidget(QWidget):
         self.load_camera_signal.emit(camera)
 
     def _reload_camera_list(self):
-        """Reload the camera list.
-        """
+        """Reload the camera list."""
         self.camera_box.clear()
         self._set_camera_list()
 
 
 class PlayButton(extra_widgets.ToolIconButton):
-    """Play and stop button.
-    """
+    """Play and stop button."""
 
     def __init__(self, parent=None):
-        """Constructor.
-        """
+        """Constructor."""
         self._play = False
 
-        self.play_icon = QIcon(tool_icons.get_icon_path('play'))
-        self.stop_icon = QIcon(tool_icons.get_icon_path('pause'))
+        self.play_icon = QIcon(tool_icons.get_icon_path("play"))
+        self.stop_icon = QIcon(tool_icons.get_icon_path("pause"))
 
-        super(PlayButton, self).__init__(icon_name='play', parent=parent)
+        super().__init__(icon_name="play", parent=parent)
 
     def run(self):
-        """Run the capture.
-        """
+        """Run the capture."""
         self._play = True
         self.setIcon(self.stop_icon)
 
     def stop(self):
-        """Stop the capture.
-        """
+        """Stop the capture."""
         self._play = False
         self.setIcon(self.play_icon)
 
@@ -474,45 +457,42 @@ class PlayButton(extra_widgets.ToolIconButton):
 
 
 class BackGroundColorButton(QPushButton):
-    """Change the background color button.
-    """
+    """Change the background color button."""
 
-    _default_color = '#000000'
+    _default_color = "#000000"
 
     def __init__(self, parent=None):
-        """Constructor.
-        """
-        super(BackGroundColorButton, self).__init__(parent)
+        """Constructor."""
+        super().__init__(parent)
 
         self._color = self._default_color
 
-        white_icon_path = tool_icons.get_icon_path('paint-bucket')
+        white_icon_path = tool_icons.get_icon_path("paint-bucket")
         self.write_icon = QIcon(white_icon_path)
-        black_icon_path = tool_icons.get_icon_path('paint-bucket-black')
+        black_icon_path = tool_icons.get_icon_path("paint-bucket-black")
         self.black_icon = QIcon(black_icon_path)
 
         self.setIcon(self.write_icon)
 
         style = QApplication.style()
-        pm_button_margin = style.PM_ButtonMargin if hasattr(style, 'PM_ButtonMargin') else style.PixelMetric.PM_ButtonMargin
+        pm_button_margin = style.PM_ButtonMargin if hasattr(style, "PM_ButtonMargin") else style.PixelMetric.PM_ButtonMargin
         padding = style.pixelMetric(pm_button_margin)
 
-        self.setStyleSheet("""
+        self.setStyleSheet(f"""
             QPushButton {{
                 border: none;
-                background-color: {};
+                background-color: {self._color};
                 border-radius: 1px;
                 text-align: center;
             }}
-        """.format(self._color))
+        """)
 
         pixmap = QPixmap(white_icon_path)
         size = pixmap.width() + padding
         self.setMinimumSize(size, size)
 
-    def mousePressEvent(self, event):
-        """Mouse press event.
-        """
+    def mousePressEvent(self):
+        """Mouse press event."""
         color = QColorDialog.getColor(QColor(self._color), None)
         if not color.isValid():
             return
@@ -538,41 +518,40 @@ class BackGroundColorButton(QPushButton):
         else:
             self.setIcon(self.write_icon)
 
-        self.setStyleSheet("""
+        self.setStyleSheet(f"""
             QPushButton {{
                 border: none;
-                background-color: {};
+                background-color: {color.name()};
                 border-radius: 1px;
                 text-align: center;
             }}
-        """.format(color.name()))
+        """)
 
         self._color = color
 
 
 class ControlPanelSizeWidget(QWidget):
-    """Control panel size widget.
-    """
+    """Control panel size widget."""
+
     size_up_signal = Signal()
     size_down_signal = Signal()
     size_fit_signal = Signal()
 
     def __init__(self, parent=None):
-        """Constructor.
-        """
-        super(ControlPanelSizeWidget, self).__init__(parent)
+        """Constructor."""
+        super().__init__(parent)
 
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(1)
 
-        self.size_up_button = extra_widgets.ToolIconButton('square-arrow-up')
+        self.size_up_button = extra_widgets.ToolIconButton("square-arrow-up")
         layout.addWidget(self.size_up_button)
 
-        self.size_down_button = extra_widgets.ToolIconButton('square-arrow-down')
+        self.size_down_button = extra_widgets.ToolIconButton("square-arrow-down")
         layout.addWidget(self.size_down_button)
 
-        self.size_fit_button = extra_widgets.ToolIconButton('scaling')
+        self.size_fit_button = extra_widgets.ToolIconButton("scaling")
         layout.addWidget(self.size_fit_button)
 
         self.setLayout(layout)
@@ -583,29 +562,23 @@ class ControlPanelSizeWidget(QWidget):
         self.size_fit_button.clicked.connect(self._size_fit)
 
     def _size_up(self):
-        """Size up.
-        """
+        """Size up."""
         self.size_up_signal.emit()
 
     def _size_down(self):
-        """Size down.
-        """
+        """Size down."""
         self.size_down_signal.emit()
 
     def _size_fit(self):
-        """Size fit.
-        """
+        """Size fit."""
         self.size_fit_signal.emit()
 
 
 def show_ui():
-    """Show the main window.
-    """
-    window_name = f'{__name__}MainWindow'
+    """Show the main window."""
+    window_name = f"{__name__}MainWindow"
     maya_qt.delete_widget(window_name)
 
     # Create the main window.
-    main_window = MainWindow(parent=maya_qt.get_maya_pointer(),
-                             object_name=window_name,
-                             window_title='Panel Compositor')
+    main_window = MainWindow(parent=maya_qt.get_maya_pointer(), object_name=window_name, window_title="Panel Compositor")
     main_window.show()

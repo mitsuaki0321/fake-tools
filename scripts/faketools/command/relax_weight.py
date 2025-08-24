@@ -17,7 +17,7 @@ logger = getLogger(__name__)
 class SmoothSkinWeights:
     """Smooth skin weights using various methods."""
 
-    def __init__(self, skinCluster: str, vertices: list[str], *args, **kwargs):
+    def __init__(self, skinCluster: str, vertices: list[str]):
         """Initialize the BaseSkinWeights class.
 
         Args:
@@ -182,7 +182,7 @@ class RBFSkinWeights(SmoothSkinWeights):
         return math.exp(-(distance**2) / (2 * sigma**2))
 
     @staticmethod
-    def linear_weight(distance, **kwargs):
+    def linear_weight(distance):
         return max(1 - distance, 0)
 
     @staticmethod

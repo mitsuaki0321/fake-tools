@@ -96,7 +96,7 @@ class CleanUpNode:
         cmds.delete(self.node, constructionHistory=True)
         logger.debug(f"Deleted history: {self.node}")
 
-    def clean(self, *args, **kwargs) -> None:
+    def clean(self, **kwargs) -> None:
         """Clean up the node with specified options.
 
         Keyword Args:

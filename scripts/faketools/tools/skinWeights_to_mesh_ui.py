@@ -43,10 +43,8 @@ logger = getLogger(__name__)
 
 
 class SkinWeightsMeshConverterWidgets(QWidget):
-
     def __init__(self, parent=None, window_mode: bool = False):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__(parent=parent)
 
         self.tool_options = optionvar.ToolOptionSettings(__name__)
@@ -64,7 +62,7 @@ class SkinWeightsMeshConverterWidgets(QWidget):
 
         layout = QGridLayout()
 
-        label = QLabel('Mesh Divisions:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        label = QLabel("Mesh Divisions:", alignment=Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(label, 0, 0)
 
         self.mesh_div_field = QLineEdit()
@@ -76,7 +74,7 @@ class SkinWeightsMeshConverterWidgets(QWidget):
         self.mesh_div_slider.setRange(1, 10)
         layout.addWidget(self.mesh_div_slider, 0, 2)
 
-        label = QLabel('U Divisions:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        label = QLabel("U Divisions:", alignment=Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(label, 1, 0)
 
         self.u_div_field = QLineEdit()
@@ -88,7 +86,7 @@ class SkinWeightsMeshConverterWidgets(QWidget):
         self.u_div_slider.setRange(1, 10)
         layout.addWidget(self.u_div_slider, 1, 2)
 
-        label = QLabel('V Divisions:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        label = QLabel("V Divisions:", alignment=Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(label, 2, 0)
 
         self.v_div_field = QLineEdit()
@@ -107,10 +105,10 @@ class SkinWeightsMeshConverterWidgets(QWidget):
         separator = extra_widgets.HorizontalSeparator()
         self.main_layout.addWidget(separator)
 
-        template_button = QPushButton('Create Template Mesh')
+        template_button = QPushButton("Create Template Mesh")
         self.main_layout.addWidget(template_button)
 
-        convert_button = QPushButton('Convert Skin Weights to Mesh')
+        convert_button = QPushButton("Convert Skin Weights to Mesh")
         self.main_layout.addWidget(convert_button)
 
         self.main_layout.addStretch()
@@ -118,11 +116,11 @@ class SkinWeightsMeshConverterWidgets(QWidget):
         self.setLayout(self.main_layout)
 
         # Option settings
-        self.mesh_div_field.setText(str(self.tool_options.read('mesh_divisions', '1')))
+        self.mesh_div_field.setText(str(self.tool_options.read("mesh_divisions", "1")))
         self.mesh_div_slider.setValue(int(self.mesh_div_field.text()))
-        self.u_div_field.setText(str(self.tool_options.read('u_divisions', '2')))
+        self.u_div_field.setText(str(self.tool_options.read("u_divisions", "2")))
         self.u_div_slider.setValue(int(self.u_div_field.text()))
-        self.v_div_field.setText(str(self.tool_options.read('v_divisions', '2')))
+        self.v_div_field.setText(str(self.tool_options.read("v_divisions", "2")))
 
         # Signal & Slot
         self.mesh_div_field.textChanged.connect(partial(self.__update_preview_values, self.mesh_div_field))
@@ -135,11 +133,10 @@ class SkinWeightsMeshConverterWidgets(QWidget):
         template_button.clicked.connect(self.create_template_mesh)
         convert_button.clicked.connect(self.convert_skin_weights_to_mesh)
 
-    @maya_ui.undo_chunk('Update Preview Values')
+    @maya_ui.undo_chunk("Update Preview Values")
     @maya_ui.error_handler
-    def __update_preview_values(self, sender, *args, **kwargs):
-        """Update the preview values.
-        """
+    def __update_preview_values(self, sender):
+        """Update the preview values."""
         # Check slide and field values
         if sender == self.mesh_div_field:
             value = self.mesh_div_field.text()
@@ -162,65 +159,62 @@ class SkinWeightsMeshConverterWidgets(QWidget):
 
         # Change preview values
         if self.preview_mesh is None and self.preview_mesh_node is None:
-            logger.debug('No preview mesh found.')
+            logger.debug("No preview mesh found.")
             return
 
         if not cmds.objExists(self.preview_mesh) or not cmds.objExists(self.preview_mesh_node):
-            logger.debug('Preview mesh not found.')
+            logger.debug("Preview mesh not found.")
             return
 
-        if cmds.nodeType(self.preview_mesh_node) == 'polySmoothFace':
+        if cmds.nodeType(self.preview_mesh_node) == "polySmoothFace":
             value = self.mesh_div_slider.value()
-            cmds.setAttr(f'{self.preview_mesh_node}.divisions', value)
+            cmds.setAttr(f"{self.preview_mesh_node}.divisions", value)
 
-            logger.debug(f'Update preview node values: {self.preview_mesh_node} >> {value}')
-        elif cmds.nodeType(self.preview_mesh_node) == 'nurbsTessellate':
+            logger.debug(f"Update preview node values: {self.preview_mesh_node} >> {value}")
+        elif cmds.nodeType(self.preview_mesh_node) == "nurbsTessellate":
             u_value = self.u_div_slider.value()
-            cmds.setAttr(f'{self.preview_mesh_node}.uNumber', u_value)
+            cmds.setAttr(f"{self.preview_mesh_node}.uNumber", u_value)
 
             v_value = self.v_div_slider.value()
-            cmds.setAttr(f'{self.preview_mesh_node}.vNumber', v_value)
+            cmds.setAttr(f"{self.preview_mesh_node}.vNumber", v_value)
 
-            logger.debug(f'Update preview node values: {self.preview_mesh_node} >> {u_value}, {v_value}')
+            logger.debug(f"Update preview node values: {self.preview_mesh_node} >> {u_value}, {v_value}")
 
-    @maya_ui.undo_chunk('Create Template Mesh')
+    @maya_ui.undo_chunk("Create Template Mesh")
     @maya_ui.error_handler
     def create_template_mesh(self):
-        """Create a template mesh.
-        """
-        shapes = cmds.ls(sl=True, dag=True, type='geometryShape', ni=True)
+        """Create a template mesh."""
+        shapes = cmds.ls(sl=True, dag=True, type="geometryShape", ni=True)
         if not shapes:
-            cmds.error('Select any geometry.')
+            cmds.error("Select any geometry.")
         else:
             shape = shapes[0]
 
         skinCluster = lib_skinCluster.get_skinCluster(shape)
         if not skinCluster:
-            cmds.error('No skinCluster found.')
+            cmds.error("No skinCluster found.")
 
         mesh_divisions = int(self.mesh_div_field.text())
         u_divisions = int(self.u_div_field.text())
         v_divisions = int(self.v_div_field.text())
 
-        skinCluster_to_mesh_ins = convert_weight.SkinClusterToMesh(skinCluster,
-                                                                   divisions=mesh_divisions,
-                                                                   u_divisions=u_divisions,
-                                                                   v_divisions=v_divisions)
+        skinCluster_to_mesh_ins = convert_weight.SkinClusterToMesh(
+            skinCluster, divisions=mesh_divisions, u_divisions=u_divisions, v_divisions=v_divisions
+        )
 
         self.preview_mesh, self.preview_mesh_node = skinCluster_to_mesh_ins.preview()
 
         cmds.select(self.preview_mesh)
 
-        logger.debug(f'Created template mesh: {self.preview_mesh}')
+        logger.debug(f"Created template mesh: {self.preview_mesh}")
 
-    @maya_ui.undo_chunk('Convert Skin Weights to Mesh')
+    @maya_ui.undo_chunk("Convert Skin Weights to Mesh")
     @maya_ui.error_handler
     def convert_skin_weights_to_mesh(self):
-        """Convert the skin weights to mesh.
-        """
-        shapes = cmds.ls(sl=True, dag=True, type='geometryShape', ni=True)
+        """Convert the skin weights to mesh."""
+        shapes = cmds.ls(sl=True, dag=True, type="geometryShape", ni=True)
         if not shapes:
-            cmds.error('Select any geometry.')
+            cmds.error("Select any geometry.")
 
         mesh_divisions = int(self.mesh_div_field.text())
         u_divisions = int(self.u_div_field.text())
@@ -230,42 +224,39 @@ class SkinWeightsMeshConverterWidgets(QWidget):
         for shape in shapes:
             skinCluster = lib_skinCluster.get_skinCluster(shape)
             if not skinCluster:
-                cmds.warning(f'No skinCluster found: {shape}')
+                cmds.warning(f"No skinCluster found: {shape}")
                 continue
 
-            skinCluster_to_mesh_ins = convert_weight.SkinClusterToMesh(skinCluster,
-                                                                       divisions=mesh_divisions,
-                                                                       u_divisions=u_divisions,
-                                                                       v_divisions=v_divisions)
+            skinCluster_to_mesh_ins = convert_weight.SkinClusterToMesh(
+                skinCluster, divisions=mesh_divisions, u_divisions=u_divisions, v_divisions=v_divisions
+            )
 
             converted_mesh = skinCluster_to_mesh_ins.convert()
             converted_meshes.append(converted_mesh)
 
-            logger.debug(f'Converted skin weights to mesh: {converted_mesh}')
+            logger.debug(f"Converted skin weights to mesh: {converted_mesh}")
 
         if converted_meshes:
             cmds.select(converted_meshes, r=True)
 
     def closeEvent(self, event):
-        """Close event.
-        """
+        """Close event."""
         # Save the option settings
-        self.tool_options.write('mesh_divisions', self.mesh_div_field.text())
-        self.tool_options.write('u_divisions', self.u_div_field.text())
-        self.tool_options.write('v_divisions', self.v_div_field.text())
+        self.tool_options.write("mesh_divisions", self.mesh_div_field.text())
+        self.tool_options.write("u_divisions", self.u_div_field.text())
+        self.tool_options.write("v_divisions", self.v_div_field.text())
 
         super().closeEvent(event)
 
 
 def show_ui():
-    """Show the main window.
-    """
-    window_name = f'{__name__}MainWindow'
+    """Show the main window."""
+    window_name = f"{__name__}MainWindow"
     maya_qt.delete_widget(window_name)
 
     window = QMainWindow(parent=maya_qt.get_maya_pointer())
     window.setObjectName(window_name)
-    window.setWindowTitle('Skin Weights to Mesh Converter')
+    window.setWindowTitle("Skin Weights to Mesh Converter")
     window.setAttribute(Qt.WA_DeleteOnClose)
 
     widgets = SkinWeightsMeshConverterWidgets(window_mode=True)

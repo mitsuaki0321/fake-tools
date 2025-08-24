@@ -40,10 +40,7 @@ def cleanup_driven_keys(node: str) -> None:
         values = cmds.keyframe(anim_curve_node, q=True, valueChange=True)
         tangent_weights = cmds.keyTangent(anim_curve_node, q=True, inAngle=True, outAngle=True)
 
-        if len(list(set(values))) == 1 and not any(tangent_weights):
-            return True
-
-        return False
+        return bool(len(list(set(values))) == 1 and not any(tangent_weights))
 
     for driven_plug in driven_plugs:
         driven_source_plugs = cmds.listConnections(driven_plug, s=True, d=False, p=True)

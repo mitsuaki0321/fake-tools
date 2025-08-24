@@ -31,7 +31,7 @@ class NodeFilter:
 
         self.nodes = nodes
 
-    def by_type(self, node_type: str, *args, **kwargs) -> list[str]:
+    def by_type(self, node_type: str, **kwargs) -> list[str]:
         """Filters the nodes by the type.
 
         Args:
@@ -57,7 +57,7 @@ class NodeFilter:
 
         return nodes
 
-    def by_regex(self, regex: str, *args, **kwargs) -> list[str]:
+    def by_regex(self, regex: str, **kwargs) -> list[str]:
         """Filters the nodes by the regex.
 
         Args:
@@ -122,9 +122,8 @@ class DagHierarchy:
         result_nodes = []
         for node in self.nodes:
             parent = cmds.listRelatives(node, parent=True, path=True)
-            if parent:
-                if parent[0] not in result_nodes:
-                    result_nodes.append(parent[0])
+            if parent and parent[0] not in result_nodes:
+                result_nodes.append(parent[0])
 
         return result_nodes
 

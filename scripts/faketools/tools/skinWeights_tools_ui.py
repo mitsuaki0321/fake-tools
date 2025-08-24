@@ -28,13 +28,8 @@ logger = getLogger(__name__)
 
 
 class MainWindow(base_window.BaseMainWindow):
-
-    def __init__(self,
-                 parent=None,
-                 object_name='MainWindow',
-                 window_title='Main Window'):
-        """Constructor.
-        """
+    def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
+        """Constructor."""
         super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
         # Menu
@@ -80,64 +75,62 @@ class MainWindow(base_window.BaseMainWindow):
         self.widgets_box.currentIndexChanged.connect(self.widgets_stack_widget.setCurrentIndex)
 
     def widgets_data(self):
-        """List of widgets data.
-        """
-        return {'Copy Skin Weights Custom': skinWeights_copy_custom_ui.SkinWeightsCopyCustomWidgets,
-                'Skin Weights to Mesh': skinWeights_to_mesh_ui.SkinWeightsMeshConverterWidgets,
-                'Adjust Center Skin Weights': skinWeights_adjust_center_ui.AdjustCenterSkinWeightsWidgets,
-                'Combine Skin Weights': skinWeights_combine_ui.CombineSkinWeightsWidgets,
-                'Influence Exchange': influence_exchanger_ui.InfluenceExchangerWidgets}
+        """List of widgets data."""
+        return {
+            "Copy Skin Weights Custom": skinWeights_copy_custom_ui.SkinWeightsCopyCustomWidgets,
+            "Skin Weights to Mesh": skinWeights_to_mesh_ui.SkinWeightsMeshConverterWidgets,
+            "Adjust Center Skin Weights": skinWeights_adjust_center_ui.AdjustCenterSkinWeightsWidgets,
+            "Combine Skin Weights": skinWeights_combine_ui.CombineSkinWeightsWidgets,
+            "Influence Exchange": influence_exchanger_ui.InfluenceExchangerWidgets,
+        }
 
     def __add_menu(self):
-        """Add menu.
-        """
-        edit_menu = self.menu.addMenu('Edit')
+        """Add menu."""
+        edit_menu = self.menu.addMenu("Edit")
 
-        action = edit_menu.addAction('Select Influences')
+        action = edit_menu.addAction("Select Influences")
         action.triggered.connect(self.select_influences)
 
-        action = edit_menu.addAction('Rebind SkinCluster')
+        action = edit_menu.addAction("Rebind SkinCluster")
         action.triggered.connect(self.rebind_skinCluster)
 
         edit_menu.addSeparator()
 
-        action = edit_menu.addAction('Prune Small Weights')
+        action = edit_menu.addAction("Prune Small Weights")
         action.triggered.connect(self.prune_small_weights)
 
-        action = edit_menu.addAction('Remove Unused Influences')
+        action = edit_menu.addAction("Remove Unused Influences")
         action.triggered.connect(self.remove_unused_influences)
 
         edit_menu.addSeparator()
 
-        action = edit_menu.addAction('Average Skin Weights')
+        action = edit_menu.addAction("Average Skin Weights")
         action.triggered.connect(self.average_skin_weights)
 
-        action = edit_menu.addAction('Average Skin Weights Shell')
+        action = edit_menu.addAction("Average Skin Weights Shell")
         action.triggered.connect(self.average_skin_weights_shell)
 
-    @maya_ui.undo_chunk('Select Influences')
+    @maya_ui.undo_chunk("Select Influences")
     @maya_ui.error_handler
     def select_influences(self):
-        """Select the influences.
-        """
+        """Select the influences."""
         sel_nodes = cmds.ls(sl=True)
         if not sel_nodes:
-            cmds.error('Select geometry or components.')
+            cmds.error("Select geometry or components.")
 
         influences = convert_weight.get_influences_from_objects(sel_nodes)
         if not influences:
-            cmds.warning('No influences found.')
+            cmds.warning("No influences found.")
             return
 
         cmds.select(influences, r=True)
 
-    @maya_ui.undo_chunk('Rebind SkinCluster')
+    @maya_ui.undo_chunk("Rebind SkinCluster")
     @maya_ui.error_handler
     def rebind_skinCluster(self):
-        """Rebind the skinCluster.
-        """
+        """Rebind the skinCluster."""
         target_skinClusters = self.__get_skinClusters()
-        influences = cmds.ls(sl=True, type='joint')
+        influences = cmds.ls(sl=True, type="joint")
 
         if target_skinClusters:
             for skinCluster in target_skinClusters:
@@ -146,62 +139,57 @@ class MainWindow(base_window.BaseMainWindow):
         if influences:
             lib_skinCluster.rebind_skinCluster_from_influence(influences)
 
-    @maya_ui.undo_chunk('Prune Small Weights')
+    @maya_ui.undo_chunk("Prune Small Weights")
     @maya_ui.error_handler
     def prune_small_weights(self):
-        """Prune small weights.
-        """
+        """Prune small weights."""
         sel_dag_nodes = cmds.ls(sl=True, dag=True, shapes=True, ni=True)
         if not sel_dag_nodes:
-            cmds.error('Select geometry to prune small weights.')
+            cmds.error("Select geometry to prune small weights.")
 
         convert_weight.prune_small_weights(sel_dag_nodes, threshold=0.005)
 
-    @maya_ui.undo_chunk('Remove Unused Influences')
+    @maya_ui.undo_chunk("Remove Unused Influences")
     @maya_ui.error_handler
     def remove_unused_influences(self):
-        """Remove unused influences.
-        """
+        """Remove unused influences."""
         shapes = cmds.ls(sl=True, dag=True, shapes=True, ni=True)
         if not shapes:
-            cmds.error('Select geometry to remove unused influences.')
+            cmds.error("Select geometry to remove unused influences.")
 
         for shape in shapes:
             skinCluster = lib_skinCluster.get_skinCluster(shape)
             if not skinCluster:
-                cmds.warning(f'No skinCluster found: {shape}')
+                cmds.warning(f"No skinCluster found: {shape}")
                 continue
 
             lib_skinCluster.remove_unused_influences(skinCluster)
 
-    @maya_ui.undo_chunk('Average Skin Weights')
+    @maya_ui.undo_chunk("Average Skin Weights")
     @maya_ui.error_handler
     def average_skin_weights(self):
-        """Average skin weights.
-        """
+        """Average skin weights."""
         sel_components = cmds.filterExpand(sm=[28, 31, 46])
         if not sel_components:
-            cmds.error('Select components to average skin weights.')
+            cmds.error("Select components to average skin weights.")
 
         convert_weight.average_skin_weights(sel_components)
 
-    @maya_ui.undo_chunk('Average Skin Weights Shell')
+    @maya_ui.undo_chunk("Average Skin Weights Shell")
     @maya_ui.error_handler
     def average_skin_weights_shell(self):
-        """Average skin weights shell.
-        """
-        meshs = cmds.ls(sl=True, dag=True, type='mesh', ni=True)
+        """Average skin weights shell."""
+        meshs = cmds.ls(sl=True, dag=True, type="mesh", ni=True)
         if not meshs:
-            cmds.error('Select mesh to average skin weights shell.')
+            cmds.error("Select mesh to average skin weights shell.")
 
         for mesh in meshs:
             convert_weight.average_skin_weights_shell(mesh)
 
     def __get_skinClusters(self):
-        """Get the skinClusters.
-        """
-        shapes = cmds.ls(sl=True, dag=True, type='deformableShape', objectsOnly=True, ni=True)
-        skinClusters = cmds.ls(sl=True, type='skinCluster')
+        """Get the skinClusters."""
+        shapes = cmds.ls(sl=True, dag=True, type="deformableShape", objectsOnly=True, ni=True)
+        skinClusters = cmds.ls(sl=True, type="skinCluster")
 
         target_skinClusters = []
         if shapes:
@@ -218,14 +206,11 @@ class MainWindow(base_window.BaseMainWindow):
 
 
 def show_ui():
-    """Show the main window.
-    """
-    window_name = f'{__name__}MainWindow'
+    """Show the main window."""
+    window_name = f"{__name__}MainWindow"
     maya_qt.delete_widget(window_name)
 
     # Create the main window.
-    main_window = MainWindow(parent=maya_qt.get_maya_pointer(),
-                             object_name=window_name,
-                             window_title='Skin Weights Tools')
+    main_window = MainWindow(parent=maya_qt.get_maya_pointer(), object_name=window_name, window_title="Skin Weights Tools")
     main_window.show()
     main_window.resize(0, 0)

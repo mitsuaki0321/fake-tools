@@ -33,7 +33,7 @@ class CreateTransforms:
         shape_type: str = "locator",
         chain: bool = False,
         reverse: bool = False,
-        rotation_offset: list[float] = [0.0, 0.0, 0.0],
+        rotation_offset: tuple[float, float, float] = (0.0, 0.0, 0.0),
     ):
         """Constructor.
 
@@ -43,7 +43,7 @@ class CreateTransforms:
             shape_type (str): The shape type of the transform node. Default is 'locator'.
             chain (bool): Whether to chain the transform node. Default is False.
             reverse (bool): Whether to reverse the transform node. Default is False.
-            rotation_offset (list[float]): The rotation to add to the current rotation. Default is [0.0, 0.0, 0.0].
+            rotation_offset (tuple[float] | None): The rotation to add to the current rotation. Default is None.
         """
         if shape_type not in self.__shape_types:
             raise ValueError("Invalid shape type.")
@@ -74,7 +74,7 @@ class CreateTransforms:
                 if rotations:
                     rotations.reverse()
 
-            if rotations and self.rotation_offset != [0.0, 0.0, 0.0]:
+            if rotations and self.rotation_offset != (0.0, 0.0, 0.0):
                 rotations = [lib_math.mult_rotation([self.rotation_offset, rotation]) for rotation in rotations]
 
             make_nodes = []
@@ -122,8 +122,8 @@ class PreviewLocatorForTransform:
         shape_type: str = "locator",
         chain: bool = False,
         reverse: bool = False,
-        rotation_offset: list[float] = [0.0, 0.0, 0.0],
-        color: list[float] = [1.0, 1.0, 1.0],
+        rotation_offset: tuple[float, float, float] = (0.0, 0.0, 0.0),
+        color: tuple[float, float, float] = (1.0, 1.0, 1.0),
     ):
         """Constructor.
 
@@ -133,8 +133,8 @@ class PreviewLocatorForTransform:
             shape_type (str): The shape type of the preview locator. Default is 'locator'.
             chain (bool): Whether to chain the preview locator. Default is False.
             reverse (bool): Whether to reverse the preview locator. Default is False.
-            rotation_offset (list[float]): The rotation to add to the current rotation. Default is [0.0, 0.0, 0.0].
-            color (list[float]): The color of the preview locator. Default is [1.0, 1.0, 1.0].
+            rotation_offset (tuple[float, float, float]): The rotation to add to the current rotation. Default is (0.0, 0.0, 0.0).
+            color (tuple[float, float, float]): The color of the preview locator. Default is (1.0, 1.0, 1.0).
         """
         if shape_type not in self.__shape_types:
             raise ValueError("Invalid shape type.")
@@ -191,7 +191,7 @@ class PreviewLocatorForTransform:
 
                     logger.debug(f"Reverse rotations: {self.reverse}")
 
-                if self.rotation_offset != [0.0, 0.0, 0.0]:
+                if self.rotation_offset != (0.0, 0.0, 0.0):
                     rotations = [lib_math.mult_rotation([self.rotation_offset, rotation]) for rotation in rotations]
 
                     logger.debug(f"Rotation offset: {self.rotation_offset}")
@@ -203,7 +203,7 @@ class PreviewLocatorForTransform:
 
                 logger.debug(f"Chain: {self.chain}")
 
-            if self.color != [1.0, 1.0, 1.0]:
+            if self.color != (1.0, 1.0, 1.0):
                 self.preview_locator.set_shape_color(index=i, color=self.color)
 
                 logger.debug(f"Color: {self.color}")
@@ -290,7 +290,7 @@ class PreviewLocatorForTransform:
 
         logger.debug(f"Reverse changed: {reverse}")
 
-    def change_rotation_offset(self, rotation_offset: list[float]):
+    def change_rotation_offset(self, rotation_offset: tuple[float, float, float]):
         """Change the rotation offset of the previewLocator."""
         if not self.preview_locator:
             return
@@ -315,7 +315,7 @@ class PreviewLocatorForTransform:
 
         logger.debug(f"Rotation offset changed: {rotation_offset}")
 
-    def change_color(self, color: list[float]):
+    def change_color(self, color: tuple[float, float, float]):
         """Change the color of the previewLocator."""
         if not self.preview_locator:
             return
@@ -351,7 +351,7 @@ class PreviewLocatorForTransform:
 # Create transform nodes at selected object's position.
 
 
-def bounding_box_center(*args, **kwargs) -> list[dict[str, list[float]]]:
+def bounding_box_center() -> list[dict[str, list[float]]]:
     """Get the bounding box center of the selected object.
 
     Returns:
@@ -369,7 +369,7 @@ def bounding_box_center(*args, **kwargs) -> list[dict[str, list[float]]]:
     return [{"position": [center_position], "rotation": []}]
 
 
-def gravity_center(*args, **kwargs) -> list[dict[str, list[float]]]:
+def gravity_center() -> list[dict[str, list[float]]]:
     """Get the centroid of the selected object.
 
     Returns:
@@ -387,7 +387,7 @@ def gravity_center(*args, **kwargs) -> list[dict[str, list[float]]]:
     return [{"position": [gravity_center_position], "rotation": []}]
 
 
-def each_positions(*args, **kwargs) -> list[dict[str, list[float]]]:
+def each_positions(**kwargs) -> list[dict[str, list[float]]]:
     """Get the each position of the selected object.
 
     Keyword Args:
@@ -409,7 +409,7 @@ def each_positions(*args, **kwargs) -> list[dict[str, list[float]]]:
     return [{"position": positions[0], "rotation": positions[1]}]
 
 
-def closest_position(*args, **kwargs) -> list[dict[str, list[float]]]:
+def closest_position(**kwargs) -> list[dict[str, list[float]]]:
     """Get the closest point on the selected nurbs surface or curve.
 
     Keyword Args:
@@ -433,7 +433,7 @@ def closest_position(*args, **kwargs) -> list[dict[str, list[float]]]:
     return [{"position": positions[0], "rotation": positions[1]}]
 
 
-def inner_divide(*args, **kwargs) -> list[dict[str, list[float]]]:
+def inner_divide(**kwargs) -> list[dict[str, list[float]]]:
     """Get the inner divided points of the selected object.
 
     Keyword Args:
@@ -740,7 +740,7 @@ def __get_selected_positions(
 # Create transform nodes at on nurbsSurface or nurbsCurve.
 
 
-def cv_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
+def cv_positions(**kwargs) -> list[dict[str, list[list[float]]]]:
     """Get the cv positions of the selected nurbsCurve.
 
     Keyword Args:
@@ -751,7 +751,7 @@ def cv_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     Returns:
         list[{position: list[float], rotation: list[float]}]: The position and rotation.
     """
-    curves = __get_selected_curves()
+    curves = _get_selected_curves()
     if not curves:
         logger.warning("No valid nurbsCurve selected.")
         return
@@ -764,7 +764,7 @@ def cv_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
         positions = curve_obj.get_cv_positions()
         rotations = []
         if include_rotation:
-            rotations = __get_curve_rotations(curve, positions, **kwargs)
+            rotations = _get_curve_rotations(curve, positions, **kwargs)
 
         positions = lib_conversion.MPoint_to_float(positions)
         result_data.append({"position": positions, "rotation": rotations})
@@ -774,7 +774,7 @@ def cv_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     return result_data
 
 
-def cv_closest_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
+def cv_closest_positions(**kwargs) -> list[dict[str, list[list[float]]]]:
     """Get the closest cv positions of the selected nurbsCurve.
 
     Keyword Args:
@@ -785,7 +785,7 @@ def cv_closest_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     Returns:
         list[{position: list[float], rotation: list[float]}]: The position and rotation.
     """
-    curves = __get_selected_curves()
+    curves = _get_selected_curves()
     if not curves:
         logger.warning("No valid nurbsCurve selected.")
         return
@@ -799,7 +799,7 @@ def cv_closest_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
         closest_positions, _ = curve_obj.get_closest_positions(positions)
         rotations = []
         if include_rotation:
-            rotations = __get_curve_rotations(curve, closest_positions, **kwargs)
+            rotations = _get_curve_rotations(curve, closest_positions, **kwargs)
 
         closest_positions = lib_conversion.MPoint_to_float(closest_positions)
         result_data.append({"position": closest_positions, "rotation": rotations})
@@ -809,7 +809,7 @@ def cv_closest_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     return result_data
 
 
-def ep_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
+def ep_positions(**kwargs) -> list[dict[str, list[list[float]]]]:
     """Get the ep positions of the selected nurbsCurve.
 
     Keyword Args:
@@ -820,7 +820,7 @@ def ep_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     Returns:
         list[{position: list[float], rotation: list[float]}]: The position and rotation.
     """
-    curves = __get_selected_curves()
+    curves = _get_selected_curves()
     if not curves:
         logger.warning("No valid nurbsCurve selected.")
         return
@@ -833,7 +833,7 @@ def ep_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
         positions, _ = curve_obj.get_edit_positions()
         rotations = []
         if include_rotation:
-            rotations = __get_curve_rotations(curve, positions, **kwargs)
+            rotations = _get_curve_rotations(curve, positions, **kwargs)
 
         positions = lib_conversion.MPoint_to_float(positions)
         result_data.append({"position": positions, "rotation": rotations})
@@ -843,7 +843,7 @@ def ep_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     return result_data
 
 
-def length_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
+def length_positions(**kwargs) -> list[dict[str, list[list[float]]]]:
     """Get the positions from the length of the selected nurbsCurve.
 
     Keyword Args:
@@ -856,7 +856,7 @@ def length_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     Returns:
         list[{position: list[float], rotation: list[float]}]: The position and rotation.
     """
-    curves = __get_selected_curves()
+    curves = _get_selected_curves()
     if not curves:
         logger.warning("No valid nurbsCurve selected.")
         return
@@ -871,7 +871,7 @@ def length_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
         positions, _ = curve_positions_obj.get_positions_length(num_divisions=divisions)
         rotations = []
         if include_rotation:
-            rotations = __get_curve_rotations(curve, positions, **kwargs)
+            rotations = _get_curve_rotations(curve, positions, **kwargs)
 
         positions = lib_conversion.MPoint_to_float(positions)
         result_data.append({"position": positions, "rotation": rotations})
@@ -881,7 +881,7 @@ def length_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     return result_data
 
 
-def param_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
+def param_positions(**kwargs) -> list[dict[str, list[list[float]]]]:
     """Get the positions from the parameter of the selected nurbsCurve.
 
     Keyword Args:
@@ -893,7 +893,7 @@ def param_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     Returns:
         list[{position: list[float], rotation: list[float]}]: The position and rotation.
     """
-    curves = __get_selected_curves()
+    curves = _get_selected_curves()
     if not curves:
         logger.warning("No valid nurbsCurve selected.")
         return
@@ -908,7 +908,7 @@ def param_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
         positions, _ = curve_positions_obj.get_positions_param(num_divisions=divisions)
         rotations = []
         if include_rotation:
-            rotations = __get_curve_rotations(curve, positions, **kwargs)
+            rotations = _get_curve_rotations(curve, positions, **kwargs)
 
         positions = lib_conversion.MPoint_to_float(positions)
         result_data.append({"position": positions, "rotation": rotations})
@@ -918,7 +918,7 @@ def param_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     return result_data
 
 
-def cloud_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
+def cloud_positions(**kwargs) -> list[dict[str, list[list[float]]]]:
     """Get the positions from the cloud of the selected nurbsCurve.
 
     Keyword Args:
@@ -930,7 +930,7 @@ def cloud_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     Returns:
         list[{position: list[float], rotation: list[float]}]: The position and rotation.
     """
-    curves = __get_selected_curves()
+    curves = _get_selected_curves()
     if not curves:
         logger.warning("No valid nurbsCurve selected.")
         return
@@ -945,7 +945,7 @@ def cloud_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
         positions, _ = curve_positions_obj.get_positions_cloud(num_divisions=divisions)
         rotations = []
         if include_rotation:
-            rotations = __get_curve_rotations(curve, positions, **kwargs)
+            rotations = _get_curve_rotations(curve, positions, **kwargs)
 
         positions = lib_conversion.MPoint_to_float(positions)
         result_data.append({"position": positions, "rotation": rotations})
@@ -955,7 +955,7 @@ def cloud_positions(*args, **kwargs) -> list[dict[str, list[list[float]]]]:
     return result_data
 
 
-def __get_selected_curves() -> list[str]:
+def _get_selected_curves() -> list[str]:
     """Get the selected nurbsCurve.
 
     Returns:
@@ -964,7 +964,7 @@ def __get_selected_curves() -> list[str]:
     return cmds.ls(sl=True, dag=True, type="nurbsCurve", ni=True)
 
 
-def __get_curve_rotations(curve: str, positions: list[om.MPoint], *args, **kwargs) -> list[list[float]]:
+def _get_curve_rotations(curve: str, positions: list[om.MPoint], **kwargs) -> list[list[float]]:
     """Get the curve rotations.
 
     Args:
@@ -1019,15 +1019,9 @@ def __get_curve_rotations(curve: str, positions: list[om.MPoint], *args, **kwarg
         if aim_vector_method == "tangent":
             aim_vector = curve_obj.get_tangent(param)
         elif aim_vector_method == "next_point":
-            if i == (num_positions - 1):
-                aim_vector = positions[i] - positions[i - 1]
-            else:
-                aim_vector = positions[i + 1] - positions[i]
+            aim_vector = positions[i] - positions[i - 1] if i == num_positions - 1 else positions[i + 1] - positions[i]
         elif aim_vector_method == "previous_point":
-            if i == 0:
-                aim_vector = positions[i + 1] - positions[i]
-            else:
-                aim_vector = positions[i] - positions[i - 1]
+            aim_vector = positions[i + 1] - positions[i] if i == 0 else positions[i] - positions[i - 1]
 
         # Get the up vector
         if up_vector_method == "scene_up":

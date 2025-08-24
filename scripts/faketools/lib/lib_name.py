@@ -72,7 +72,7 @@ def substitute_names(names: list[str], regex_name: str, replace_name: str) -> li
     return result_names
 
 
-def solve_names(names: list[str], regex_name: str, *args, **kwargs) -> list[str]:
+def solve_names(names: list[str], regex_name: str, **kwargs) -> list[str]:
     """Solve the names with the corresponding letters and numbers.
 
     Args:

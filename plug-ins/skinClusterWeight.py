@@ -48,10 +48,9 @@ cmds.copySkinWeightsCustom(sourceSkin='skinCluster1', destinationSkin='skinClust
 """
 
 import sys
-from typing import Optional
 
-import maya.cmds as cmds
 from maya.api import OpenMaya, OpenMayaAnim
+import maya.cmds as cmds
 
 
 def maya_useNewAPI():
@@ -610,7 +609,7 @@ class CopySkinWeightsCustom(OpenMaya.MPxCommand):
             _, triangle_vtx_indices, = src_mit_mesh.getTriangle(src_point_on_mesh.triangle, OpenMaya.MSpace.kWorld)
 
             calc_weight = OpenMaya.MDoubleArray(num_dst_infs, 0.0)
-            for vtx_index, bary_weight in zip(triangle_vtx_indices, [uw, vw, 1 - uw - vw]):
+            for vtx_index, bary_weight in zip(triangle_vtx_indices, [uw, vw, 1 - uw - vw], strict=False):
                 weights = src_weights_array[vtx_index]
                 for i in range(num_dst_infs):
                     calc_weight[i] += weights[i] * bary_weight
@@ -746,7 +745,7 @@ def get_skinCluster_fn(skinCluster_name) -> OpenMayaAnim.MFnSkinCluster:
     return skinCluster_fn
 
 
-def get_components_from_name(components) -> Optional[tuple[OpenMaya.MDagPath, OpenMaya.MObject]]:
+def get_components_from_name(components) -> tuple[OpenMaya.MDagPath, OpenMaya.MObject] | None:
     """Get components from the component name list.
 
     Args:

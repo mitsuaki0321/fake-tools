@@ -360,7 +360,7 @@ def prune_small_weights(shapes: list[str], threshold: float = 0.0001) -> None:
         logger.debug(f"Pruned small weights: {shape}")
 
 
-def copy_skin_weights_with_bind(src_obj: str, dst_objs: list[str], uv: bool = False, **kwargs) -> None:
+def copy_skin_weights_with_bind(src_obj: str, dst_objs: list[str], uv: bool = False) -> None:
     """Copy the skin weights from the source object to the destination object.
 
     Args:
@@ -476,7 +476,7 @@ def mirror_skin_weights(
     if not cmds.objExists(obj):
         cmds.error(f"Node does not exist: {obj}")
 
-    if not cmds.nodeType(obj) == "transform":
+    if cmds.nodeType(obj) != "transform":
         cmds.error(f"Node is not a transform: {obj}")
 
     shp = cmds.listRelatives(obj, shapes=True, fullPath=True)
@@ -561,7 +561,7 @@ def mirror_skin_weights_with_objects(
     if not cmds.objExists(src_obj):
         cmds.error(f"Node does not exist: {src_obj}")
 
-    if not cmds.nodeType(src_obj) == "transform":
+    if cmds.nodeType(src_obj) != "transform":
         cmds.error(f"Node is not a transform: {src_obj}")
 
     src_shp = cmds.listRelatives(src_obj, shapes=True, fullPath=True)
@@ -648,12 +648,15 @@ class SkinClusterToMesh:
         - Converts the bound mesh or nurbsSurface with specified divisions.
     """
 
-    def __init__(self, skinCluster: str, *args, **kwargs):
+    def __init__(self, skinCluster: str, divisions: int = 2, u_divisions: int = 2, v_divisions: int = 2):
         """Initialize the class.
 
         Args:
             skinCluster (str): The skinCluster node.
             mesh (str): The mesh node.
+            divisions (int): 分割数（デフォルト2）
+            u_divisions (int): U方向分割数（デフォルト2）
+            v_divisions (int): V方向分割数（デフォルト2）
         """
         if not skinCluster:
             raise ValueError("No skinCluster node specified")
@@ -671,9 +674,9 @@ class SkinClusterToMesh:
         if self.geometry_type not in ["mesh", "nurbsSurface"]:
             cmds.error(f"Unsupported geometry type: {self.geometry_type}")
 
-        self.divisions = kwargs.get("divisions", 2)
-        self.u_divisions = kwargs.get("u_divisions", 2)
-        self.v_divisions = kwargs.get("v_divisions", 2)
+        self.divisions = divisions
+        self.u_divisions = u_divisions
+        self.v_divisions = v_divisions
 
     def preview(self) -> tuple[str, str]:
         """Preview the converted mesh.

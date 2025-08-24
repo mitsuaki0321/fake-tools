@@ -62,8 +62,7 @@ class SkinWeightsWidgets(QWidget):
     """
 
     def __init__(self, parent=None):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__(parent=parent)
 
         self.main_layout = QVBoxLayout()
@@ -76,19 +75,16 @@ class SkinWeightsWidgets(QWidget):
         self.setLayout(self.main_layout)
 
     def get_options(self):
-        """Get the skin weight options.
-        """
+        """Get the skin weight options."""
         return {}
 
 
 class LaplacianSkinWeightsWidgets(SkinWeightsWidgets):
-
     def __init__(self, parent=None):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__(parent=parent)
 
-        label = QLabel('No options available.')
+        label = QLabel("No options available.")
 
         self.main_layout.addWidget(label)
 
@@ -97,16 +93,14 @@ class LaplacianSkinWeightsWidgets(SkinWeightsWidgets):
 
 
 class RBFSkinWeightsWidgets(SkinWeightsWidgets):
-
     def __init__(self, parent=None):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__(parent=parent)
 
         # RBF Weight Method
         layout = QHBoxLayout()
 
-        label = QLabel('Weight Method:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        label = QLabel("Weight Method:", alignment=Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(label)
 
         self.method_box = QComboBox()
@@ -128,10 +122,10 @@ class RBFSkinWeightsWidgets(SkinWeightsWidgets):
 
         layout = QHBoxLayout()
 
-        label = QLabel('Sigma:')
+        label = QLabel("Sigma:")
         layout.addWidget(label)
 
-        self.sigma_field = QLineEdit('1.0')
+        self.sigma_field = QLineEdit("1.0")
         self.sigma_field.setValidator(QDoubleValidator(0.0, 100.0, 2))
         self.sigma_field.setFixedWidth(self.sigma_field.sizeHint().width() / 2)
         self.sigma_field.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -150,7 +144,7 @@ class RBFSkinWeightsWidgets(SkinWeightsWidgets):
         linear_widget = QWidget()
         linear_layout = QVBoxLayout()
 
-        label = QLabel('No options available.')
+        label = QLabel("No options available.")
         linear_layout.addWidget(label)
 
         linear_widget.setLayout(linear_layout)
@@ -163,10 +157,10 @@ class RBFSkinWeightsWidgets(SkinWeightsWidgets):
 
         layout = QHBoxLayout()
 
-        label = QLabel('Power:')
+        label = QLabel("Power:")
         layout.addWidget(label)
 
-        self.power_field = QLineEdit('2.0')
+        self.power_field = QLineEdit("2.0")
         self.power_field.setValidator(QDoubleValidator(0.0, 100.0, 2))
         self.power_field.setFixedWidth(self.power_field.sizeHint().width() / 2)
         self.power_field.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -182,10 +176,10 @@ class RBFSkinWeightsWidgets(SkinWeightsWidgets):
         option_stack_widget.addWidget(inverse_distance_widget)
 
         # Option settings
-        self.method_box.setCurrentIndex(tool_options.read('rbf_method', 0))
+        self.method_box.setCurrentIndex(tool_options.read("rbf_method", 0))
         option_stack_widget.setCurrentIndex(self.method_box.currentIndex())
-        self.sigma_field.setText(tool_options.read('rbf_sigma', '1.0'))
-        self.power_field.setText(tool_options.read('rbf_power', '2.0'))
+        self.sigma_field.setText(tool_options.read("rbf_sigma", "1.0"))
+        self.power_field.setText(tool_options.read("rbf_power", "2.0"))
 
         # Signal & Slot
         self.method_box.currentIndexChanged.connect(option_stack_widget.setCurrentIndex)
@@ -194,54 +188,49 @@ class RBFSkinWeightsWidgets(SkinWeightsWidgets):
 
     @staticmethod
     def weight_function_map():
-        """Get the weight function map.
-        """
+        """Get the weight function map."""
         return {
-            'Gaussian': 'gaussian',
-            'Linear': 'linear',
-            'Inverse Distance': 'inverse_distance',
+            "Gaussian": "gaussian",
+            "Linear": "linear",
+            "Inverse Distance": "inverse_distance",
         }
 
     def get_options(self):
-        """Get the weight function options.
-        """
+        """Get the weight function options."""
         method = self.method_box.currentText()
 
         options = {}
-        if method == 'Gaussian':
-            options['sigma'] = float(self.sigma_field.text())
-        elif method == 'Inverse Distance':
-            options['power'] = float(self.power_field.text())
+        if method == "Gaussian":
+            options["sigma"] = float(self.sigma_field.text())
+        elif method == "Inverse Distance":
+            options["power"] = float(self.power_field.text())
 
         return {
-            'weight_type': self.weight_function_map()[method],
-            'options': options,
+            "weight_type": self.weight_function_map()[method],
+            "options": options,
         }
 
     def closeEvent(self, event):
-        """Close event.
-        """
+        """Close event."""
         # Save the option settings
-        tool_options.write('rbf_method', self.method_box.currentIndex())
-        tool_options.write('rbf_sigma', self.sigma_field.text())
-        tool_options.write('rbf_power', self.power_field.text())
+        tool_options.write("rbf_method", self.method_box.currentIndex())
+        tool_options.write("rbf_sigma", self.sigma_field.text())
+        tool_options.write("rbf_power", self.power_field.text())
 
         super().closeEvent(event)
 
 
 class BiharmonicSkinWeightsWidgets(SkinWeightsWidgets):
-
     def __init__(self, parent=None):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__(parent=parent)
 
         layout = QHBoxLayout()
 
-        label = QLabel('First Order Weight:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        label = QLabel("First Order Weight:", alignment=Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(label)
 
-        self.first_order_field = QLineEdit('0.75')
+        self.first_order_field = QLineEdit("0.75")
         self.first_order_field.setValidator(QDoubleValidator(0.0, 1.0, 2))
         self.first_order_field.setFixedWidth(self.first_order_field.sizeHint().width() / 2)
         self.first_order_field.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -258,7 +247,7 @@ class BiharmonicSkinWeightsWidgets(SkinWeightsWidgets):
         self.main_layout.addItem(spacer)
 
         # Option settings
-        self.first_order_field.setText(tool_options.read('first_order_weight', '0.75'))
+        self.first_order_field.setText(tool_options.read("first_order_weight", "0.75"))
         self.first_order_slider.setValue(float(self.first_order_field.text()) * 100)
 
         # Signal & Slot
@@ -266,8 +255,7 @@ class BiharmonicSkinWeightsWidgets(SkinWeightsWidgets):
         self.first_order_slider.valueChanged.connect(self.__update_field_slider_value)
 
     def __update_field_slider_value(self):
-        """Update the field and slider value.
-        """
+        """Update the field and slider value."""
         sender = self.sender()
 
         if sender == self.first_order_field:
@@ -278,35 +266,31 @@ class BiharmonicSkinWeightsWidgets(SkinWeightsWidgets):
             self.first_order_field.setText(str(value))
 
     def get_options(self):
-        """Get the biharmonic weight options.
-        """
+        """Get the biharmonic weight options."""
         return {
-            'first_order_weight': float(self.first_order_field.text()),
-            'second_order_weight': 1.0 - float(self.first_order_field.text()),
+            "first_order_weight": float(self.first_order_field.text()),
+            "second_order_weight": 1.0 - float(self.first_order_field.text()),
         }
 
     def closeEvent(self, event):
-        """Close event.
-        """
+        """Close event."""
         # Save the option settings
-        tool_options.write('first_order_weight', self.first_order_field.text())
+        tool_options.write("first_order_weight", self.first_order_field.text())
 
         super().closeEvent(event)
 
 
 class RelaxSkinWeightsWidgets(SkinWeightsWidgets):
-
     def __init__(self, parent=None):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__(parent=parent)
 
         layout = QHBoxLayout()
 
-        label = QLabel('Relaxation Factor:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        label = QLabel("Relaxation Factor:", alignment=Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(label)
 
-        self.relaxation_factor_field = QLineEdit('0.5')
+        self.relaxation_factor_field = QLineEdit("0.5")
         self.relaxation_factor_field.setValidator(QDoubleValidator(0.0, 1.0, 2))
         self.relaxation_factor_field.setFixedWidth(self.relaxation_factor_field.sizeHint().width() / 2)
         self.relaxation_factor_field.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -323,7 +307,7 @@ class RelaxSkinWeightsWidgets(SkinWeightsWidgets):
         self.main_layout.addItem(spacer)
 
         # Option settings
-        self.relaxation_factor_field.setText(tool_options.read('relaxation_factor', '0.5'))
+        self.relaxation_factor_field.setText(tool_options.read("relaxation_factor", "0.5"))
         self.relaxation_factor_slider.setValue(float(self.relaxation_factor_field.text()) * 100)
 
         # Signal & Slot
@@ -331,8 +315,7 @@ class RelaxSkinWeightsWidgets(SkinWeightsWidgets):
         self.relaxation_factor_slider.valueChanged.connect(self.__update_field_slider_value)
 
     def __update_field_slider_value(self):
-        """Update the field and slider value.
-        """
+        """Update the field and slider value."""
         sender = self.sender()
 
         if sender == self.relaxation_factor_field:
@@ -344,17 +327,15 @@ class RelaxSkinWeightsWidgets(SkinWeightsWidgets):
             self.relaxation_factor_field.setText(str(value))
 
     def get_options(self):
-        """Get the relax weight options.
-        """
+        """Get the relax weight options."""
         return {
-            'relaxation_factor': float(self.relaxation_factor_field.text()),
+            "relaxation_factor": float(self.relaxation_factor_field.text()),
         }
 
     def closeEvent(self, event):
-        """Close event.
-        """
+        """Close event."""
         # Save the option settings
-        tool_options.write('relaxation_factor', self.relaxation_factor_field.text())
+        tool_options.write("relaxation_factor", self.relaxation_factor_field.text())
 
         super().closeEvent(event)
 
@@ -367,17 +348,16 @@ class MainWindow(base_window.BaseMainWindow):
 
     The widgets to switch must inherit from SkinWeightsWidgets.
     """
-    method_data = {'Laplacian': {'command': relax_weight.LaplacianSkinWeights, 'widget': LaplacianSkinWeightsWidgets},
-                   'RBF': {'command': relax_weight.RBFSkinWeights, 'widget': RBFSkinWeightsWidgets},
-                   'Biharmonic': {'command': relax_weight.BiharmonicSkinWeights, 'widget': BiharmonicSkinWeightsWidgets},
-                   'Relax': {'command': relax_weight.RelaxSkinWeights, 'widget': RelaxSkinWeightsWidgets}}
 
-    def __init__(self,
-                 parent=None,
-                 object_name='MainWindow',
-                 window_title='Main Window'):
-        """Constructor.
-        """
+    method_data = {
+        "Laplacian": {"command": relax_weight.LaplacianSkinWeights, "widget": LaplacianSkinWeightsWidgets},
+        "RBF": {"command": relax_weight.RBFSkinWeights, "widget": RBFSkinWeightsWidgets},
+        "Biharmonic": {"command": relax_weight.BiharmonicSkinWeights, "widget": BiharmonicSkinWeightsWidgets},
+        "Relax": {"command": relax_weight.RelaxSkinWeights, "widget": RelaxSkinWeightsWidgets},
+    }
+
+    def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
+        """Constructor."""
         super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
         method_layout = QVBoxLayout()
@@ -400,16 +380,16 @@ class MainWindow(base_window.BaseMainWindow):
         self.method_stack_widget = QStackedWidget()
 
         palette = self.method_stack_widget.palette()
-        role = QPalette.Background if hasattr(QPalette, 'Background') else QPalette.Window
+        role = QPalette.Background if hasattr(QPalette, "Background") else QPalette.Window
         color = palette.color(role)
         color = color.lighter(115)
-        self.method_stack_widget.setStyleSheet(f'QStackedWidget {{ background-color: {color.name()}; }}')
+        self.method_stack_widget.setStyleSheet(f"QStackedWidget {{ background-color: {color.name()}; }}")
 
         # Add widgets to the stack
         for data in self.method_data.values():
-            widget_cls = data['widget']
+            widget_cls = data["widget"]
             if not issubclass(widget_cls, SkinWeightsWidgets):
-                raise TypeError(f'Widget class must inherit from SkinWeightsWidgets: {widget_cls}')
+                raise TypeError(f"Widget class must inherit from SkinWeightsWidgets: {widget_cls}")
             widget = widget_cls()
             self.method_stack_widget.addWidget(widget)
 
@@ -421,10 +401,10 @@ class MainWindow(base_window.BaseMainWindow):
         # Options
         layout = QGridLayout()
 
-        label = QLabel('Iterations:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        label = QLabel("Iterations:", alignment=Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(label, 0, 0)
 
-        self.iterations_field = QLineEdit('1')
+        self.iterations_field = QLineEdit("1")
         self.iterations_field.setValidator(QIntValidator(0, 50))
         self.iterations_field.setFixedWidth(self.iterations_field.sizeHint().width() / 2)
         self.iterations_field.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -435,10 +415,10 @@ class MainWindow(base_window.BaseMainWindow):
         self.iterations_slider.setValue(1)
         layout.addWidget(self.iterations_slider, 0, 2)
 
-        label = QLabel('After Blend:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        label = QLabel("After Blend:", alignment=Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(label, 1, 0)
 
-        self.after_blend_field = QLineEdit('1.0')
+        self.after_blend_field = QLineEdit("1.0")
         self.after_blend_field.setValidator(QDoubleValidator(0.0, 1.0, 2))
         self.after_blend_field.setFixedWidth(self.after_blend_field.sizeHint().width() / 2)
         self.after_blend_field.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -451,20 +431,20 @@ class MainWindow(base_window.BaseMainWindow):
 
         self.central_layout.addLayout(layout)
 
-        self.only_unlock_inf_checkBox = QCheckBox('Use Only Unlocked Influences')
+        self.only_unlock_inf_checkBox = QCheckBox("Use Only Unlocked Influences")
         self.central_layout.addWidget(self.only_unlock_inf_checkBox)
 
         separator = extra_widgets.HorizontalSeparator()
         self.central_layout.addWidget(separator)
 
-        execute_button = QPushButton('Relax Skin Weights')
+        execute_button = QPushButton("Relax Skin Weights")
         self.central_layout.addWidget(execute_button)
 
         # Option settings
-        self.method_box.setCurrentIndex(tool_options.read('method', 0))
-        self.iterations_field.setText(tool_options.read('iterations', '1'))
+        self.method_box.setCurrentIndex(tool_options.read("method", 0))
+        self.iterations_field.setText(tool_options.read("iterations", "1"))
         self.iterations_slider.setValue(int(self.iterations_field.text()))
-        self.after_blend_field.setText(tool_options.read('after_blend', '1.0'))
+        self.after_blend_field.setText(tool_options.read("after_blend", "1.0"))
         self.after_blend_slider.setValue(int(float(self.after_blend_field.text()) * 100))
 
         # Signal & Slot
@@ -477,8 +457,7 @@ class MainWindow(base_window.BaseMainWindow):
         execute_button.clicked.connect(self.relax_weights)
 
     def __update_field_slider_value(self):
-        """Update the field and slider value.
-        """
+        """Update the field and slider value."""
         sender = self.sender()
 
         if sender == self.iterations_field:
@@ -495,63 +474,57 @@ class MainWindow(base_window.BaseMainWindow):
             value = self.after_blend_slider.value() / 100
             self.after_blend_field.setText(str(value))
 
-    @maya_ui.undo_chunk('Relax Skin Weights')
+    @maya_ui.undo_chunk("Relax Skin Weights")
     @maya_ui.error_handler
     def relax_weights(self):
-        """Relax the skin weights.
-        """
+        """Relax the skin weights."""
         vertices = cmds.filterExpand(selectionMask=31)
         if not vertices:
-            cmds.error('No vertices selected')
+            cmds.error("No vertices selected")
 
         shapes = list(set(cmds.ls(vertices, objectsOnly=True)))
         if len(shapes) > 1:
-            cmds.error('Vertices must belong to the same object')
+            cmds.error("Vertices must belong to the same object")
 
         skinCluster = lib_skinCluster.get_skinCluster(shapes[0])
         if not skinCluster:
-            cmds.error(f'Object is not bound to a skinCluster: {shapes[0]}')
+            cmds.error(f"Object is not bound to a skinCluster: {shapes[0]}")
 
         method = self.method_box.currentText()
-        smooth_skin_weights = self.method_data[method]['command']
+        smooth_skin_weights = self.method_data[method]["command"]
         options = self.method_stack_widget.currentWidget().get_options()
 
-        logger.debug(f'Smooth method: {method}')
-        logger.debug(f'Smooth options: {options}')
+        logger.debug(f"Smooth method: {method}")
+        logger.debug(f"Smooth options: {options}")
 
         iterations = int(self.iterations_field.text())
         after_blend = float(self.after_blend_field.text())
         only_unlock_inf = self.only_unlock_inf_checkBox.isChecked()
 
-        logger.debug(f'UI options: {iterations}, {after_blend}, {only_unlock_inf}')
+        logger.debug(f"UI options: {iterations}, {after_blend}, {only_unlock_inf}")
 
-        smooth_skin_weights(skinCluster, vertices).smooth(iterations=iterations,
-                                                          blend_weights=after_blend,
-                                                          only_unlock_influences=only_unlock_inf,
-                                                          **options)
+        smooth_skin_weights(skinCluster, vertices).smooth(
+            iterations=iterations, blend_weights=after_blend, only_unlock_influences=only_unlock_inf, **options
+        )
 
-        logger.debug(f'Smoothed skin weights: {vertices}')
+        logger.debug(f"Smoothed skin weights: {vertices}")
 
     def closeEvent(self, event):
-        """Close event.
-        """
+        """Close event."""
         # Save the option settings
-        tool_options.write('method', self.method_box.currentIndex())
-        tool_options.write('iterations', self.iterations_field.text())
-        tool_options.write('after_blend', self.after_blend_field.text())
-        tool_options.write('only_unlock_inf', self.only_unlock_inf_checkBox.isChecked())
+        tool_options.write("method", self.method_box.currentIndex())
+        tool_options.write("iterations", self.iterations_field.text())
+        tool_options.write("after_blend", self.after_blend_field.text())
+        tool_options.write("only_unlock_inf", self.only_unlock_inf_checkBox.isChecked())
 
         super().closeEvent(event)
 
 
 def show_ui():
-    """Show the main window.
-    """
-    window_name = f'{__name__}MainWindow'
+    """Show the main window."""
+    window_name = f"{__name__}MainWindow"
     maya_qt.delete_widget(window_name)
 
     # Create the main window.
-    main_window = MainWindow(parent=maya_qt.get_maya_pointer(),
-                             object_name=window_name,
-                             window_title='SkinWeights Relax')
+    main_window = MainWindow(parent=maya_qt.get_maya_pointer(), object_name=window_name, window_title="SkinWeights Relax")
     main_window.show()

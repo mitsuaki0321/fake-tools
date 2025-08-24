@@ -52,9 +52,8 @@ def combine_rotation(node: str, target_attribute: str = "rotate") -> None:
     elif target_attribute == "rotateAxis":
         if rotate == [0, 0, 0] and joint_orient == [0, 0, 0]:
             return
-    elif target_attribute == "jointOrient":
-        if rotate == [0, 0, 0] and rotate_axis == [0, 0, 0]:
-            return
+    elif target_attribute == "jointOrient" and rotate == [0, 0, 0] and rotate_axis == [0, 0, 0]:
+        return
 
     rotate_order = cmds.getAttr(f"{node}.rotateOrder")
     rotate_axis_quat = om.MEulerRotation(

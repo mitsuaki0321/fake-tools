@@ -19,13 +19,13 @@ class BoundingBox(ABC):
         Args:
             points (Union[list[list[float]], np.ndarray]): The list of points. Each point must be a 3-element list or numpy array.
         """
-        if not isinstance(points, (list, np.ndarray)):
+        if not isinstance(points, list | np.ndarray):
             raise ValueError("Points must be a list or numpy array.")
 
         if isinstance(points, list):
             points = np.array(points)
 
-        if not all(isinstance(pt, (list, np.ndarray)) and len(pt) == 3 for pt in points):
+        if not all(isinstance(pt, list | np.ndarray) and len(pt) == 3 for pt in points):
             raise ValueError("Points must be a list of 3-element lists or numpy arrays.")
 
         self._points = points

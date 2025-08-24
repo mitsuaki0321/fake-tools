@@ -2,6 +2,7 @@
 Math functions.
 """
 
+from collections.abc import Sequence
 from logging import getLogger
 import math
 
@@ -200,7 +201,7 @@ def vector_orthogonalize(vector_a: list[float], vector_b: list[float]) -> om.MVe
 # Rotation
 
 
-def mult_rotation(rotations: list[list[float]]) -> list[float]:
+def mult_rotation(rotations: list[Sequence[float]]) -> list[float]:
     """Multiply rotations.
 
     Args:

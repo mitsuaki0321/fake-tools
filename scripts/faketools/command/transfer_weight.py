@@ -6,7 +6,6 @@ import json
 from logging import getLogger
 import os
 import pickle
-from typing import Optional
 
 import maya.cmds as cmds
 
@@ -176,9 +175,8 @@ class SkinWeightsCopyPaste:
         if len(shapes) > 1:
             cmds.error("Multiple shapes selected.")
 
-        if self.__method == "oneToOne":
-            if len(self._src_components) != len(components):
-                cmds.error(f"The source and destination components do not match: {self._src_components} != {components}")
+        if self.__method == "oneToOne" and len(self._src_components) != len(components):
+            cmds.error(f"The source and destination components do not match: {self._src_components} != {components}")
 
         skinCluster = lib_skinCluster.get_skinCluster(shapes[0])
         if not skinCluster:
@@ -272,9 +270,9 @@ class SkinWeightsCopyPaste:
             cmds.error("Copy and paste is not ready.")
 
         new_weights = []
-        for src_weight, dst_weight in zip(self._src_weights, self._dst_weights):
+        for src_weight, dst_weight in zip(self._src_weights, self._dst_weights, strict=False):
             new_weight = []
-            for src_w, dst_w in zip(src_weight, dst_weight):
+            for src_w, dst_w in zip(src_weight, dst_weight, strict=False):
                 new_weight.append(src_w * self.__blend_weights + dst_w * (1.0 - self.__blend_weights))
 
             new_weights.append(new_weight)
@@ -332,7 +330,7 @@ class SkinWeightsImportExport:
 
             logger.debug(f"Export skin weights: {output_path}")
 
-    def import_weights(self, file_path: str, target_geometry: Optional[str] = None):
+    def import_weights(self, file_path: str, target_geometry: str | None = None):
         """Import the skin weights.
 
         Args:
@@ -347,7 +345,7 @@ class SkinWeightsImportExport:
             raise ValueError(f"Invalid file format: {file_path}")
 
         if file_path.endswith(".json"):
-            with open(file_path, "r") as f:
+            with open(file_path) as f:
                 data = json.load(f)
         else:
             with open(file_path, "rb") as f:
@@ -366,7 +364,7 @@ class SkinWeightsImportExport:
         if not cmds.objExists(target_geometry):
             cmds.error(f"Node does not exist: {target_geometry}")
 
-        if not cmds.nodeType(target_geometry) == data["geometryType"]:
+        if cmds.nodeType(target_geometry) != data["geometryType"]:
             cmds.error(f"Invalid geometry type: {target_geometry}")
 
         if self._get_num_components(target_geometry) != data["numComponents"]:
@@ -405,10 +403,7 @@ class SkinWeightsImportExport:
         if not cmds.objExists(node):
             return False
 
-        if not cmds.nodeType(node) == "skinCluster":
-            return False
-
-        return True
+        return cmds.nodeType(node) == "skinCluster"
 
     def _get_influences(self, skinCluster: str) -> list[str]:
         """Get the influences.

@@ -53,13 +53,8 @@ logger = getLogger(__name__)
 
 
 class MainWindow(base_window.BaseMainWindow):
-
-    def __init__(self,
-                 parent=None,
-                 object_name='MainWindow',
-                 window_title='Main Window'):
-        """Constructor.
-        """
+    def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
+        """Constructor."""
         super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
         self.tool_options = optionvar.ToolOptionSettings(__name__)
@@ -68,10 +63,10 @@ class MainWindow(base_window.BaseMainWindow):
         load_button_layout = QHBoxLayout()
         load_button_layout.setContentsMargins(0, 0, 0, 0)
 
-        source_load_button = QPushButton('Load Source')
+        source_load_button = QPushButton("Load Source")
         load_button_layout.addWidget(source_load_button)
 
-        dest_load_button = QPushButton('Load Destination')
+        dest_load_button = QPushButton("Load Destination")
         load_button_layout.addWidget(dest_load_button)
 
         self.central_layout.addLayout(load_button_layout)
@@ -132,10 +127,10 @@ class MainWindow(base_window.BaseMainWindow):
         self.dest_filter_line_edit.setPlaceholderText("Filter attributes...")
         layout.addWidget(self.dest_filter_line_edit, 1, 1)
 
-        copy_value_button = QPushButton('Copy Value')
+        copy_value_button = QPushButton("Copy Value")
         layout.addWidget(copy_value_button, 2, 0)
 
-        connect_button = QPushButton('Connect')
+        connect_button = QPushButton("Connect")
         layout.addWidget(connect_button, 2, 1)
 
         # Command list
@@ -169,7 +164,9 @@ class MainWindow(base_window.BaseMainWindow):
         dest_load_button.clicked.connect(lambda: self._list_nodes(self.dest_node_list, self._dest_display_attributes))
         self.source_node_list.node_changed.connect(lambda: self._set_node_count(self.source_node_list, self.source_node_count_label))
         self.dest_node_list.node_changed.connect(lambda: self._set_node_count(self.dest_node_list, self.dest_node_count_label))
-        self.source_node_list.selectionModel().selectionChanged.connect(lambda: self._set_node_count(self.source_node_list, self.source_node_count_label))  # noqa
+        self.source_node_list.selectionModel().selectionChanged.connect(
+            lambda: self._set_node_count(self.source_node_list, self.source_node_count_label)
+        )  # noqa
         self.dest_node_list.selectionModel().selectionChanged.connect(lambda: self._set_node_count(self.dest_node_list, self.dest_node_count_label))
         operation_switch_widget.button_changed.connect(self.__switch_operation)
         self.source_filter_line_edit.textChanged.connect(self.source_attr_list.attr_model.setFilterFixedString)
@@ -186,8 +183,7 @@ class MainWindow(base_window.BaseMainWindow):
         self.operation_stack_widget.setCurrentIndex(index)
 
     @maya_ui.error_handler
-    def _list_nodes(self, node_list_widget: nodeAttr_widgets.NodeListView,
-                    display_attributes_callback: callable) -> None:
+    def _list_nodes(self, node_list_widget: nodeAttr_widgets.NodeListView, display_attributes_callback: callable) -> None:
         """Update the node list
 
         Args:
@@ -196,7 +192,7 @@ class MainWindow(base_window.BaseMainWindow):
         """
         sel_nodes = cmds.ls(sl=True)
         if not sel_nodes:
-            cmds.error('Please select the nodes to list.')
+            cmds.error("Please select the nodes to list.")
 
         shift_pressed = QApplication.keyboardModifiers() == Qt.ShiftModifier
         if shift_pressed:
@@ -236,18 +232,19 @@ class MainWindow(base_window.BaseMainWindow):
         node_count_label.set_count(selected_count, total_count)
 
     def _source_display_attributes(self) -> None:
-        """Display the attributes of the selected source nodes.
-        """
+        """Display the attributes of the selected source nodes."""
         self.__display_attributes(self.source_node_list, self.source_attr_list, self.__source_list_attributes)
 
     def _dest_display_attributes(self) -> None:
-        """Display the attributes of the selected destination nodes.
-        """
+        """Display the attributes of the selected destination nodes."""
         self.__display_attributes(self.dest_node_list, self.dest_attr_list, self.__dest_list_attributes)
 
-    def __display_attributes(self, node_list_widget: nodeAttr_widgets.NodeListView,
-                             attr_list_widget: nodeAttr_widgets.AttributeListView,
-                             list_attributes_callback: callable) -> None:
+    def __display_attributes(
+        self,
+        node_list_widget: nodeAttr_widgets.NodeListView,
+        attr_list_widget: nodeAttr_widgets.AttributeListView,
+        list_attributes_callback: callable,
+    ) -> None:
         """Display the attributes of the selected nodes
 
         Args:
@@ -305,44 +302,57 @@ class MainWindow(base_window.BaseMainWindow):
         """
         result_attrs = []
 
-        if 'transform' in cmds.nodeType(node, inherited=True):
-            result_attrs.extend(['translate', 'rotate', 'scale', 'shear',
-                                 'translateX', 'translateY', 'translateZ',
-                                 'rotateX', 'rotateY', 'rotateZ',
-                                 'scaleX', 'scaleY', 'scaleZ',
-                                 'shearXY', 'shearXZ', 'shearYZ',
-                                 'visibility'])
+        if "transform" in cmds.nodeType(node, inherited=True):
+            result_attrs.extend(
+                [
+                    "translate",
+                    "rotate",
+                    "scale",
+                    "shear",
+                    "translateX",
+                    "translateY",
+                    "translateZ",
+                    "rotateX",
+                    "rotateY",
+                    "rotateZ",
+                    "scaleX",
+                    "scaleY",
+                    "scaleZ",
+                    "shearXY",
+                    "shearXZ",
+                    "shearYZ",
+                    "visibility",
+                ]
+            )
 
         user_attrs = cmds.listAttr(node, userDefined=True)
         if user_attrs:
             result_attrs.extend(user_attrs)
 
         attrs = cmds.listAttr(node) or []
-        except_attr_types = ['TdataCompound']
+        except_attr_types = ["TdataCompound"]
         for attr in attrs:
             if attr in result_attrs:
                 continue
             try:
-                if cmds.getAttr(f'{node}.{attr}', type=True) in except_attr_types:
+                if cmds.getAttr(f"{node}.{attr}", type=True) in except_attr_types:
                     continue
                 result_attrs.append(attr)
             except Exception:
-                logger.debug(f'Failed to list attribute: {node}.{attr}')
+                logger.debug(f"Failed to list attribute: {node}.{attr}")
 
         return result_attrs
 
-    @maya_ui.undo_chunk('Copy Attribute Value')
+    @maya_ui.undo_chunk("Copy Attribute Value")
     @maya_ui.error_handler
     def _copy_value(self) -> None:
-        """Copy the value of the source attribute to the destination attribute.
-        """
+        """Copy the value of the source attribute to the destination attribute."""
         self.__transfer_attribute(self.__copy_value)
 
-    @maya_ui.undo_chunk('Connect Attribute')
+    @maya_ui.undo_chunk("Connect Attribute")
     @maya_ui.error_handler
     def _connect_attribute(self) -> None:
-        """Connect the source attribute to the destination attribute.
-        """
+        """Connect the source attribute to the destination attribute."""
         self.__transfer_attribute(self.__connect_attribute)
 
     def __transfer_attribute(self, func: callable) -> None:
@@ -357,13 +367,13 @@ class MainWindow(base_window.BaseMainWindow):
         dest_attrs = self.dest_attr_list.get_selected_attributes()
 
         if not source_nodes or not dest_nodes or not source_attrs or not dest_attrs:
-            cmds.error('Please select the source and destination nodes and attributes.')
+            cmds.error("Please select the source and destination nodes and attributes.")
 
         if len(source_nodes) > 1 and len(source_nodes) != len(dest_nodes):
-            cmds.error('Please select the same number of nodes or select only one source node.')
+            cmds.error("Please select the same number of nodes or select only one source node.")
 
         if len(source_attrs) > 1 and len(source_attrs) != len(dest_attrs):
-            cmds.error('Please select the same number of attributes or select only one source attribute.')
+            cmds.error("Please select the same number of attributes or select only one source attribute.")
 
         if len(source_nodes) == 1:
             source_nodes = source_nodes * len(dest_nodes)
@@ -371,8 +381,8 @@ class MainWindow(base_window.BaseMainWindow):
         if len(source_attrs) == 1:
             source_attrs = source_attrs * len(dest_attrs)
 
-        for source_node, dest_node in zip(source_nodes, dest_nodes):
-            for source_attr, dest_attr in zip(source_attrs, dest_attrs):
+        for source_node, dest_node in zip(source_nodes, dest_nodes, strict=False):
+            for source_attr, dest_attr in zip(source_attrs, dest_attrs, strict=False):
                 func(source_node, source_attr, dest_node, dest_attr)
 
     @staticmethod
@@ -385,37 +395,37 @@ class MainWindow(base_window.BaseMainWindow):
             dest_node (str): The destination node name.
             dest_attr (str): The destination attribute name.
         """
-        source_plug = f'{source_node}.{source_attr}'
-        dest_plug = f'{dest_node}.{dest_attr}'
+        source_plug = f"{source_node}.{source_attr}"
+        dest_plug = f"{dest_node}.{dest_attr}"
         if cmds.getAttr(dest_plug, lock=True):
-            cmds.error(f'The attribute is locked: {dest_plug}')
+            cmds.error(f"The attribute is locked: {dest_plug}")
 
         if cmds.connectionInfo(dest_plug, isDestination=True):
-            cmds.error(f'The attribute is connected: {dest_plug}')
+            cmds.error(f"The attribute is connected: {dest_plug}")
 
         source_type = cmds.getAttr(source_plug, type=True)
         dest_type = cmds.getAttr(dest_plug, type=True)
 
-        if source_type == 'string' or dest_type == 'string':
+        if source_type == "string" or dest_type == "string":
             if source_type != dest_type:
-                cmds.error('Both attributes must be strings.')
-            cmds.setAttr(dest_plug, cmds.getAttr(source_plug), type='string')
-        elif source_type == 'matrix' or dest_type == 'matrix':
+                cmds.error("Both attributes must be strings.")
+            cmds.setAttr(dest_plug, cmds.getAttr(source_plug), type="string")
+        elif source_type == "matrix" or dest_type == "matrix":
             if source_type != dest_type:
-                cmds.error('Both attributes must be matrices.')
-            cmds.setAttr(dest_plug, cmds.getAttr(source_plug), type='matrix')
+                cmds.error("Both attributes must be matrices.")
+            cmds.setAttr(dest_plug, cmds.getAttr(source_plug), type="matrix")
         else:
             num_source_elements = cmds.attributeQuery(source_attr, node=source_node, numberOfChildren=True)
             num_dest_elements = cmds.attributeQuery(dest_attr, node=dest_node, numberOfChildren=True)
             if num_source_elements or num_dest_elements:
                 if num_source_elements != num_dest_elements:
-                    cmds.error('The number of elements in the compound attributes does not match.')
+                    cmds.error("The number of elements in the compound attributes does not match.")
 
                 cmds.setAttr(dest_plug, *cmds.getAttr(source_plug)[0])
             else:
                 cmds.setAttr(dest_plug, cmds.getAttr(source_plug))
 
-        logger.debug(f'Copied: {source_plug} -> {dest_plug}')
+        logger.debug(f"Copied: {source_plug} -> {dest_plug}")
 
     @staticmethod
     def __connect_attribute(source_node: str, source_attr: str, dest_node: str, dest_attr: str) -> None:
@@ -427,31 +437,31 @@ class MainWindow(base_window.BaseMainWindow):
             dest_node (str): The destination node name.
             dest_attr (str): The destination attribute name.
         """
-        source_plug = f'{source_node}.{source_attr}'
-        dest_plug = f'{dest_node}.{dest_attr}'
+        source_plug = f"{source_node}.{source_attr}"
+        dest_plug = f"{dest_node}.{dest_attr}"
         if cmds.getAttr(dest_plug, lock=True):
-            cmds.error(f'The attribute is locked: {dest_plug}')
+            cmds.error(f"The attribute is locked: {dest_plug}")
 
         if cmds.isConnected(source_plug, dest_plug, iuc=True):
-            cmds.error(f'The attribute is already connected: {dest_plug}')
+            cmds.error(f"The attribute is already connected: {dest_plug}")
 
         source_type = cmds.getAttr(source_plug, type=True)
         dest_type = cmds.getAttr(dest_plug, type=True)
 
-        if source_type == 'string' or dest_type == 'string':
+        if source_type == "string" or dest_type == "string":
             if source_plug != dest_plug:
-                cmds.error('Both attributes must be strings.')
+                cmds.error("Both attributes must be strings.")
             cmds.connectAttr(source_plug, dest_plug, f=True)
-        elif source_type == 'matrix' or dest_type == 'matrix':
+        elif source_type == "matrix" or dest_type == "matrix":
             if source_plug != dest_plug:
-                cmds.error('Both attributes must be matrices.')
+                cmds.error("Both attributes must be matrices.")
             cmds.connectAttr(source_plug, dest_plug, f=True)
         else:
             cmds.connectAttr(source_plug, dest_plug, f=True)
 
-        logger.debug(f'Connected: {source_plug} -> {dest_plug}')
+        logger.debug(f"Connected: {source_plug} -> {dest_plug}")
 
-    @maya_ui.undo_chunk('Execute Single Command')
+    @maya_ui.undo_chunk("Execute Single Command")
     @maya_ui.error_handler
     def _execute_single_command(self, command_name: str) -> None:
         """Execute the single command.
@@ -460,50 +470,48 @@ class MainWindow(base_window.BaseMainWindow):
             command_name (str): The single command class name.
         """
         if not hasattr(singleCommands, command_name):
-            cmds.error(f'Command does not exist: {command_name}')
+            cmds.error(f"Command does not exist: {command_name}")
 
         single_command_cls = getattr(singleCommands, command_name)
         if not issubclass(single_command_cls, PairCommand):
-            cmds.error(f'Command is not a pair command: {command_name}')
+            cmds.error(f"Command is not a pair command: {command_name}")
 
         source_nodes = self.source_node_list.get_selected_nodes()
         dest_nodes = self.dest_node_list.get_selected_nodes()
 
         if not source_nodes or not dest_nodes:
-            cmds.error('Please select the source and destination nodes.')
+            cmds.error("Please select the source and destination nodes.")
 
         if len(source_nodes) > 1 and len(source_nodes) != len(dest_nodes):
-            cmds.error('Please select the same number of nodes or select only one source node.')
+            cmds.error("Please select the same number of nodes or select only one source node.")
 
         if len(source_nodes) == 1:
             source_nodes = source_nodes * len(dest_nodes)
 
         single_command_cls(source_nodes, dest_nodes)
 
-        logger.debug(f'Executed: {command_name}')
+        logger.debug(f"Executed: {command_name}")
 
 
 class OperationSwitchWidget(QWidget):
-    """Switch operation stack widget.
-    """
+    """Switch operation stack widget."""
 
     button_changed = Signal(int)
 
     def __init__(self, parent=None):
-        """Initialize the widget.
-        """
+        """Initialize the widget."""
         super().__init__(parent=parent)
 
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        self.connect_button = OperationSwitchButton('Connect')
+        self.connect_button = OperationSwitchButton("Connect")
         self.connect_button.setCheckable(True)
         self.connect_button.setChecked(True)
         layout.addWidget(self.connect_button)
 
-        self.command_button = OperationSwitchButton('Command')
+        self.command_button = OperationSwitchButton("Command")
         self.command_button.setCheckable(True)
         self.command_button.setChecked(False)
         layout.addWidget(self.command_button)
@@ -515,8 +523,7 @@ class OperationSwitchWidget(QWidget):
         self.command_button.clicked.connect(self.__toggle_checked)
 
     def __toggle_checked(self) -> None:
-        """Toggle the checked state of the buttons.
-        """
+        """Toggle the checked state of the buttons."""
         sender = self.sender()
         if sender == self.connect_button:
             self.blockSignals(True)
@@ -541,8 +548,7 @@ class OperationSwitchWidget(QWidget):
 
 
 class OperationSwitchButton(QPushButton):
-    """Switch operation button.
-    """
+    """Switch operation button."""
 
     def __init__(self, text: str, parent=None):
         """Initialize the button.
@@ -581,14 +587,12 @@ class OperationSwitchButton(QPushButton):
 
 
 class NodeCountLabel(QLabel):
-    """Label to display the number of nodes.
-    """
+    """Label to display the number of nodes."""
 
     def __init__(self, parent=None):
-        """Initialize the label.
-        """
+        """Initialize the label."""
         super().__init__(parent=parent)
-        self.setText('0 / 0')
+        self.setText("0 / 0")
         self.setAlignment(Qt.AlignCenter)
 
     def set_count(self, current: int, total: int) -> None:
@@ -598,19 +602,16 @@ class NodeCountLabel(QLabel):
             current (int): The current count.
             total (int): The total count.
         """
-        self.setText(f'{current} / {total}')
+        self.setText(f"{current} / {total}")
 
 
 def show_ui():
-    """Show the main window.
-    """
-    window_name = f'{__name__}MainWindow'
+    """Show the main window."""
+    window_name = f"{__name__}MainWindow"
     maya_qt.delete_widget(window_name)
 
     # Create the main window.
-    main_window = MainWindow(parent=maya_qt.get_maya_pointer(),
-                             object_name=window_name,
-                             window_title='Connection Lister')
+    main_window = MainWindow(parent=maya_qt.get_maya_pointer(), object_name=window_name, window_title="Connection Lister")
     main_window.show()
     size = main_window.size()
     main_window.resize(size.width() * 0.75, size.height() * 0.75)

@@ -26,9 +26,9 @@ def main(
     is_bind: bool = False,
     to_skin_cage: bool = False,
     skin_cage_division_levels: int = 1,
-    select_options: dict = {},
-    create_options: dict = {},
-    bind_options: dict = {},
+    select_options: dict = None,
+    create_options: dict = None,
+    bind_options: dict = None,
 ) -> list[str]:
     """Create and bind curve surface.
 
@@ -38,13 +38,19 @@ def main(
         is_bind (bool): Whether to bind the created geometry.
         to_skin_cage (bool): Whether to bind to the skin cage. Only nurbsSurface is supported.
         skin_cage_division_levels (int): Number of division levels for the skin cage.
-        select_options (dict): Options for selecting nodes.
-        create_options (dict): Options for creating curve surface.
-        bind_options (dict): Options for binding curve surface.
+        select_options (dict, optional): Options for selecting nodes.
+        create_options (dict, optional): Options for creating curve surface.
+        bind_options (dict, optional): Options for binding curve surface.
 
     Returns:
         list[str]: Created surface or curves.
     """
+    if select_options is None:
+        select_options = {}
+    if create_options is None:
+        create_options = {}
+    if bind_options is None:
+        bind_options = {}
     sel_nodes = _get_selected_nodes(select_type, **select_options)
 
     result_objs = []
@@ -532,7 +538,7 @@ class CurveWeightSetting:
         cv_weights = []
         num_infs = len(inf_lengths)
 
-        for i, cv_length in enumerate(cv_lengths):
+        for cv_length in cv_lengths:
             weights = [0.0] * num_infs
 
             out_of_range = True
@@ -679,7 +685,7 @@ class CurveWeightSetting:
         raise ValueError("Invalid ease_type. Use 'in', 'out', or 'inout'.")
 
 
-def __validate_geometry(geometry: str, node_types: list[str] = ["nurbsCurve"]) -> str:
+def __validate_geometry(geometry: str, node_types: list[str] = None) -> str:
     """Validate the geometry.
 
     Args:
@@ -689,6 +695,8 @@ def __validate_geometry(geometry: str, node_types: list[str] = ["nurbsCurve"]) -
     Returns:
         str: Validated geometry name.
     """
+    if node_types is None:
+        node_types = ["nurbsCurve"]
     if not geometry:
         cmds.error("No geometry specified.")
 

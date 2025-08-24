@@ -91,7 +91,7 @@ class CreateBoundingBox:
             base_line = None
 
         if base_line is not None:
-            if not isinstance(base_line, (list, tuple)):
+            if not isinstance(base_line, list | tuple):
                 raise TypeError("base_line must be a list or tuple.")
 
             if not all([-1.0 <= val <= 1.0 for val in base_line]):

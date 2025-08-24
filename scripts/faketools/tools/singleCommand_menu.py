@@ -1,8 +1,6 @@
-"""Single Command Menus.
-"""
+"""Single Command Menus."""
 
 from logging import getLogger
-from typing import Optional
 
 import maya.cmds as cmds
 import maya.mel as mel
@@ -12,10 +10,10 @@ from ..lib.lib_singleCommand import AllCommand, PairCommand, SceneCommand
 
 logger = getLogger(__name__)
 
-MENU_NAME = 'Single Commands'
+MENU_NAME = "Single Commands"
 
 
-def show_menu(parent_menu: Optional[str] = None) -> None:
+def show_menu(parent_menu: str | None = None) -> None:
     """Show the menu.
 
     Notes:
@@ -27,12 +25,12 @@ def show_menu(parent_menu: Optional[str] = None) -> None:
     """
     if parent_menu:
         if not cmds.menu(parent_menu, exists=True):
-            cmds.error(f'Parent menu does not exist: {parent_menu}')
+            cmds.error(f"Parent menu does not exist: {parent_menu}")
 
         menu = cmds.menuItem(label=MENU_NAME, subMenu=True, parent=parent_menu, tearOff=True)
     else:
-        parent_window = mel.eval('$tmpVar=$gMainWindow')
-        menu = '{}_{}'.format('_'.join(__name__.split('.')), MENU_NAME)
+        parent_window = mel.eval("$tmpVar=$gMainWindow")
+        menu = "{}_{}".format("_".join(__name__.split(".")), MENU_NAME)
         if cmds.menu(menu, exists=True):
             cmds.deleteUI(menu)
 
@@ -64,7 +62,7 @@ def show_menu(parent_menu: Optional[str] = None) -> None:
             cmd = f"import {__name__}; {__name__}.execute_single_commands('{cls_name}')"
             cmds.menuItem(label=cls_name, command=cmd, parent=menu)
 
-    logger.debug(f'Add single command menu: {menu}')
+    logger.debug(f"Add single command menu: {menu}")
 
 
 def execute_single_commands(single_command_name: str) -> None:
@@ -74,20 +72,20 @@ def execute_single_commands(single_command_name: str) -> None:
         command_name (str): The single command class name.
     """
     if not hasattr(singleCommands, single_command_name):
-        cmds.error(f'Command does not exist: {single_command_name}')
+        cmds.error(f"Command does not exist: {single_command_name}")
 
     single_command_cls = getattr(singleCommands, single_command_name)
     if issubclass(single_command_cls, SceneCommand):
         single_command_cls()
     else:
-        sel_nodes = cmds.ls(sl=True, type='transform')
+        sel_nodes = cmds.ls(sl=True, type="transform")
         if not sel_nodes:
-            cmds.error('No transform nodes selected')
+            cmds.error("No transform nodes selected")
 
         if issubclass(single_command_cls, AllCommand):
             single_command_cls(sel_nodes)
         elif issubclass(single_command_cls, PairCommand):
             if len(sel_nodes) < 2:
-                cmds.error('Please select at least 2 nodes')
+                cmds.error("Please select at least 2 nodes")
 
             single_command_cls([sel_nodes[0]], sel_nodes[1:])

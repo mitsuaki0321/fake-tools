@@ -3,7 +3,6 @@ SkinCluster node functions.
 """
 
 from logging import getLogger
-from typing import Optional
 
 import maya.cmds as cmds
 
@@ -18,7 +17,7 @@ def load_skinWeights_plugin() -> None:
         cmds.loadPlugin(f"{PLUGIN_NAME}.py")
 
 
-def get_skinCluster(shape: str) -> Optional[str]:
+def get_skinCluster(shape: str) -> str | None:
     """Get the skinCluster node.
 
     Args:
@@ -103,7 +102,7 @@ def rebind_skinCluster(skinCluster: str) -> None:
             continue
 
         world_inverse_matrix = cmds.getAttr(f"{inf[0]}.worldInverseMatrix")
-        cmds.setAttr("{}.bindPreMatrix[{}]".format(skinCluster, index), world_inverse_matrix, type="matrix")
+        cmds.setAttr(f"{skinCluster}.bindPreMatrix[{index}]", world_inverse_matrix, type="matrix")
 
     cmds.skinCluster(skinCluster, e=True, recacheBindMatrices=True)
 
@@ -328,7 +327,7 @@ def copy_skin_weights_custom(
     logger.debug(f"Copy skin weights custom: {src_skinCluster} -> {dst_skinCluster}")
 
 
-def get_skin_weights_custom(skinCluster: str, components: Optional[list[str]] = None, all_components: bool = False) -> list[float]:
+def get_skin_weights_custom(skinCluster: str, components: list[str] | None = None, all_components: bool = False) -> list[float]:
     """Get the skin weights.
 
     Args:
@@ -363,7 +362,7 @@ def get_skin_weights_custom(skinCluster: str, components: Optional[list[str]] = 
     return weights
 
 
-def set_skin_weights_custom(skinCluster: str, weights: dict, components: Optional[list[str]]) -> None:
+def set_skin_weights_custom(skinCluster: str, weights: dict, components: list[str] | None) -> None:
     """Set the skin weights.
 
     Args:
@@ -387,7 +386,7 @@ def set_skin_weights_custom(skinCluster: str, weights: dict, components: Optiona
     logger.debug(f"Set skin weights: {skinCluster}")
 
 
-def get_skin_weights(skinCluster: str, components: Optional[list[str]] = None, all_components: bool = False) -> list[float]:
+def get_skin_weights(skinCluster: str, components: list[str] | None = None, all_components: bool = False) -> list[float]:
     """Get the skin weights.
 
     Args:
@@ -425,7 +424,7 @@ def get_skin_weights(skinCluster: str, components: Optional[list[str]] = None, a
     return weights
 
 
-def set_skin_weights(skinCluster: str, weights: list[list[float]], components: Optional[list[str]]) -> None:
+def set_skin_weights(skinCluster: str, weights: list[list[float]], components: list[str] | None) -> None:
     """Set the skin weights.
 
     Args:
@@ -447,8 +446,8 @@ def set_skin_weights(skinCluster: str, weights: list[list[float]], components: O
 
     infs = cmds.skinCluster(skinCluster, query=True, influence=True)
     components = cmds.ls(components, flatten=True)
-    for component, weight in zip(components, weights):
-        cmds.skinPercent(skinCluster, component, transformValue=zip(infs, weight))
+    for component, weight in zip(components, weights, strict=False):
+        cmds.skinPercent(skinCluster, component, transformValue=zip(infs, weight, strict=False))
 
     logger.debug(f"Set skin weights: {skinCluster}")
 
@@ -501,10 +500,7 @@ def is_bound_to_skinCluster(skinCluster: str, components: list[str]) -> bool:
     components = cmds.ls(components, flatten=True)
 
     diff_components = list(set(components) - set(skin_components))
-    if diff_components:
-        return False
-
-    return True
+    return not diff_components
 
 
 def remove_unused_influences(skinCluster: str) -> None:

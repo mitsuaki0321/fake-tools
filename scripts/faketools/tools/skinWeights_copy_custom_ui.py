@@ -45,10 +45,8 @@ logger = getLogger(__name__)
 
 
 class SkinWeightsCopyCustomWidgets(QWidget):
-
     def __init__(self, parent=None, window_mode: bool = False):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__(parent=parent)
 
         self.tool_options = optionvar.ToolOptionSettings(__name__)
@@ -66,7 +64,7 @@ class SkinWeightsCopyCustomWidgets(QWidget):
 
         layout = QHBoxLayout()
 
-        label = QLabel('Blend:', alignment=Qt.AlignRight | Qt.AlignVCenter)
+        label = QLabel("Blend:", alignment=Qt.AlignRight | Qt.AlignVCenter)
         layout.addWidget(label)
 
         self.blend_field = QLineEdit()
@@ -84,19 +82,19 @@ class SkinWeightsCopyCustomWidgets(QWidget):
         separator = extra_widgets.HorizontalSeparator()
         self.main_layout.addWidget(separator)
 
-        self.only_unlock_inf_checkBox = QCheckBox('Use Only Unlocked Influences')
+        self.only_unlock_inf_checkBox = QCheckBox("Use Only Unlocked Influences")
         self.main_layout.addWidget(self.only_unlock_inf_checkBox)
 
-        self.reference_orig_checkBox = QCheckBox('Reference Original Shape')
+        self.reference_orig_checkBox = QCheckBox("Reference Original Shape")
         self.main_layout.addWidget(self.reference_orig_checkBox)
 
-        self.add_missing_infs_checkBox = QCheckBox('Add Missing Influences')
+        self.add_missing_infs_checkBox = QCheckBox("Add Missing Influences")
         self.main_layout.addWidget(self.add_missing_infs_checkBox)
 
         separator = extra_widgets.HorizontalSeparator()
         self.main_layout.addWidget(separator)
 
-        execute_button = QPushButton('Copy Skin Weights')
+        execute_button = QPushButton("Copy Skin Weights")
         self.main_layout.addWidget(execute_button)
 
         self.main_layout.addStretch()
@@ -104,20 +102,19 @@ class SkinWeightsCopyCustomWidgets(QWidget):
         self.setLayout(self.main_layout)
 
         # Option settings
-        self.blend_field.setText(str(self.tool_options.read('blend_value', '1.0')))
+        self.blend_field.setText(str(self.tool_options.read("blend_value", "1.0")))
         self.blend_slider.setValue(float(self.blend_field.text()) * 100)
-        self.only_unlock_inf_checkBox.setChecked(self.tool_options.read('only_unlock_inf', False))
-        self.reference_orig_checkBox.setChecked(self.tool_options.read('reference_orig', False))
-        self.add_missing_infs_checkBox.setChecked(self.tool_options.read('add_missing_infs', True))
+        self.only_unlock_inf_checkBox.setChecked(self.tool_options.read("only_unlock_inf", False))
+        self.reference_orig_checkBox.setChecked(self.tool_options.read("reference_orig", False))
+        self.add_missing_infs_checkBox.setChecked(self.tool_options.read("add_missing_infs", True))
 
         # Signal & Slot
         self.blend_field.textChanged.connect(self.__blend_value_change)
         self.blend_slider.valueChanged.connect(self.__blend_value_change)
         execute_button.clicked.connect(self.copy_skin_weights)
 
-    def __blend_value_change(self, *args, **kwargs):
-        """Change the blend value.
-        """
+    def __blend_value_change(self):
+        """Change the blend value."""
         sender = self.sender()
 
         if sender == self.blend_field:
@@ -127,21 +124,20 @@ class SkinWeightsCopyCustomWidgets(QWidget):
             value = sender.value() / 100
             self.blend_field.setText(str(value))
 
-    @maya_ui.undo_chunk('Copy Skin Weights Custom')
+    @maya_ui.undo_chunk("Copy Skin Weights Custom")
     @maya_ui.error_handler
     def copy_skin_weights(self):
-        """Copy the skin weights.
-        """
-        shapes = cmds.ls(sl=True, dag=True, type='deformableShape', ni=True, objectsOnly=True)
+        """Copy the skin weights."""
+        shapes = cmds.ls(sl=True, dag=True, type="deformableShape", ni=True, objectsOnly=True)
         if not shapes or len(shapes) < 2:
-            cmds.error('Select 2 or more deformable shapes')
+            cmds.error("Select 2 or more deformable shapes")
 
         src_shape = shapes[0]
         dst_shapes = shapes[1:]
 
         src_skinCluster = lib_skinCluster.get_skinCluster(src_shape)
         if not src_skinCluster:
-            cmds.error(f'No skinCluster found: {src_shape}')
+            cmds.error(f"No skinCluster found: {src_shape}")
 
         blend_value = float(self.blend_field.text())
 
@@ -152,37 +148,37 @@ class SkinWeightsCopyCustomWidgets(QWidget):
         for dst_shape in dst_shapes:
             dst_skinCluster = lib_skinCluster.get_skinCluster(dst_shape)
             if not dst_skinCluster:
-                cmds.warning(f'No skinCluster found: {dst_shape}')
+                cmds.warning(f"No skinCluster found: {dst_shape}")
                 continue
 
-            lib_skinCluster.copy_skin_weights_custom(src_skinCluster,
-                                                     dst_skinCluster,
-                                                     only_unlock_influences=only_unlock_inf,
-                                                     blend_weights=blend_value,
-                                                     reference_orig=reference_orig,
-                                                     add_missing_influences=add_missing_infs)
+            lib_skinCluster.copy_skin_weights_custom(
+                src_skinCluster,
+                dst_skinCluster,
+                only_unlock_influences=only_unlock_inf,
+                blend_weights=blend_value,
+                reference_orig=reference_orig,
+                add_missing_influences=add_missing_infs,
+            )
 
     def closeEvent(self, event):
-        """Close event.
-        """
+        """Close event."""
         # Save the option settings
-        self.tool_options.write('blend_value', self.blend_field.text())
-        self.tool_options.write('only_unlock_inf', self.only_unlock_inf_checkBox.isChecked())
-        self.tool_options.write('reference_orig', self.reference_orig_checkBox.isChecked())
-        self.tool_options.write('add_missing_infs', self.add_missing_infs_checkBox.isChecked())
+        self.tool_options.write("blend_value", self.blend_field.text())
+        self.tool_options.write("only_unlock_inf", self.only_unlock_inf_checkBox.isChecked())
+        self.tool_options.write("reference_orig", self.reference_orig_checkBox.isChecked())
+        self.tool_options.write("add_missing_infs", self.add_missing_infs_checkBox.isChecked())
 
         super().closeEvent(event)
 
 
 def show_ui():
-    """Show the main window.
-    """
-    window_name = f'{__name__}MainWindow'
+    """Show the main window."""
+    window_name = f"{__name__}MainWindow"
     maya_qt.delete_widget(window_name)
 
     window = QMainWindow(parent=maya_qt.get_maya_pointer())
     window.setObjectName(window_name)
-    window.setWindowTitle('Skin Weights Copy Custom')
+    window.setWindowTitle("Skin Weights Copy Custom")
     window.setAttribute(Qt.WA_DeleteOnClose)
 
     widgets = SkinWeightsCopyCustomWidgets(window_mode=True)

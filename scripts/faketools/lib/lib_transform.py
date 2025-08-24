@@ -170,7 +170,7 @@ class TransformHierarchy:
             raise ValueError("Hierarchy data is not a dictionary.")
 
         # Validate the data
-        for node, node_data in data.items():
+        for node_data in data.values():
             if not isinstance(node_data, dict):
                 raise ValueError(f"Invalid node data: {node_data}")
 
@@ -382,7 +382,4 @@ def is_unique_node(node: str) -> bool:
         raise ValueError("Node is not specified.")
 
     node = cmds.ls(node)
-    if "|" in node:
-        return False
-
-    return True
+    return "|" not in node

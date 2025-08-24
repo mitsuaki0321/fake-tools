@@ -18,13 +18,8 @@ logger = getLogger(__name__)
 
 
 class MainWindow(base_window.BaseMainWindow):
-
-    def __init__(self,
-                 parent=None,
-                 object_name='MainWindow',
-                 window_title='Main Window'):
-        """Constructor.
-        """
+    def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
+        """Constructor."""
         super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
         self.tool_options = optionvar.ToolOptionSettings(__name__)
@@ -41,37 +36,36 @@ class MainWindow(base_window.BaseMainWindow):
         self.view.attr_list.attribute_lock_changed.connect(self._display_value)
 
     def _display_value(self) -> None:
-        """Display the value of the selected attribute.
-        """
+        """Display the value of the selected attribute."""
         nodes = self.view.get_selected_nodes()
         attrs = self.view.get_selected_attributes()
 
         if not nodes or not attrs:
-            self.value_field.setText('')
+            self.value_field.setText("")
             self.value_field.setEnabled(False)
             return
 
-        value = cmds.getAttr(f'{nodes[-1]}.{attrs[-1]}')
+        value = cmds.getAttr(f"{nodes[-1]}.{attrs[-1]}")
         self.value_field.setText(str(value))
 
         attr_types = set()
         for node in nodes:
             for attr in attrs:
-                if cmds.getAttr(f'{node}.{attr}', lock=True):
+                if cmds.getAttr(f"{node}.{attr}", lock=True):
                     self.value_field.setEnabled(False)
                     self.value_field.setStyleSheet("background-color: darkgrey;")
 
-                    logger.debug(f'Attribute is locked: {node}.{attr}')
+                    logger.debug(f"Attribute is locked: {node}.{attr}")
                     return
 
-                if cmds.connectionInfo(f'{node}.{attr}', isDestination=True):
+                if cmds.connectionInfo(f"{node}.{attr}", isDestination=True):
                     self.value_field.setEnabled(False)
                     self.value_field.setStyleSheet("background-color: lightyellow;")
 
-                    logger.debug(f'Attribute is connected: {node}.{attr}')
+                    logger.debug(f"Attribute is connected: {node}.{attr}")
                     return
 
-                attr_type = cmds.getAttr(f'{node}.{attr}', type=True)
+                attr_type = cmds.getAttr(f"{node}.{attr}", type=True)
                 attr_types.add(attr_type)
 
         if len(attr_types) > 1:
@@ -81,11 +75,10 @@ class MainWindow(base_window.BaseMainWindow):
             self.value_field.setEnabled(True)
             self.value_field.setStyleSheet("")
 
-    @maya_ui.undo_chunk('Set Attribute Value')
+    @maya_ui.undo_chunk("Set Attribute Value")
     @maya_ui.error_handler
     def _set_value(self) -> None:
-        """Set the value of the selected attribute.
-        """
+        """Set the value of the selected attribute."""
         nodes = self.view.get_selected_nodes()
         attrs = self.view.get_selected_attributes()
 
@@ -93,48 +86,45 @@ class MainWindow(base_window.BaseMainWindow):
             return
 
         if not self.value_field.text():
-            cmds.error('No value is entered.')
+            cmds.error("No value is entered.")
 
         if not self.value_field.isEnabled():
-            cmds.error('Cannot change the value because the attribute type is different, it is connected, or it is locked.')
+            cmds.error("Cannot change the value because the attribute type is different, it is connected, or it is locked.")
 
         try:
             value = self.value_field.text()
-            attr_type = cmds.getAttr(f'{nodes[-1]}.{attrs[-1]}', type=True)
-            if attr_type == 'bool':
+            attr_type = cmds.getAttr(f"{nodes[-1]}.{attrs[-1]}", type=True)
+            if attr_type == "bool":
                 value = bool(int(value))
-            elif attr_type in ['long', 'short', 'byte', 'char', 'enum', 'time']:
+            elif attr_type in ["long", "short", "byte", "char", "enum", "time"]:
                 value = int(value)
-            elif attr_type == 'string':
+            elif attr_type == "string":
                 value = str(value)
-            elif attr_type in ['float', 'double', 'doubleLinear', 'doubleAngle']:
+            elif attr_type in ["float", "double", "doubleLinear", "doubleAngle"]:
                 value = float(value)
-            elif attr_type == 'matrix':
+            elif attr_type == "matrix":
                 value = eval(value)
             else:
-                raise ValueError(f'Unsupported attribute type: {attr_type}')
+                raise ValueError(f"Unsupported attribute type: {attr_type}")
 
             for node in nodes:
                 for attr in attrs:
-                    if attr_type == 'matrix':
-                        cmds.setAttr(f'{node}.{attr}', *value, type=attr_type)
-                    elif attr_type == 'string':
-                        cmds.setAttr(f'{node}.{attr}', value, type=attr_type)
+                    if attr_type == "matrix":
+                        cmds.setAttr(f"{node}.{attr}", *value, type=attr_type)
+                    elif attr_type == "string":
+                        cmds.setAttr(f"{node}.{attr}", value, type=attr_type)
                     else:
-                        cmds.setAttr(f'{node}.{attr}', value)
+                        cmds.setAttr(f"{node}.{attr}", value)
 
         except (ValueError, SyntaxError, TypeError) as e:
-            cmds.error(f'Invalid input value: {value}. \n{str(e)}')
+            cmds.error(f"Invalid input value: {value}. \n{str(e)}")
 
 
 def show_ui():
-    """Show the main window.
-    """
-    window_name = f'{__name__}MainWindow'
+    """Show the main window."""
+    window_name = f"{__name__}MainWindow"
     maya_qt.delete_widget(window_name)
 
     # Create the main window.
-    main_window = MainWindow(parent=maya_qt.get_maya_pointer(),
-                             object_name=window_name,
-                             window_title='Attribute Lister')
+    main_window = MainWindow(parent=maya_qt.get_maya_pointer(), object_name=window_name, window_title="Attribute Lister")
     main_window.show()

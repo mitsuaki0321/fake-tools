@@ -84,9 +84,8 @@ class DefaultPosition(PositionBase):
 
         positions = data["positions"]
         rotations = data.get("rotations", [])
-        if rotations:
-            if len(rotations) != len(positions):
-                raise ValueError("Rotations and positions length mismatch.")
+        if rotations and len(rotations) != len(positions):
+            raise ValueError("Rotations and positions length mismatch.")
 
         return positions, rotations
 
@@ -145,9 +144,8 @@ class MeshBaryPosition(MeshPosition):
             dict: The barycentric coordinates.
         """
         rotations = kwargs.get("rotations", [])
-        if rotations:
-            if len(rotations) != len(positions):
-                raise ValueError("Rotations and positions length mismatch.")
+        if rotations and len(rotations) != len(positions):
+            raise ValueError("Rotations and positions length mismatch.")
 
         mesh_inverse_matrix = self.dag_path.inclusiveMatrixInverse()
 
@@ -471,7 +469,7 @@ class MeshRBFPosition(MeshPosition):
         return hit_data[1]  # hitRayParam ( Parametric distance to the hit point along the ray. )
 
 
-def export_transform_position(output_directory: str, file_name: str, method: str = "barycentric", *args, **kwargs) -> None:
+def export_transform_position(output_directory: str, file_name: str, method: str = "barycentric", **kwargs) -> None:
     """Export the transform positions to a file for GUI.
 
     Notes:
@@ -627,7 +625,7 @@ def _create_transform_node(name: str, object_type: str = "transform", size: int 
     return new_transform
 
 
-def import_transform_position(input_file_path: str, create_new: bool = False, is_rotation: bool = True, *args, **kwargs) -> list[str]:
+def import_transform_position(input_file_path: str, create_new: bool = False, is_rotation: bool = True, **kwargs) -> list[str]:
     """Import the transform positions from a file.
 
     Notes:
@@ -725,7 +723,7 @@ def import_transform_position(input_file_path: str, create_new: bool = False, is
         return new_transforms
     else:
         reorder_transforms = lib_transform.reorder_transform_nodes(target_transforms)
-        for i, transform in enumerate(reorder_transforms):
+        for transform in reorder_transforms:
             index = target_transforms.index(transform)
             cmds.xform(transform, ws=True, t=result_positions[index])
             if is_rotation:

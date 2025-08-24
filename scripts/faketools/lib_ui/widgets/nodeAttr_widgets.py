@@ -53,7 +53,7 @@ class NodeListView(QListView):
 
     def __init__(self, parent=None):
         """Initialize the NodeList."""
-        super(NodeListView, self).__init__(parent)
+        super().__init__(parent)
         self.setSelectionMode(QListView.ExtendedSelection)
         self.setEditTriggers(QListView.NoEditTriggers)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -74,7 +74,7 @@ class NodeListView(QListView):
             elif event.button() == Qt.MiddleButton:
                 return True
 
-        return super(NodeListView, self).eventFilter(source, event)
+        return super().eventFilter(source, event)
 
     def show_context_menu(self, position) -> None:
         """Show context menu for node list.
@@ -191,7 +191,7 @@ class AttributeListView(QListView):
         Args:
             node_widgets (NodeList): The node list widget.
         """
-        super(AttributeListView, self).__init__(parent)
+        super().__init__(parent)
         self.setSelectionMode(QListView.ExtendedSelection)
         self.setEditTriggers(QListView.NoEditTriggers)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -216,7 +216,7 @@ class AttributeListView(QListView):
                 return True
             elif event.button() == Qt.MiddleButton:
                 return True
-        return super(AttributeListView, self).eventFilter(source, event)
+        return super().eventFilter(source, event)
 
     def show_context_menu(self, position) -> None:
         """Show context menu for attribute list."""
@@ -315,7 +315,7 @@ class NodeAttributeWidgets(QWidget):
 
     def __init__(self, parent=None):
         """Initialize the NodeListWidget."""
-        super(NodeAttributeWidgets, self).__init__(parent)
+        super().__init__(parent)
 
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
@@ -393,7 +393,7 @@ class NodeAttributeWidgets(QWidget):
             item = QStandardItem(attr)
             self.attr_list.model().sourceModel().appendRow(item)
 
-    def __list_attributes(self, node, *args, **kwargs) -> list[str]:
+    def __list_attributes(self, node, **kwargs) -> list[str]:
         """List the attributes of the node.
 
         Args:

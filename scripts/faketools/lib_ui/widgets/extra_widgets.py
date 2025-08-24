@@ -205,7 +205,7 @@ class ModifierSpinBox(QDoubleSpinBox):
 
     def __init__(self, parent=None):
         """Constructor."""
-        super(ModifierSpinBox, self).__init__(parent=parent)
+        super().__init__(parent=parent)
         self.__shift_multiplier = 10.0
         self.__ctrl_multiplier = 0.1
 

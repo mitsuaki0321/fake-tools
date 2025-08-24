@@ -344,7 +344,7 @@ class ComponentSelection:
 
         return result_components
 
-    def same_position_selection(self, driver_mesh: str, *args, **kwargs) -> list[str]:
+    def same_position_selection(self, driver_mesh: str, **kwargs) -> list[str]:
         """Same position selection of components.
 
         Notes:
@@ -390,7 +390,7 @@ class ComponentSelection:
 
         return result_components
 
-    def uv_area_selection(self, *args, **kwargs) -> list[str]:
+    def uv_area_selection(self, **kwargs) -> list[str]:
         """UV area selection of components.
 
         Notes:
@@ -434,9 +434,8 @@ class ComponentSelection:
                     if uv == "u":
                         if area[0] <= index[0] <= area[1]:
                             result_components.append(f"{shape_transform}.cv[{index[0]}][{index[1]}]")
-                    elif uv == "v":
-                        if area[0] <= index[1] <= area[1]:
-                            result_components.append(f"{shape_transform}.cv[{index[0]}][{index[1]}]")
+                    elif uv == "v" and area[0] <= index[1] <= area[1]:
+                        result_components.append(f"{shape_transform}.cv[{index[0]}][{index[1]}]")
 
         logger.debug(f"Parameter components: {result_components}")
 
@@ -486,10 +485,9 @@ def get_unique_selections(filter_geometries: list[str] | None = None) -> dict[st
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
                 dag_path, component = iterator.getComponent()
-                if filter_geometries_path:
-                    if dag_path not in filter_geometries_path:
-                        iterator.next()
-                        continue
+                if filter_geometries_path and dag_path not in filter_geometries_path:
+                    iterator.next()
+                    continue
 
                 dag_path.pop()  # Remove shape node
                 node = dag_path.partialPathName()
@@ -508,10 +506,9 @@ def get_unique_selections(filter_geometries: list[str] | None = None) -> dict[st
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
                 dag_path, component = iterator.getComponent()
-                if filter_geometries_path:
-                    if dag_path not in filter_geometries_path:
-                        iterator.next()
-                        continue
+                if filter_geometries_path and dag_path not in filter_geometries_path:
+                    iterator.next()
+                    continue
 
                 dag_path.pop()
                 node = dag_path.partialPathName()
@@ -530,10 +527,9 @@ def get_unique_selections(filter_geometries: list[str] | None = None) -> dict[st
             iterator = om.MItSelectionList(selection, component_type)
             while not iterator.isDone():
                 dag_path, component = iterator.getComponent()
-                if filter_geometries_path:
-                    if dag_path not in filter_geometries_path:
-                        iterator.next()
-                        continue
+                if filter_geometries_path and dag_path not in filter_geometries_path:
+                    iterator.next()
+                    continue
 
                 dag_path.pop()
                 node = dag_path.partialPathName()

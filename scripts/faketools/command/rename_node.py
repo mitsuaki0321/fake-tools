@@ -11,7 +11,7 @@ from ..lib import lib_api, lib_name
 logger = getLogger(__name__)
 
 
-def solve_rename(nodes: list[str], regex_name: str, *args, **kwargs) -> list[str]:
+def solve_rename(nodes: list[str], regex_name: str, **kwargs) -> list[str]:
     """Solve the node name.
 
     Args:
@@ -76,7 +76,7 @@ def solve_rename(nodes: list[str], regex_name: str, *args, **kwargs) -> list[str
         return result_nodes
 
 
-def substitute_rename(nodes: list[str], regex_name: str, replace_name: str, *args, **kwargs) -> list[str]:
+def substitute_rename(nodes: list[str], regex_name: str, replace_name: str) -> list[str]:
     """Substitute the node name.
 
     Args:

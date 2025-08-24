@@ -2,9 +2,9 @@
 Set driven key tools.
 """
 
+from logging import getLogger
 import os
 import tempfile
-from logging import getLogger
 
 import maya.cmds as cmds
 
@@ -39,20 +39,15 @@ from ..lib_ui.widgets import extra_widgets
 
 logger = getLogger(__name__)
 
-TEMP_DIR = os.path.normpath(os.path.join(tempfile.gettempdir(), 'drivenKeys'))
+TEMP_DIR = os.path.normpath(os.path.join(tempfile.gettempdir(), "drivenKeys"))
 
 global_settings = user_directory.ToolSettings(__name__).load()
-REGEX = global_settings.get('LEFT_TO_RIGHT', ['(.*)(L)', r'\g<1>R'])
+REGEX = global_settings.get("LEFT_TO_RIGHT", ["(.*)(L)", r"\g<1>R"])
 
 
 class MainWindow(base_window.BaseMainWindow):
-
-    def __init__(self,
-                 parent=None,
-                 object_name='MainWindow',
-                 window_title='Main Window'):
-        """Constructor.
-        """
+    def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
+        """Constructor."""
         super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
         self.tool_options = optionvar.ToolOptionSettings(__name__)
@@ -61,10 +56,10 @@ class MainWindow(base_window.BaseMainWindow):
         self.menu_bar = self.menuBar()
         self.__add_menu()
 
-        one_to_all_button = QPushButton('One to All')
+        one_to_all_button = QPushButton("One to All")
         self.central_layout.addWidget(one_to_all_button)
 
-        one_to_replace_button = QPushButton('One to Replace')
+        one_to_replace_button = QPushButton("One to Replace")
         self.central_layout.addWidget(one_to_replace_button)
 
         layout = QHBoxLayout()
@@ -78,42 +73,42 @@ class MainWindow(base_window.BaseMainWindow):
 
         self.central_layout.addLayout(layout)
 
-        self.replace_driver_check_box = QCheckBox('Replace Driver')
+        self.replace_driver_check_box = QCheckBox("Replace Driver")
         self.central_layout.addWidget(self.replace_driver_check_box)
 
-        self.force_delete_check_box = QCheckBox('Force Delete Driven Key')
+        self.force_delete_check_box = QCheckBox("Force Delete Driven Key")
         self.central_layout.addWidget(self.force_delete_check_box)
 
-        self.mirror_check_box = QCheckBox('Mirror')
+        self.mirror_check_box = QCheckBox("Mirror")
         self.central_layout.addWidget(self.mirror_check_box)
 
         layout = QGridLayout()
         layout.setContentsMargins(0, 0, 0, 0)
 
-        self.time_label = QLabel('Time')
-        self.time_label.setStyleSheet('font-weight: bold;')
+        self.time_label = QLabel("Time")
+        self.time_label.setStyleSheet("font-weight: bold;")
         layout.addWidget(self.time_label, 0, 0)
 
-        self.time_translate_check_box = MirrorCheckBox('T', 'translate')
+        self.time_translate_check_box = MirrorCheckBox("T", "translate")
         layout.addWidget(self.time_translate_check_box, 1, 0)
 
-        self.time_rotate_check_box = MirrorCheckBox('R', 'rotate')
+        self.time_rotate_check_box = MirrorCheckBox("R", "rotate")
         layout.addWidget(self.time_rotate_check_box, 2, 0)
 
-        self.time_scale_check_box = MirrorCheckBox('S', 'scale')
+        self.time_scale_check_box = MirrorCheckBox("S", "scale")
         layout.addWidget(self.time_scale_check_box, 3, 0)
 
-        self.value_label = QLabel('Value')
-        self.value_label.setStyleSheet('font-weight: bold;')
+        self.value_label = QLabel("Value")
+        self.value_label.setStyleSheet("font-weight: bold;")
         layout.addWidget(self.value_label, 0, 1)
 
-        self.value_translate_check_box = MirrorCheckBox('T', 'translate')
+        self.value_translate_check_box = MirrorCheckBox("T", "translate")
         layout.addWidget(self.value_translate_check_box, 1, 1)
 
-        self.value_rotate_check_box = MirrorCheckBox('R', 'rotate')
+        self.value_rotate_check_box = MirrorCheckBox("R", "rotate")
         layout.addWidget(self.value_rotate_check_box, 2, 1)
 
-        self.value_scale_check_box = MirrorCheckBox('S', 'scale')
+        self.value_scale_check_box = MirrorCheckBox("S", "scale")
         layout.addWidget(self.value_scale_check_box, 3, 1)
 
         self.central_layout.addLayout(layout)
@@ -121,33 +116,33 @@ class MainWindow(base_window.BaseMainWindow):
         separator = extra_widgets.HorizontalSeparator()
         self.central_layout.addWidget(separator)
 
-        label = QLabel('Mirror Curve')
-        label.setStyleSheet('font-weight: bold;')
+        label = QLabel("Mirror Curve")
+        label.setStyleSheet("font-weight: bold;")
         self.central_layout.addWidget(label)
 
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
 
-        mirror_curve_time_button = QPushButton('Time')
+        mirror_curve_time_button = QPushButton("Time")
         layout.addWidget(mirror_curve_time_button)
 
-        mirror_curve_value_button = QPushButton('Value')
+        mirror_curve_value_button = QPushButton("Value")
         layout.addWidget(mirror_curve_value_button)
 
         self.central_layout.addLayout(layout)
 
         # Option Settings
-        self.regex_line_edit.setText(self.tool_options.read('regex', REGEX[0]))
-        self.replace_to_line_edit.setText(self.tool_options.read('replace_to', REGEX[1]))
-        self.mirror_check_box.setChecked(self.tool_options.read('mirror', False))
-        self.replace_driver_check_box.setChecked(self.tool_options.read('replace_driver', True))
-        self.force_delete_check_box.setChecked(self.tool_options.read('force_delete', False))
-        self.time_translate_check_box.set_values(self.tool_options.read('time_translate', []))
-        self.time_rotate_check_box.set_values(self.tool_options.read('time_rotate', []))
-        self.time_scale_check_box.set_values(self.tool_options.read('time_scale', []))
-        self.value_translate_check_box.set_values(self.tool_options.read('value_translate', ['translateX', 'translateY', 'translateZ']))
-        self.value_rotate_check_box.set_values(self.tool_options.read('value_rotate', []))
-        self.value_scale_check_box.set_values(self.tool_options.read('value_scale', []))
+        self.regex_line_edit.setText(self.tool_options.read("regex", REGEX[0]))
+        self.replace_to_line_edit.setText(self.tool_options.read("replace_to", REGEX[1]))
+        self.mirror_check_box.setChecked(self.tool_options.read("mirror", False))
+        self.replace_driver_check_box.setChecked(self.tool_options.read("replace_driver", True))
+        self.force_delete_check_box.setChecked(self.tool_options.read("force_delete", False))
+        self.time_translate_check_box.set_values(self.tool_options.read("time_translate", []))
+        self.time_rotate_check_box.set_values(self.tool_options.read("time_rotate", []))
+        self.time_scale_check_box.set_values(self.tool_options.read("time_scale", []))
+        self.value_translate_check_box.set_values(self.tool_options.read("value_translate", ["translateX", "translateY", "translateZ"]))
+        self.value_rotate_check_box.set_values(self.tool_options.read("value_rotate", []))
+        self.value_scale_check_box.set_values(self.tool_options.read("value_scale", []))
 
         # Signal & Slot
         one_to_all_button.clicked.connect(self.transfer_one_to_all)
@@ -160,59 +155,55 @@ class MainWindow(base_window.BaseMainWindow):
         self.__update_mirror_check_box()
 
     def __add_menu(self):
-        """Add the menu.
-        """
-        menu = self.menu_bar.addMenu('Export/Import')
+        """Add the menu."""
+        menu = self.menu_bar.addMenu("Export/Import")
 
-        export_temp_action = menu.addAction('Export')
+        export_temp_action = menu.addAction("Export")
         export_temp_action.triggered.connect(self.export_to_temp)
 
-        import_temp_action = menu.addAction('Import')
+        import_temp_action = menu.addAction("Import")
         import_temp_action.triggered.connect(self.import_from_temp)
 
         menu.addSeparator()
 
-        export_file_action = menu.addAction('Export File')
+        export_file_action = menu.addAction("Export File")
         export_file_action.triggered.connect(self.export_to_file)
 
-        import_file_action = menu.addAction('Import File')
+        import_file_action = menu.addAction("Import File")
         import_file_action.triggered.connect(self.import_from_file)
 
-        menu = self.menu_bar.addMenu('Options')
+        menu = self.menu_bar.addMenu("Options")
 
-        option_action = menu.addAction('Select Driven Key Nodes')
+        option_action = menu.addAction("Select Driven Key Nodes")
         option_action.triggered.connect(self.select_driven_key_nodes)
 
-        option_action = menu.addAction('Cleanup Driven Key')
+        option_action = menu.addAction("Cleanup Driven Key")
         option_action.triggered.connect(self.cleanup_driven_keys)
 
     @maya_ui.error_handler
     def export_to_temp(self):
-        """Export driven key to temp directory.
-        """
+        """Export driven key to temp directory."""
         temp_dir = TEMP_DIR
         if not os.path.exists(temp_dir):
             os.makedirs(temp_dir)
 
-        temp_file = os.path.join(temp_dir, 'driven_key.json')
+        temp_file = os.path.join(temp_dir, "driven_key.json")
         transfer_drivenkey.DrivenKeyExportImport().export_driven_keys(temp_file)
 
-    @maya_ui.undo_chunk('Import Driven Key')
+    @maya_ui.undo_chunk("Import Driven Key")
     @maya_ui.error_handler
     def import_from_temp(self):
-        """Import driven key from temp directory.
-        """
-        temp_file = os.path.join(TEMP_DIR, 'driven_key.json')
+        """Import driven key from temp directory."""
+        temp_file = os.path.join(TEMP_DIR, "driven_key.json")
         if not os.path.exists(temp_file):
-            cmds.warning('Driven key file does not exists')
+            cmds.warning("Driven key file does not exists")
             return
 
         transfer_drivenkey.DrivenKeyExportImport().import_driven_keys(temp_file)
 
     @maya_ui.error_handler
     def export_to_file(self):
-        """Export driven key to file.
-        """
+        """Export driven key to file."""
         file_dialog = QFileDialog(self, directory=self.root_path)
         file_dialog.setAcceptMode(QFileDialog.AcceptSave)
         file_dialog.setNameFilter("JSON Files (*.json)")
@@ -222,11 +213,10 @@ class MainWindow(base_window.BaseMainWindow):
             file_path = file_dialog.selectedFiles()[0]
             transfer_drivenkey.DrivenKeyExportImport().export_driven_keys(file_path)
 
-    @maya_ui.undo_chunk('Import Driven Key')
+    @maya_ui.undo_chunk("Import Driven Key")
     @maya_ui.error_handler
     def import_from_file(self):
-        """Import driven key from file.
-        """
+        """Import driven key from file."""
         file_dialog = QFileDialog(self)
         file_dialog.setAcceptMode(QFileDialog.AcceptOpen)
         file_dialog.setNameFilter("JSON Files (*.json)")
@@ -235,18 +225,16 @@ class MainWindow(base_window.BaseMainWindow):
             file_path = file_dialog.selectedFiles()[0]
             transfer_drivenkey.DrivenKeyExportImport().import_driven_keys(file_path)
 
-    @maya_ui.undo_chunk('Transfer Driven Key')
+    @maya_ui.undo_chunk("Transfer Driven Key")
     @maya_ui.error_handler
     def transfer_one_to_all(self):
-        """Transfer driven key one to all.
-        """
+        """Transfer driven key one to all."""
         transfer_drivenkey.DrivenKeyTransfer().one_to_all()
 
-    @maya_ui.undo_chunk('Transfer Driven Key')
+    @maya_ui.undo_chunk("Transfer Driven Key")
     @maya_ui.error_handler
     def transfer_one_to_replace(self):
-        """Transfer driven key one to replace.
-        """
+        """Transfer driven key one to replace."""
         regex = self.regex_line_edit.text()
         replace_to = self.replace_to_line_edit.text()
         replace_driver = self.replace_driver_check_box.isChecked()
@@ -267,57 +255,52 @@ class MainWindow(base_window.BaseMainWindow):
         for node in replaced_nodes:
             manage_drivenkey.mirror_transform_anim_curve(node, time_attrs, value_attrs)
 
-    @maya_ui.undo_chunk('Mirror Curve')
+    @maya_ui.undo_chunk("Mirror Curve")
     @maya_ui.error_handler
     def mirror_curve_time(self):
-        """Mirror the curve time.
-        """
+        """Mirror the curve time."""
         anim_curves = cmds.keyframe(q=True, sl=True, n=True)
         if not anim_curves:
-            cmds.error('No animation curve selected')
+            cmds.error("No animation curve selected")
 
         for anim_curve in anim_curves:
             lib_keyframe.mirror_anim_curve(anim_curve, mirror_time=True, mirror_value=False)
 
-    @maya_ui.undo_chunk('Mirror Curve')
+    @maya_ui.undo_chunk("Mirror Curve")
     @maya_ui.error_handler
     def mirror_curve_value(self):
-        """Mirror the curve value.
-        """
+        """Mirror the curve value."""
         anim_curves = cmds.keyframe(q=True, sl=True, n=True)
         if not anim_curves:
-            cmds.error('No animation curve selected')
+            cmds.error("No animation curve selected")
 
         for anim_curve in anim_curves:
             lib_keyframe.mirror_anim_curve(anim_curve, mirror_time=False, mirror_value=True)
 
-    @maya_ui.undo_chunk('Select Driven Key Nodes')
+    @maya_ui.undo_chunk("Select Driven Key Nodes")
     @maya_ui.error_handler
     def select_driven_key_nodes(self):
-        """Select driven key nodes.
-        """
+        """Select driven key nodes."""
         sel_nodes = manage_drivenkey.get_driven_key_nodes()
         if not sel_nodes:
-            cmds.waning('No driven key nodes found')
+            cmds.waning("No driven key nodes found")
             return
 
         cmds.select(sel_nodes, r=True)
 
-    @maya_ui.undo_chunk('Cleanup Driven Key')
+    @maya_ui.undo_chunk("Cleanup Driven Key")
     @maya_ui.error_handler
     def cleanup_driven_keys(self):
-        """Cleanup driven keys.
-        """
+        """Cleanup driven keys."""
         sel_nodes = cmds.ls(sl=True)
         if not sel_nodes:
-            cmds.error('No nodes selected')
+            cmds.error("No nodes selected")
 
         for node in sel_nodes:
             manage_drivenkey.cleanup_driven_keys(node)
 
     def __update_mirror_check_box(self):
-        """Update the mirror check box.
-        """
+        """Update the mirror check box."""
         state = self.mirror_check_box.isChecked()
 
         self.time_label.setEnabled(state)
@@ -330,27 +313,25 @@ class MainWindow(base_window.BaseMainWindow):
         self.value_scale_check_box.set_enabled(state)
 
     def closeEvent(self, event):
-        """Close event.
-        """
+        """Close event."""
         # Save option settings
-        self.tool_options.write('regex', self.regex_line_edit.text())
-        self.tool_options.write('replace_to', self.replace_to_line_edit.text())
-        self.tool_options.write('mirror', self.mirror_check_box.isChecked())
-        self.tool_options.write('replace_driver', self.replace_driver_check_box.isChecked())
-        self.tool_options.write('force_delete', self.force_delete_check_box.isChecked())
-        self.tool_options.write('time_translate', self.time_translate_check_box.get_values())
-        self.tool_options.write('time_rotate', self.time_rotate_check_box.get_values())
-        self.tool_options.write('time_scale', self.time_scale_check_box.get_values())
-        self.tool_options.write('value_translate', self.value_translate_check_box.get_values())
-        self.tool_options.write('value_rotate', self.value_rotate_check_box.get_values())
-        self.tool_options.write('value_scale', self.value_scale_check_box.get_values())
+        self.tool_options.write("regex", self.regex_line_edit.text())
+        self.tool_options.write("replace_to", self.replace_to_line_edit.text())
+        self.tool_options.write("mirror", self.mirror_check_box.isChecked())
+        self.tool_options.write("replace_driver", self.replace_driver_check_box.isChecked())
+        self.tool_options.write("force_delete", self.force_delete_check_box.isChecked())
+        self.tool_options.write("time_translate", self.time_translate_check_box.get_values())
+        self.tool_options.write("time_rotate", self.time_rotate_check_box.get_values())
+        self.tool_options.write("time_scale", self.time_scale_check_box.get_values())
+        self.tool_options.write("value_translate", self.value_translate_check_box.get_values())
+        self.tool_options.write("value_rotate", self.value_rotate_check_box.get_values())
+        self.tool_options.write("value_scale", self.value_scale_check_box.get_values())
 
         super().closeEvent(event)
 
 
 class MirrorCheckBox(QWidget):
-
-    def __init__(self, label: str = 'T', attribute: str = 'translate', parent=None):
+    def __init__(self, label: str = "T", attribute: str = "translate", parent=None):
         """Initialize.
 
         Args:
@@ -363,16 +344,16 @@ class MirrorCheckBox(QWidget):
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
 
-        self.label = QLabel(f'{label}:')
+        self.label = QLabel(f"{label}:")
         layout.addWidget(self.label)
 
-        self.x_check_box = QCheckBox('')
+        self.x_check_box = QCheckBox("")
         layout.addWidget(self.x_check_box)
 
-        self.y_check_box = QCheckBox('')
+        self.y_check_box = QCheckBox("")
         layout.addWidget(self.y_check_box)
 
-        self.z_check_box = QCheckBox('')
+        self.z_check_box = QCheckBox("")
         layout.addWidget(self.z_check_box)
 
         self.setLayout(layout)
@@ -384,9 +365,9 @@ class MirrorCheckBox(QWidget):
             list[str]: The values.
         """
         values = []
-        for check_box, axis in [(self.x_check_box, 'X'), (self.y_check_box, 'Y'), (self.z_check_box, 'Z')]:
+        for check_box, axis in [(self.x_check_box, "X"), (self.y_check_box, "Y"), (self.z_check_box, "Z")]:
             if check_box.isChecked():
-                values.append(f'{self.__attribute}{axis}')
+                values.append(f"{self.__attribute}{axis}")
 
         return values
 
@@ -396,8 +377,8 @@ class MirrorCheckBox(QWidget):
         Args:
             values (list[str]): The values.
         """
-        for check_box, axis in [(self.x_check_box, 'X'), (self.y_check_box, 'Y'), (self.z_check_box, 'Z')]:
-            attribute = f'{self.__attribute}{axis}'
+        for check_box, axis in [(self.x_check_box, "X"), (self.y_check_box, "Y"), (self.z_check_box, "Z")]:
+            attribute = f"{self.__attribute}{axis}"
             if attribute in values:
                 check_box.setChecked(True)
             else:
@@ -415,13 +396,10 @@ class MirrorCheckBox(QWidget):
 
 
 def show_ui():
-    """Show the main window.
-    """
-    window_name = f'{__name__}MainWindow'
+    """Show the main window."""
+    window_name = f"{__name__}MainWindow"
     maya_qt.delete_widget(window_name)
 
     # Create the main window.
-    main_window = MainWindow(parent=maya_qt.get_maya_pointer(),
-                             object_name=window_name,
-                             window_title='Driven Key Tools')
+    main_window = MainWindow(parent=maya_qt.get_maya_pointer(), object_name=window_name, window_title="Driven Key Tools")
     main_window.show()

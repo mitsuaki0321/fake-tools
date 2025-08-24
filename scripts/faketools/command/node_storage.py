@@ -89,10 +89,7 @@ class NodeStockFile:
         if not os.path.exists(file_path):
             return False
 
-        if not file_path.endswith(cls._get_file_suffix()):
-            return False
-
-        return True
+        return file_path.endswith(cls._get_file_suffix())
 
     @classmethod
     def create(cls, name: str, storage_directory: str):

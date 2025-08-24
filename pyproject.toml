@@ -9,7 +9,7 @@ indent-style = "space"
 
 [tool.ruff.lint]
 select = ["E", "F", "UP", "B", "SIM", "I", "ARG"]
-ignore = ["E203", "E501", "E701"]
+ignore = ["E203", "E501", "E701", "SIM108"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true

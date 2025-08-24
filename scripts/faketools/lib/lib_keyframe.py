@@ -321,9 +321,8 @@ class AttributeKeyframe:
         driver_plug = cmds.ls(driver_plug)[0]  # Name rearrange
         for anim_curve in anim_curves:
             source_plug = cmds.listConnections(anim_curve, s=True, d=False, p=True, scn=True)
-            if source_plug:
-                if source_plug[0] == driver_plug:
-                    return anim_curve
+            if source_plug and source_plug[0] == driver_plug:
+                return anim_curve
 
         return None
 

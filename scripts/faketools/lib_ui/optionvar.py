@@ -62,8 +62,8 @@ class ToolOptionSettings:
         full_key = self.__full_key(key)
         try:
             value = json.dumps(value)
-        except (TypeError, ValueError):
-            raise ValueError(f"Value for key '{key}' is not JSON serializable")
+        except (TypeError, ValueError) as e:
+            raise ValueError("Value must be JSON serializable.") from e
         cmds.optionVar(sv=(full_key, value))
 
     def delete(self, key: str) -> None:

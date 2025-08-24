@@ -299,8 +299,7 @@ class NurbsCurve:
             end_param = brentq(chord_length_func, start_param, max_param, xtol=tolerance, maxiter=max_iterations)
             return end_param
         except ValueError as e:
-            print(e)
-            raise ValueError("Parameter corresponding to the target chord length not found.")
+            raise ValueError("Parameter corresponding to the target chord length not found.") from e
 
 
 class NurbsCurvePositions:
@@ -404,11 +403,11 @@ class NurbsCurvePositions:
 
             params = []
             tmp_param = min_param
-            for i in range(num_divisions - 1):
+            for _ in range(num_divisions - 1):
                 try:
                     param = self.curve.find_cloud_length_from_param(tmp_param, length, local=om.MSpace.kWorld)
-                except ValueError:
-                    raise ValueError("Parameter corresponding to the target chord length not found.")
+                except ValueError as e:
+                    raise ValueError("Parameter corresponding to the target chord length not found.") from e
                 if param is not None:
                     params.append(param)
                     tmp_param = param

@@ -55,15 +55,9 @@ logger = getLogger(__name__)
 
 
 class MainWindow(base_window.BaseMainWindow):
+    _stock_file_name = "node"
 
-    _stock_file_name = 'node'
-
-    def __init__(self,
-                 parent=None,
-                 object_name='MainWindow',
-                 window_title='Main Window',
-                 num_areas=7,
-                 *args, **kwargs):
+    def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window", num_areas=7, **kwargs):
         """Constructor.
 
         Args:
@@ -79,9 +73,9 @@ class MainWindow(base_window.BaseMainWindow):
         """
         super().__init__(parent=parent, object_name=object_name, window_title=window_title)
 
-        rows = kwargs.get('rows', 2)
-        cols = kwargs.get('cols', 7)
-        button_size = kwargs.get('button_size', 50)
+        rows = kwargs.get("rows", 2)
+        cols = kwargs.get("cols", 7)
+        button_size = kwargs.get("button_size", 50)
 
         tool_directory = user_directory.ToolDirectory(__name__)
         self.node_storage = node_storage.NodeStorage(tool_directory.get_directory())
@@ -137,11 +131,11 @@ class MainWindow(base_window.BaseMainWindow):
         # In Maya, the status bar gets destroyed at some point, so this is a workaround
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
-        self.status_bar.setStyleSheet('QStatusBar::item { border: none; }')
+        self.status_bar.setStyleSheet("QStatusBar::item { border: none; }")
         self.status_bar.setSizeGripEnabled(False)
         layout.addWidget(self.status_bar)
 
-        self.node_length_label = QLabel('{}   '.format(self.__get_node_length_label(0)))
+        self.node_length_label = QLabel(f"{self.__get_node_length_label(0)}   ")
         self.node_length_label.setFixedWidth(self.node_length_label.sizeHint().width())
         self.status_separator = extra_widgets.VerticalSeparator()
         self.node_names_label = QLabel()
@@ -153,12 +147,12 @@ class MainWindow(base_window.BaseMainWindow):
         self.central_layout.addLayout(layout)
 
         # Option settings
-        self.tool_bar.set_hilite(self.tool_options.read('hilite', False))
-        self.name_space_box.set_enabled(self.tool_options.read('name_space_enabled', False))
-        self.name_replace_field.set_enabled(self.tool_options.read('name_replace_enabled', False))
-        self.name_replace_field.set_search_replace_text(*self.tool_options.read('search_replace', ('', '')))
-        self.name_replace_field.set_switched(self.tool_options.read('name_replace_switched', False))
-        self.name_replace_field.set_re(self.tool_options.read('name_replace_re', False))
+        self.tool_bar.set_hilite(self.tool_options.read("hilite", False))
+        self.name_space_box.set_enabled(self.tool_options.read("name_space_enabled", False))
+        self.name_replace_field.set_enabled(self.tool_options.read("name_replace_enabled", False))
+        self.name_replace_field.set_search_replace_text(*self.tool_options.read("search_replace", ("", "")))
+        self.name_replace_field.set_switched(self.tool_options.read("name_replace_switched", False))
+        self.name_replace_field.set_re(self.tool_options.read("name_replace_re", False))
 
         # Signals & Slots
         self.switch_buttons.button_selection_changed.connect(self.__switch_scene)
@@ -210,7 +204,7 @@ class MainWindow(base_window.BaseMainWindow):
                 for col in range(cols):
                     x = margin + col * (button_size + spacing) + offset
                     y = margin + row * (button_size + spacing)
-                    button = nodeStock_view.NodeStockButton(f'{row}_{col}', x, y, button_size, label=str(row * cols + col))
+                    button = nodeStock_view.NodeStockButton(f"{row}_{col}", x, y, button_size, label=str(row * cols + col))
                     button.left_button_clicked.connect(self._select_nodes)
                     button.middle_button_clicked.connect(self._add_nodes)
                     button.right_button_clicked.connect(self._remove_nodes)
@@ -243,9 +237,8 @@ class MainWindow(base_window.BaseMainWindow):
         logger.debug(f"Loaded scene data: {scene_file_name}")
 
     def __get_file_prefix(self, index: int) -> str:
-        """Make the file prefix.
-        """
-        return f'{self._stock_file_name}_{index}'
+        """Make the file prefix."""
+        return f"{self._stock_file_name}_{index}"
 
     def __get_node_stock_file(self, button: nodeStock_view.NodeStockButton) -> node_storage.NodeStockFile:
         """Get the node stock file from the button.
@@ -265,8 +258,7 @@ class MainWindow(base_window.BaseMainWindow):
         return self.node_storage.get_file(name)
 
     def __refresh_window(self) -> None:
-        """Refresh the window.
-        """
+        """Refresh the window."""
         self.__load_scene_data(self.switch_buttons.button_group.checkedId())
         self.name_space_box.refresh_name_spaces()
 
@@ -280,7 +272,7 @@ class MainWindow(base_window.BaseMainWindow):
         Returns:
             str: The node length label.
         """
-        return f'Nodes: {node_count}'
+        return f"Nodes: {node_count}"
 
     def __update_status_bar(self, button: nodeStock_view.NodeStockButton) -> None:
         """Update the status bar with the button's information.
@@ -296,15 +288,14 @@ class MainWindow(base_window.BaseMainWindow):
             return
 
         node_count = len(nodes)
-        node_names = ' '.join(nodes)
+        node_names = " ".join(nodes)
         max_width = self.status_bar.width() - self.status_bar_spacing - 5
         elided_text = self.font_metrics.elidedText(node_names, Qt.ElideRight, max_width)
         self.node_length_label.setText(self.__get_node_length_label(node_count))
         self.node_names_label.setText(elided_text)
 
     def __clear_status_bar(self) -> None:
-        """Clear the status bar.
-        """
+        """Clear the status bar."""
         self.node_length_label.setText(self.__get_node_length_label(0))
         self.node_names_label.clear()
 
@@ -334,8 +325,7 @@ class MainWindow(base_window.BaseMainWindow):
         self._hilite_nodes = nodes
 
     def __unhighlight_nodes(self) -> None:
-        """Unhighlight the nodes in the Maya scene when the button is unhovered.
-        """
+        """Unhighlight the nodes in the Maya scene when the button is unhovered."""
         if not self._hilite_nodes:
             return
 
@@ -363,15 +353,11 @@ class MainWindow(base_window.BaseMainWindow):
         if not mod_keys:
             cmds.select(nodes, r=True)
             logger.debug(f"Selected new nodes: {nodes}")
-        elif ['Shift', 'Ctrl'] == mod_keys:
+        elif mod_keys == ["Shift", "Ctrl"] or "Shift" in mod_keys:
             cmds.select(sel_nodes, r=True)
             cmds.select(nodes, add=True)
             logger.debug(f"Add selected new nodes: {nodes}")
-        elif 'Shift' in mod_keys:
-            cmds.select(sel_nodes, r=True)
-            cmds.select(nodes, add=True)
-            logger.debug(f"Add selected new nodes: {nodes}")
-        elif 'Ctrl' in mod_keys:
+        elif "Ctrl" in mod_keys:
             cmds.select(sel_nodes, r=True)
             cmds.select(nodes, d=True)
             logger.debug(f"Deselect selected new nodes: {nodes}")
@@ -434,11 +420,10 @@ class MainWindow(base_window.BaseMainWindow):
 
         return nodes
 
-    @maya_ui.undo_chunk('Select Nodes')
+    @maya_ui.undo_chunk("Select Nodes")
     @maya_ui.error_handler
     def _select_nodes(self, button: nodeStock_view.NodeStockButton) -> None:
-        """Select the nodes when the left button is clicked.
-        """
+        """Select the nodes when the left button is clicked."""
         nodes = self._current_scene_data.get(button.key, [])
         if not nodes:
             return
@@ -447,11 +432,10 @@ class MainWindow(base_window.BaseMainWindow):
 
         logger.debug(f"Selected nodes: {nodes}")
 
-    @maya_ui.undo_chunk('Select Nodes by Rubber Band')
+    @maya_ui.undo_chunk("Select Nodes by Rubber Band")
     @maya_ui.error_handler
     def _select_nodes_rubber_band(self, buttons: list[nodeStock_view.NodeStockButton]) -> None:
-        """Select the nodes when the left button is clicked.
-        """
+        """Select the nodes when the left button is clicked."""
         if not buttons:
             logger.debug("No buttons to select.")
             return
@@ -470,8 +454,7 @@ class MainWindow(base_window.BaseMainWindow):
 
     @maya_ui.error_handler
     def _add_nodes(self, button: nodeStock_view.NodeStockButton) -> None:
-        """Add the nodes to nodeStorage when the middle button is clicked.
-        """
+        """Add the nodes to nodeStorage when the middle button is clicked."""
         sel_nodes = cmds.ls(sl=True)
         if not sel_nodes:
             cmds.warning("No nodes selected.")
@@ -491,8 +474,7 @@ class MainWindow(base_window.BaseMainWindow):
 
     @maya_ui.error_handler
     def _remove_nodes(self, button: nodeStock_view.NodeStockButton) -> None:
-        """Remove the nodes from nodeStorage when the right button is clicked.
-        """
+        """Remove the nodes from nodeStorage when the right button is clicked."""
         # Remove the nodes from the storage file.
         node_stock_file = self.__get_node_stock_file(button)
         nodes = node_stock_file.get_nodes(button.key)
@@ -511,28 +493,25 @@ class MainWindow(base_window.BaseMainWindow):
         logger.debug(f"Removed nodes: {nodes}")
 
     def closeEvent(self, event) -> None:
-        """Close the window.
-        """
+        """Close the window."""
         # Save option settings
-        self.tool_options.write('hilite', self.tool_bar.is_hilite())
-        self.tool_options.write('name_space_enabled', self.name_space_box.is_enabled())
-        self.tool_options.write('name_replace_enabled', self.name_replace_field.is_enabled())
-        self.tool_options.write('search_replace', self.name_replace_field.get_search_replace_text())
-        self.tool_options.write('name_replace_switched', self.name_replace_field.is_switched())
-        self.tool_options.write('name_replace_re', self.name_replace_field.is_re())
+        self.tool_options.write("hilite", self.tool_bar.is_hilite())
+        self.tool_options.write("name_space_enabled", self.name_space_box.is_enabled())
+        self.tool_options.write("name_replace_enabled", self.name_replace_field.is_enabled())
+        self.tool_options.write("search_replace", self.name_replace_field.get_search_replace_text())
+        self.tool_options.write("name_replace_switched", self.name_replace_field.is_switched())
+        self.tool_options.write("name_replace_re", self.name_replace_field.is_re())
 
         super().closeEvent(event)
 
 
 class ToolBar(QWidget):
-    """Tool bar for the node stocker.
-    """
+    """Tool bar for the node stocker."""
 
     refresh_button_clicked = Signal()
 
     def __init__(self, parent=None):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__(parent=parent)
 
         self.main_layout = QHBoxLayout()
@@ -541,11 +520,11 @@ class ToolBar(QWidget):
         spacer = QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.main_layout.addItem(spacer)
 
-        self.hilite_button = extra_widgets.CheckBoxButton(icon_off='lightbulb-off', icon_on='lightbulb')
+        self.hilite_button = extra_widgets.CheckBoxButton(icon_off="lightbulb-off", icon_on="lightbulb")
         self.main_layout.addWidget(self.hilite_button)
 
         self.refresh_button = QPushButton()
-        icon = QIcon(tool_icons.get_icon_path('refresh-cw'))
+        icon = QIcon(tool_icons.get_icon_path("refresh-cw"))
         self.refresh_button.setIcon(icon)
         self.refresh_button.setStyleSheet("""
             QPushButton {
@@ -580,8 +559,8 @@ class ToolBar(QWidget):
 
 
 class StockAreaSwitchButtons(QWidget):
-    """Switch buttons for the stock area stack widget.
-    """
+    """Switch buttons for the stock area stack widget."""
+
     button_selection_changed = Signal(int)
 
     def __init__(self, num_buttons: int = 10, parent=None):
@@ -612,21 +591,17 @@ class StockAreaSwitchButtons(QWidget):
         self.button_group.buttonClicked.connect(self.__button_clicked)
 
     def set_index(self, index: int) -> None:
-        """Set the index of the radio button to be selected.
-        """
+        """Set the index of the radio button to be selected."""
         self.button_group.button(index).setChecked(True)
 
     def __button_clicked(self, button: QRadioButton) -> None:
-        """Emit the signal when the button is clicked.
-        """
+        """Emit the signal when the button is clicked."""
         self.button_selection_changed.emit(self.button_group.id(button))
 
 
 class NameSpaceBox(QWidget):
-
     def __init__(self, parent=None):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__(parent=parent)
 
         self.main_layout = QHBoxLayout()
@@ -646,10 +621,9 @@ class NameSpaceBox(QWidget):
         self.check_box.stateChanged.connect(self.name_space_box.setEnabled)
 
     def refresh_name_spaces(self) -> None:
-        """Populate the name space box with the name spaces.
-        """
+        """Populate the name space box with the name spaces."""
         name_spaces = lib_name.list_all_namespace()
-        name_spaces.insert(0, '')
+        name_spaces.insert(0, "")
         self.name_space_box.clear()
         self.name_space_box.addItems(name_spaces)
 
@@ -660,7 +634,7 @@ class NameSpaceBox(QWidget):
             str: The name space.
         """
         if not self.check_box.isChecked():
-            return ''
+            return ""
 
         return self.name_space_box.currentText()
 
@@ -682,10 +656,8 @@ class NameSpaceBox(QWidget):
 
 
 class NameReplaceField(QWidget):
-
     def __init__(self, parent=None):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__(parent=parent)
 
         self.main_layout = QHBoxLayout()
@@ -701,13 +673,13 @@ class NameReplaceField(QWidget):
         self.search_field = QLineEdit()
         layout.addWidget(self.search_field)
 
-        self.switch_button = extra_widgets.CheckBoxButton(icon_off='arrow-right-half', icon_on='arrow-left-half')
+        self.switch_button = extra_widgets.CheckBoxButton(icon_off="arrow-right-half", icon_on="arrow-left-half")
         layout.addWidget(self.switch_button)
 
         self.replace_field = QLineEdit()
         layout.addWidget(self.replace_field)
 
-        self.re_button = extra_widgets.CheckBoxButton(icon_off='wildcard-half', icon_on='wildcard-checked-half')
+        self.re_button = extra_widgets.CheckBoxButton(icon_off="wildcard-half", icon_on="wildcard-checked-half")
         layout.addWidget(self.re_button)
 
         self.main_layout.addLayout(layout)
@@ -798,7 +770,7 @@ class NameReplaceField(QWidget):
         self.replace_field.setText(replace_text)
 
 
-def show_ui(num_areas: int = 7, *args, **kwargs):
+def show_ui(num_areas: int = 7, *kwargs):
     """Show the main window.
 
     Args:
@@ -809,13 +781,9 @@ def show_ui(num_areas: int = 7, *args, **kwargs):
         cols (int): The number of button columns.
         button_size (int): The size of the buttons.
     """
-    window_name = f'{__name__}MainWindow'
+    window_name = f"{__name__}MainWindow"
     maya_qt.delete_widget(window_name)
 
     # Create the main window.
-    main_window = MainWindow(parent=maya_qt.get_maya_pointer(),
-                             object_name=window_name,
-                             window_title='Node Stocker',
-                             num_areas=num_areas,
-                             *args, **kwargs)
+    main_window = MainWindow(parent=maya_qt.get_maya_pointer(), object_name=window_name, window_title="Node Stocker", num_areas=num_areas, **kwargs)
     main_window.show()

@@ -12,7 +12,7 @@ from . import rename_node
 logger = getLogger(__name__)
 
 
-def substitute_duplicate(nodes: list[str], regex_name: str, replace_name: str, *args, **kwargs) -> list[str]:
+def substitute_duplicate(nodes: list[str], regex_name: str, replace_name: str) -> list[str]:
     """Substitute the duplicate node name.
 
     Args:
@@ -87,7 +87,7 @@ def substitute_duplicate(nodes: list[str], regex_name: str, replace_name: str, *
         return result_nodes
 
 
-def substitute_duplicate_original(nodes: list[str], regex_name: str, replace_name: str, *args, **kwargs) -> list[str]:
+def substitute_duplicate_original(nodes: list[str], regex_name: str, replace_name: str) -> list[str]:
     """Duplicate the original shape of the shape node and replace it with the specified name.
 
     Args:
