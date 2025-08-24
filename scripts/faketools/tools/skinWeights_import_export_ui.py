@@ -43,6 +43,8 @@ TEMP_DIR = os.path.normpath(os.path.join(tempfile.gettempdir(), "skinWeights"))
 
 
 class MainWindow(base_window.BaseMainWindow):
+    """Main Window for Skin Weights Import/Export Tool."""
+
     def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
         """Constructor."""
         super().__init__(parent=parent, object_name=object_name, window_title=window_title)

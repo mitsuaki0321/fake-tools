@@ -19,6 +19,8 @@ logger = getLogger(__name__)
 
 
 class MainWindow(base_window.BaseMainWindow):
+    """Membership Handler Main Window."""
+
     def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
         """Constructor."""
         super().__init__(parent=parent, object_name=object_name, window_title=window_title, central_layout="horizontal")

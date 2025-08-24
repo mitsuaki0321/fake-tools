@@ -86,6 +86,8 @@ def selecter_handler(func):
 
 
 class DockableWidget(MayaQWidgetDockableMixin, QWidget):
+    """Selecter Dockable Widget."""
+
     def __init__(self, parent=None, object_name="dockableWidget", window_title="Dockable Widget"):
         super().__init__(parent=parent)
 
@@ -130,6 +132,8 @@ class DockableWidget(MayaQWidgetDockableMixin, QWidget):
 
 
 class FilterSelectionWidget(QWidget):
+    """Filter Selection Widget."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
@@ -227,6 +231,8 @@ class FilterSelectionWidget(QWidget):
 
 
 class HierarchicalSelectionWidget(QWidget):
+    """Hierarchical Selection Widget."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
@@ -349,6 +355,8 @@ class HierarchicalSelectionWidget(QWidget):
 
 
 class SubstitutionSelectionWidget(QWidget):
+    """Substitution Selection Widget."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
@@ -637,6 +645,8 @@ class SubstitutionSelectionWidget(QWidget):
 
 
 class RenameSelectionWidget(QWidget):
+    """Rename Selection Widget."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
@@ -708,6 +718,8 @@ class RenameSelectionWidget(QWidget):
 
 
 class ExtraSelectionWidget(QWidget):
+    """Extra Selection Widget."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
@@ -754,20 +766,22 @@ class SelecterButton(QPushButton):
         color = QColor(color)
         hover_color = self._get_lightness_color(color, 1.2)
         pressed_color = self._get_lightness_color(color, 0.8)
-        self.setStyleSheet(f"""
-                   QPushButton {{
-                       font-weight: bold;
-                       font-size: {FONT_SIZE}px;
-                       border: 1px solid #333;
-                       background-color: {color.name()};
-                   }}
-                   QPushButton:hover {{
-                       background-color: {hover_color};
-                   }}
-                    QPushButton:pressed {{
-                       background-color: {pressed_color};
-                   }}
-                   """)
+        self.setStyleSheet(
+            f"""
+            QPushButton {{
+                font-weight: bold;
+                font-size: {FONT_SIZE}px;
+                border: 1px solid #333;
+                background-color: {color.name()};
+                }}
+                QPushButton:hover {{
+                    background-color: {hover_color};
+                }}
+                QPushButton:pressed {{
+                    background-color: {pressed_color};
+                }}
+                """
+        )
 
     def _get_lightness_color(self, color: QColor, factor: float) -> str:
         """Adjust the brightness of a color for hover and pressed states.

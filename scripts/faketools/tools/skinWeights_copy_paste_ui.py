@@ -24,6 +24,8 @@ logger = getLogger(__name__)
 
 
 class MainWindow(base_window.BaseMainWindow):
+    """Main Window for Skin Weights Copy Paste Tool."""
+
     def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
         """Constructor.
 

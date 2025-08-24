@@ -38,6 +38,8 @@ logger = getLogger(__name__)
 
 
 class MainWindow(base_window.BaseMainWindow):
+    """Skin Weights Tools Main Window."""
+
     def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
         """Constructor."""
         super().__init__(parent=parent, object_name=object_name, window_title=window_title)
@@ -406,6 +408,8 @@ class MainWindow(base_window.BaseMainWindow):
 
 
 class PreviewLocatorForTransformOnCurve(create_transforms.PreviewLocatorForTransform):
+    """Preview locator for Transform on Curve tool."""
+
     preview_locator_name = "createTransformOnCurvePreview"
 
 

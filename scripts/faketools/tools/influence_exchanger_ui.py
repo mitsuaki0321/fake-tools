@@ -37,6 +37,8 @@ logger = getLogger(__name__)
 
 
 class InfluenceExchangerWidgets(QWidget):
+    """Influence Exchanger Widgets."""
+
     def __init__(self, parent=None, window_mode: bool = False):
         """Constructor."""
         super().__init__(parent=parent)

@@ -46,6 +46,8 @@ REGEX = global_settings.get("LEFT_TO_RIGHT", ["(.*)(L)", r"\g<1>R"])
 
 
 class MainWindow(base_window.BaseMainWindow):
+    """Component Selecter Main Window."""
+
     def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
         """Constructor."""
         super().__init__(parent=parent, object_name=object_name, window_title=window_title)
@@ -331,6 +333,8 @@ class MainWindow(base_window.BaseMainWindow):
 
 
 class MirrorCheckBox(QWidget):
+    """Mirror Check Box."""
+
     def __init__(self, label: str = "T", attribute: str = "translate", parent=None):
         """Initialize.
 

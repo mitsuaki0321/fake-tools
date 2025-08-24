@@ -47,6 +47,8 @@ tool_options = optionvar.ToolOptionSettings(__name__)
 
 
 class BaseBoxWidget(QWidget):
+    """Base class for bounding box option widgets."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
@@ -71,6 +73,8 @@ class BaseBoxWidget(QWidget):
 
 
 class WorldBoxWidget(BaseBoxWidget):
+    """World bounding box options widget."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
@@ -80,6 +84,8 @@ class WorldBoxWidget(BaseBoxWidget):
 
 
 class MinimumBoxWidget(BaseBoxWidget):
+    """Minimum bounding box options widget."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
@@ -89,7 +95,13 @@ class MinimumBoxWidget(BaseBoxWidget):
 
 
 class AxisAlignedBoxWidget(BaseBoxWidget):
-    _axis = ["x", "y", "z"]
+    """Axis Aligned bounding box options widget."""
+
+    _axis = ("x", "y", "z")
+
+    _default_axis_direction = (0, 1, 0)
+    _default_axis = "y"
+    _default_sampling = 360
 
     def __init__(self, parent=None):
         """Constructor."""
@@ -132,9 +144,9 @@ class AxisAlignedBoxWidget(BaseBoxWidget):
         self.main_layout.addLayout(layout)
 
         # Option settings
-        self.set_axis_direction(tool_options.read("axis_direction", [0.0, 1.0, 0.0]))
-        self.set_axis(tool_options.read("axis", "y"))
-        self.set_sampling(tool_options.read("sampling", 360))
+        self.set_axis_direction(tool_options.read("axis_direction", self._default_axis_direction))
+        self.set_axis(tool_options.read("axis", self._default_axis))
+        self.set_sampling(tool_options.read("sampling", self._default_sampling))
 
     def get_options(self) -> dict:
         """Get the options.
@@ -217,12 +229,11 @@ class AxisAlignedBoxWidget(BaseBoxWidget):
 
 
 class MainWindow(base_window.BaseMainWindow):
+    """Bounding Box Creator Main Window."""
+
     _boundingbox_types = {"World": "world", "Minimum": "minimum", "AxisAligned": "axis_aligned"}
     _boundingbox_widgets = {"world": WorldBoxWidget, "minimum": MinimumBoxWidget, "axis_aligned": AxisAlignedBoxWidget}
-    _box_types = ["mesh", "curve", "locator"]
-
-    _default_axis_direction = [0, 1, 0]
-    _default_axis = "y"
+    _box_types = ("mesh", "curve", "locator")
 
     def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
         """Constructor."""
@@ -317,6 +328,8 @@ class MainWindow(base_window.BaseMainWindow):
 
 
 class BaseLineWidget(QWidget):
+    """Base line input widget."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)

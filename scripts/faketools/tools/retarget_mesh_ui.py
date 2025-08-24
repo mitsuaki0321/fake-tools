@@ -27,6 +27,8 @@ logger = getLogger(__name__)
 
 
 class MainWindow(base_window.BaseMainWindow):
+    """Retarget Mesh Main Window."""
+
     def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
         """Constructor."""
         super().__init__(parent=parent, object_name=object_name, window_title=window_title)
@@ -81,6 +83,8 @@ class MainWindow(base_window.BaseMainWindow):
 
 
 class SetNodeWidgets(QWidget):
+    """Set Node Widgets."""
+
     def __init__(self, label: str, parent=None):
         """Constructor."""
         super().__init__(parent)
@@ -115,6 +119,8 @@ class SetNodeWidgets(QWidget):
 
 
 class SetNodesWidgets(QWidget):
+    """Set Nodes Widgets."""
+
     def __init__(self, label: str, parent=None):
         """Constructor."""
         super().__init__(parent)

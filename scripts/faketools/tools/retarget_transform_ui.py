@@ -44,9 +44,11 @@ logger = getLogger(__name__)
 
 
 class MainWindow(base_window.BaseMainWindow):
-    _method_list = ["Default", "Barycentric", "Rbf"]
-    _create_new_list = ["transform", "locator", "joint"]
-    _axis_list = ["X", "Y", "Z"]
+    """Retarget Transform Main Window."""
+
+    _method_list = ("Default", "Barycentric", "Rbf")
+    _create_new_list = ("transform", "locator", "joint")
+    _axis_list = ("X", "Y", "Z")
 
     def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window"):
         """Constructor."""

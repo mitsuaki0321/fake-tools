@@ -50,6 +50,8 @@ tool_options = optionvar.ToolOptionSettings(__name__)
 
 
 class MainWindow(base_window.BaseMainWindow):
+    """Panel Compositor Main Window."""
+
     _default_image_label = "Captured image will appear here"
     _panel_height = 500
     _background_color = "#000000"

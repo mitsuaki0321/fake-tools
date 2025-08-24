@@ -55,6 +55,8 @@ logger = getLogger(__name__)
 
 
 class MainWindow(base_window.BaseMainWindow):
+    """Node Stocker Main Window."""
+
     _stock_file_name = "node"
 
     def __init__(self, parent=None, object_name="MainWindow", window_title="Main Window", num_areas=7, **kwargs):
@@ -600,6 +602,8 @@ class StockAreaSwitchButtons(QWidget):
 
 
 class NameSpaceBox(QWidget):
+    """Name Space Box."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
@@ -656,6 +660,8 @@ class NameSpaceBox(QWidget):
 
 
 class NameReplaceField(QWidget):
+    """Name Replace Field."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)

@@ -80,6 +80,8 @@ class SkinWeightsWidgets(QWidget):
 
 
 class LaplacianSkinWeightsWidgets(SkinWeightsWidgets):
+    """Laplacian Skin Weights Widgets."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
@@ -93,6 +95,8 @@ class LaplacianSkinWeightsWidgets(SkinWeightsWidgets):
 
 
 class RBFSkinWeightsWidgets(SkinWeightsWidgets):
+    """RBF Skin Weights Widgets."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
@@ -221,6 +225,8 @@ class RBFSkinWeightsWidgets(SkinWeightsWidgets):
 
 
 class BiharmonicSkinWeightsWidgets(SkinWeightsWidgets):
+    """Biharmonic Skin Weights Widgets."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)
@@ -281,6 +287,8 @@ class BiharmonicSkinWeightsWidgets(SkinWeightsWidgets):
 
 
 class RelaxSkinWeightsWidgets(SkinWeightsWidgets):
+    """Relax Skin Weights Widgets."""
+
     def __init__(self, parent=None):
         """Constructor."""
         super().__init__(parent=parent)

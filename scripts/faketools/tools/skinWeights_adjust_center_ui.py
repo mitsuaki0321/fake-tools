@@ -44,6 +44,8 @@ ADJUST_CENTER_WEIGHT = global_settings.get("ADJUST_CENTER_WEIGHT", ["(.*)(L$)", 
 
 
 class AdjustCenterSkinWeightsWidgets(QWidget):
+    """Adjust Center Skin Weights Widgets."""
+
     def __init__(self, parent=None, window_mode: bool = False):
         """Constructor."""
         super().__init__(parent=parent)
